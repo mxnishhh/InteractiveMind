@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Condition } from '@/types';
+import { UI_TEXT } from '@/constants';
 
 interface ConditionCardProps {
   condition: Condition;
@@ -24,7 +25,7 @@ export const ConditionCard: React.FC<ConditionCardProps> = ({ condition }) => {
           href={`/conditions/${condition.slug}`}
           className="text-xs font-bold uppercase tracking-wider text-tealbrand-700 hover:text-tealbrand-800 inline-flex items-center gap-1.5 transition-colors"
         >
-          <span>Learn More</span>
+          <span>{UI_TEXT.learnMore}</span>
           <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
         </Link>
       </div>

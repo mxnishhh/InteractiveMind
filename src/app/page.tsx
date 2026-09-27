@@ -6,7 +6,8 @@ import { ConditionCard } from '@/components/public/ConditionCard';
 import { CTASection } from '@/components/public/CTASection';
 import { Accordion } from '@/components/ui/Accordion';
 import { getServicesDB, getConditionsDB, getFaqsDB, getTeamMembersDB } from '@/lib/db';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { ABOUT_PAGE, CORE_PRINCIPLES, THERAPY_JOURNEY, UI_TEXT } from '@/constants';
 
 export default async function HomePage() {
   const [services, conditions, faqs, teamMembers] = await Promise.all([
@@ -32,39 +33,33 @@ export default async function HomePage() {
             
             <div className="lg:col-span-5 space-y-4">
               <span className="text-xs font-bold uppercase tracking-wider text-tealbrand-700">
-                About Interactive Minds
+                {ABOUT_PAGE.eyebrow}
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
-                A Place Where Every Child Can Grow
+                {ABOUT_PAGE.philosophyTitle}
               </h2>
               <div className="pt-2">
                 <Link
                   href="/about"
                   className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-tealbrand-700 transition-colors"
                 >
-                  <span>Read Full Mission & Story</span>
+                  <span>{UI_TEXT.readStory}</span>
                   <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
                 </Link>
               </div>
             </div>
 
             <div className="lg:col-span-7 space-y-4 text-slate-600 text-sm leading-relaxed">
-              <p>
-                Interactive Minds is an Autism Care & Child Development Centre dedicated to helping children learn, communicate, participate, and become more independent.
-              </p>
-              <p>
-                We understand that every child is unique. Our team focuses on individual strengths, needs, and developmental goals to create a supportive and engaging experience for children and their families.
-              </p>
-              <p>
-                From communication and social skills to learning, sensory processing, and everyday activities, we work alongside parents to support each child’s developmental journey.
-              </p>
+              <p>{ABOUT_PAGE.subheading}</p>
+              <p>{ABOUT_PAGE.philosophyText1}</p>
+              <p>{ABOUT_PAGE.philosophyText2}</p>
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* 4. Therapies Section (Editorial Layout) */}
+      {/* 4. Therapies Section */}
       <section className="py-16 lg:py-24 bg-slate-50 border-b border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
@@ -81,7 +76,7 @@ export default async function HomePage() {
               href="/therapies"
               className="text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-tealbrand-700 inline-flex items-center gap-1"
             >
-              <span>View All 9 Therapies</span>
+              <span>{UI_TEXT.viewAll} 9 Therapies</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
             </Link>
           </div>
@@ -100,7 +95,7 @@ export default async function HomePage() {
                     href={`/therapies/${featuredService.slug}`}
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-slate-900 text-white font-semibold text-xs hover:bg-slate-800 transition-colors"
                   >
-                    <span>Read Program Details</span>
+                    <span>{UI_TEXT.readDetails}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -143,7 +138,7 @@ export default async function HomePage() {
               href="/conditions"
               className="text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-tealbrand-700 inline-flex items-center gap-1"
             >
-              <span>Explore All Conditions</span>
+              <span>{UI_TEXT.viewAll} Conditions</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
             </Link>
           </div>
@@ -171,33 +166,12 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-4 border-t border-slate-800">
-            <div className="space-y-3">
-              <h3 className="text-base font-bold text-white">Child-Centred Care</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Respecting each child’s unique personality, learning pace, and interests to make therapy engaging and effective.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="text-base font-bold text-white">Individualized Programs</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Customized intervention plans built around comprehensive baseline evaluations and structured developmental goals.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="text-base font-bold text-white">Experienced Professionals</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                A multidisciplinary team dedicated to evidence-informed care and continuous progress tracking.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="text-base font-bold text-white">Parent Partnership</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Working hand-in-hand with families to provide actionable home strategies, routine structures, and emotional support.
-              </p>
-            </div>
+            {CORE_PRINCIPLES.map((pillar, idx) => (
+              <div key={idx} className="space-y-3">
+                <h3 className="text-base font-bold text-white">{pillar.title}</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">{pillar.description}</p>
+              </div>
+            ))}
           </div>
 
         </div>
@@ -217,29 +191,13 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4">
-            <div className="p-6 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
-              <span className="text-xs font-extrabold text-slate-400 uppercase">Step 1</span>
-              <h4 className="font-bold text-slate-900 text-base">Developmental Assessment</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">Evaluation of baseline communication, motor skills, and sensory processing needs.</p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
-              <span className="text-xs font-extrabold text-slate-400 uppercase">Step 2</span>
-              <h4 className="font-bold text-slate-900 text-base">Individual Plan</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">Setting structured, measurable goals tailored specifically for your child.</p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
-              <span className="text-xs font-extrabold text-slate-400 uppercase">Step 3</span>
-              <h4 className="font-bold text-slate-900 text-base">Therapy Sessions</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">Engaging 1-on-1 and play-guided sessions in a supportive environment.</p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
-              <span className="text-xs font-extrabold text-slate-400 uppercase">Step 4</span>
-              <h4 className="font-bold text-slate-900 text-base">Progress Monitoring</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">Continuous review and parent coaching for routine home integration.</p>
-            </div>
+            {THERAPY_JOURNEY.map((step) => (
+              <div key={step.step} className="p-6 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+                <span className="text-xs font-extrabold text-slate-400 uppercase">{step.step}</span>
+                <h4 className="font-bold text-slate-900 text-base">{step.title}</h4>
+                <p className="text-xs text-slate-600 leading-relaxed">{step.description}</p>
+              </div>
+            ))}
           </div>
 
         </div>
@@ -251,10 +209,10 @@ export default async function HomePage() {
           
           <div className="max-w-3xl space-y-3">
             <span className="text-xs font-bold uppercase tracking-wider text-tealbrand-700">
-              Multidisciplinary Team
+              {ABOUT_PAGE.teamEyebrow}
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Specialized Staff Roles
+              {ABOUT_PAGE.teamHeading}
             </h2>
           </div>
 

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Input } from '@/ui/Input';
-import { Textarea } from '@/ui/Textarea';
-import { Button } from '@/ui/Button';
-import { Toast } from '@/ui/Toast';
+import { Input } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
+import { Button } from '@/components/ui/Button';
+import { Toast } from '@/components/ui/Toast';
 
 export const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({

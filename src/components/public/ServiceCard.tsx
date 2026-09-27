@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Service } from '@/types';
+import { UI_TEXT } from '@/constants';
 
 interface ServiceCardProps {
   service: Service;
@@ -24,7 +25,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
           href={`/therapies/${service.slug}`}
           className="text-xs font-bold uppercase tracking-wider text-slate-900 hover:text-tealbrand-700 inline-flex items-center gap-1.5 transition-colors"
         >
-          <span>Learn More</span>
+          <span>{UI_TEXT.learnMore}</span>
           <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
         </Link>
       </div>

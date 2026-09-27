@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Input } from '@/ui/Input';
-import { Select } from '@/ui/Select';
-import { Textarea } from '@/ui/Textarea';
-import { Button } from '@/ui/Button';
-import { Toast } from '@/ui/Toast';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Textarea } from '@/components/ui/Textarea';
+import { Button } from '@/components/ui/Button';
+import { Toast } from '@/components/ui/Toast';
 import { Service } from '@/types';
+import { APPOINTMENT_PAGE } from '@/constants';
 
 interface AppointmentFormProps {
   services?: Service[];
@@ -100,24 +101,19 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
 
   if (successResult) {
     return (
-      <div className="bg-emerald-50/80 border border-emerald-200 rounded-3xl p-8 text-center space-y-4">
-        <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
-          ✓
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-8 text-center space-y-4">
+        <h3 className="text-xl font-bold text-slate-900">{APPOINTMENT_PAGE.successTitle}</h3>
+        <p className="text-slate-600 text-xs max-w-md mx-auto">{successResult.message}</p>
+        <div className="inline-block bg-white px-6 py-3 rounded-lg border border-slate-200 shadow-sm">
+          <span className="block text-[10px] font-bold text-slate-400 uppercase">Reference Code</span>
+          <span className="block text-lg font-extrabold text-slate-900 mt-0.5">{successResult.reference}</span>
         </div>
-        <h3 className="text-2xl font-bold text-emerald-900">Appointment Request Received</h3>
-        <p className="text-emerald-800 text-sm max-w-md mx-auto">
-          {successResult.message}
-        </p>
-        <div className="inline-block bg-white px-6 py-3 rounded-2xl border border-emerald-200 shadow-sm">
-          <span className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Your Reference Code</span>
-          <span className="block text-xl font-extrabold text-brand-600 tracking-wider mt-0.5">{successResult.reference}</span>
-        </div>
-        <div className="pt-4">
+        <div className="pt-2">
           <button
             onClick={() => setSuccessResult(null)}
-            className="text-xs font-bold uppercase tracking-wider text-emerald-700 hover:text-emerald-800 underline"
+            className="text-xs font-bold text-slate-900 hover:underline"
           >
-            Submit Another Request
+            {APPOINTMENT_PAGE.submitAnotherText}
           </button>
         </div>
       </div>
@@ -210,11 +206,11 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
       </div>
 
       <Textarea
-        label="Message / Developmental Concerns (Optional)"
+        label="Message / Concerns (Optional)"
         name="message"
         value={formData.message}
         onChange={handleChange}
-        placeholder="Please share any specific goals or areas where your child needs support..."
+        placeholder="Please share any developmental goals or concerns..."
       />
 
       <Button type="submit" size="lg" isLoading={isLoading} className="w-full">
@@ -222,7 +218,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
       </Button>
 
       <p className="text-xs text-center text-slate-500 italic">
-        * Note: This is an appointment request. Our intake coordinator will contact you to confirm availability.
+        {APPOINTMENT_PAGE.formNotice}
       </p>
     </form>
   );

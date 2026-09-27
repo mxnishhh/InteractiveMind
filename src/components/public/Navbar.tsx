@@ -4,15 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Phone, Calendar } from 'lucide-react';
-
-const NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/conditions', label: 'Conditions' },
-  { href: '/therapies', label: 'Therapies' },
-  { href: '/about', label: 'About Us' },
-  { href: '/media', label: 'Media' },
-  { href: '/contact', label: 'Contact' },
-];
+import { SITE, NAVIGATION, HERO } from '@/constants';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,21 +24,21 @@ export const Navbar: React.FC = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded bg-slate-900 flex items-center justify-center text-white font-bold text-sm tracking-widest">
-              IM
+              {SITE.shortName}
             </div>
             <div>
               <span className="block text-base font-bold tracking-tight text-slate-900 leading-tight">
-                INTERACTIVE MINDS
+                {SITE.name}
               </span>
               <span className="block text-[11px] font-medium text-slate-500 tracking-wide">
-                Autism Care & Child Development
+                {SITE.tagline}
               </span>
             </div>
           </Link>
 
           {/* Desktop Nav Links */}
           <nav className="hidden lg:flex items-center gap-8">
-            {NAV_LINKS.map((link) => {
+            {NAVIGATION.map((link) => {
               const active = isActive(link.href);
               return (
                 <Link
@@ -67,25 +59,25 @@ export const Navbar: React.FC = () => {
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
             <Link
-              href="tel:+919876543210"
+              href={`tel:${SITE.phoneRaw}`}
               className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors"
             >
               <Phone className="w-4 h-4 text-slate-500" />
-              <span>(555) 234-5678</span>
+              <span>{SITE.phone}</span>
             </Link>
             <Link
-              href="/appointment"
+              href={HERO.primaryCta.href}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 transition-colors shadow-sm"
             >
               <Calendar className="w-3.5 h-3.5" />
-              <span>Book Assessment</span>
+              <span>{HERO.primaryCta.label}</span>
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="flex lg:hidden items-center gap-3">
             <Link
-              href="/appointment"
+              href={HERO.primaryCta.href}
               className="md:hidden px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-slate-900"
             >
               Book
@@ -104,7 +96,7 @@ export const Navbar: React.FC = () => {
       {/* Mobile Drawer */}
       {isOpen && (
         <div className="lg:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2">
-          {NAV_LINKS.map((link) => (
+          {NAVIGATION.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -120,11 +112,11 @@ export const Navbar: React.FC = () => {
           ))}
           <div className="pt-3 border-t border-slate-100">
             <Link
-              href="/appointment"
+              href={HERO.primaryCta.href}
               onClick={() => setIsOpen(false)}
               className="block w-full py-3 rounded-lg text-center text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800"
             >
-              Book an Assessment
+              {HERO.primaryCta.label}
             </Link>
           </div>
         </div>
