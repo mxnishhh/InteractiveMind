@@ -19,18 +19,18 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={selectId} className="block text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1.5">
+          <label htmlFor={selectId} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
             {label}
-            {props.required && <span className="text-rose-500 ml-1">*</span>}
+            {props.required && <span className="text-rose-600 ml-1">*</span>}
           </label>
         )}
         <select
           ref={ref}
           id={selectId}
-          className={`w-full px-4 py-3 rounded-xl border bg-white text-slate-900 text-sm transition-colors duration-200 focus:outline-none focus:ring-2 ${
+          className={`w-full px-4 py-2.5 rounded-lg border bg-white text-slate-900 text-sm transition-colors focus:outline-none focus:ring-2 ${
             error
-              ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-200'
-              : 'border-slate-200 focus:border-brand-500 focus:ring-brand-100'
+              ? 'border-rose-400 focus:border-rose-600 focus:ring-rose-100'
+              : 'border-slate-300 focus:border-slate-800 focus:ring-slate-100'
           } ${className}`}
           {...props}
         >

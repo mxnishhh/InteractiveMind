@@ -7,12 +7,10 @@ interface AccordionItem {
   id: number | string;
   question: string;
   answer: string;
-  category?: string;
 }
 
 interface AccordionProps {
   items: AccordionItem[];
-  allowMultiple?: boolean;
 }
 
 export const Accordion: React.FC<AccordionProps> = ({ items }) => {
@@ -23,27 +21,24 @@ export const Accordion: React.FC<AccordionProps> = ({ items }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="divide-y divide-slate-200 border-t border-b border-slate-200">
       {items.map((item) => {
         const isOpen = openId === item.id;
         return (
-          <div
-            key={item.id}
-            className="border border-slate-200/80 rounded-2xl bg-white overflow-hidden transition-all duration-200"
-          >
+          <div key={item.id} className="py-4">
             <button
               onClick={() => toggle(item.id)}
-              className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-brand-600 focus:outline-none focus:bg-slate-50/50"
+              className="w-full text-left flex items-center justify-between gap-4 font-semibold text-slate-900 hover:text-slate-700 focus:outline-none py-1"
             >
-              <span className="text-base font-medium">{item.question}</span>
+              <span className="text-base font-semibold">{item.question}</span>
               <ChevronDown
-                className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
-                  isOpen ? 'rotate-180 text-brand-600' : ''
+                className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 ${
+                  isOpen ? 'rotate-180 text-slate-900' : ''
                 }`}
               />
             </button>
             {isOpen && (
-              <div className="px-6 pb-5 pt-1 text-slate-600 text-sm leading-relaxed border-t border-slate-100">
+              <div className="pt-3 text-slate-600 text-sm leading-relaxed pr-6">
                 {item.answer}
               </div>
             )}

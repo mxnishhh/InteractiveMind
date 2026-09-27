@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwind.config').Config} */
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -8,38 +8,35 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand: {
-          50: '#f0f7ff',
-          100: '#e0effe',
-          200: '#bae0fd',
-          300: '#7cc8fc',
-          400: '#36abf8',
-          500: '#0c8ee9',
-          600: '#0270c7',
-          700: '#0359a1',
-          800: '#074c85',
-          900: '#0c406e',
-          950: '#082849',
+        navy: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          700: '#1e293b',
+          800: '#0f172a',
+          900: '#090d16',
         },
-        warm: {
-          50: '#fdfbf7',
-          100: '#f7f2e8',
-          200: '#eee3d0',
-          300: '#e1cdb0',
-          400: '#d1b18c',
-          500: '#c3986e',
-          600: '#b48259',
-          700: '#966948',
-          800: '#7a553e',
-          900: '#644735',
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
         },
         tealbrand: {
           50: '#f0fdfa',
           100: '#ccfbf1',
-          500: '#14b8a6',
-          600: '#0d9488',
           700: '#0f766e',
-        }
+          800: '#115e59',
+          900: '#134e4a',
+        },
+        warmbg: '#faf9f6',
+      },
+      borderRadius: {
+        'lg': '8px',
+        'xl': '12px',
+        '2xl': '16px',
+        '3xl': '24px',
       },
     },
   },
