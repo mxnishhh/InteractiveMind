@@ -32,28 +32,16 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Section Title Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">
-                Specialized Programs
-              </span>
-              <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
-                Our 9 Developmental Therapies
-              </h2>
-              <p className="text-stone-600 text-base max-w-2xl mt-3">
-                Every discipline is led by qualified pediatric clinicians, structured to nurture communication, motor coordination, cognitive progress, and self-confidence.
-              </p>
-            </div>
-            <div className="mt-4 md:mt-0">
-              <button
-                type="button"
-                onClick={() => setSelectedService(featuredService || allServices[0])}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-brand-850 bg-white border border-stone-200 hover:border-brand-700 shadow-sm transition-colors"
-              >
-                <span>View All 9 Programs</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+          <div className="max-w-3xl mb-14">
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">
+              Specialized Programs
+            </span>
+            <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
+              Our 9 Developmental Therapies
+            </h2>
+            <p className="text-stone-600 text-base mt-3">
+              Every discipline is led by qualified pediatric clinicians, structured to nurture communication, motor coordination, cognitive progress, and self-confidence.
+            </p>
           </div>
 
           {/* FEATURED SPOTLIGHT CARD: Occupational Therapy / Selected */}

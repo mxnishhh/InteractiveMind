@@ -32,29 +32,16 @@ export const ConditionsSection: React.FC<ConditionsSectionProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Section Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div className="max-w-3xl">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">
-                Individualized Understanding
-              </span>
-              <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
-                Conditions We Support
-              </h2>
-              <p className="text-stone-600 text-base mt-3">
-                Every diagnosis is approached with clinical precision, dignity, and a commitment to helping each child navigate everyday life with comfort and self-expression.
-              </p>
-            </div>
-
-            <div className="mt-4 md:mt-0">
-              <button
-                type="button"
-                onClick={() => setSelectedCondition(featuredCondition || allConditions[0])}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-brand-850 bg-white border border-stone-200 hover:border-brand-700 shadow-sm transition-colors"
-              >
-                <span>View All 5 Conditions</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+          <div className="max-w-3xl mb-12">
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">
+              Individualized Understanding
+            </span>
+            <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
+              Conditions We Support
+            </h2>
+            <p className="text-stone-600 text-base mt-3">
+              Every diagnosis is approached with clinical precision, dignity, and a commitment to helping each child navigate everyday life with comfort and self-expression.
+            </p>
           </div>
 
           {/* Neurodiversity Ambient Banner */}
