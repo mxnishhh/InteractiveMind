@@ -5,6 +5,7 @@ import { getConditionBySlugDB, getServicesDB } from '@/lib/db';
 import { CTASection } from '@/components/public/CTASection';
 import { Calendar, ArrowRight, ShieldCheck, Phone, MessageSquare } from 'lucide-react';
 import { SITE, HERO } from '@/constants';
+import { FadeUp, FadeIn } from '@/components/ui/motion';
 
 export default async function ConditionDetailPage({ params }: { params: { slug: string } }) {
   const [condition, services] = await Promise.all([
@@ -22,24 +23,26 @@ export default async function ConditionDetailPage({ params }: { params: { slug: 
       {/* Hero Header */}
       <section className="py-12 lg:py-20 border-b border-stone-200/80 subtle-mesh">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex items-center gap-2">
-            <Link href="/conditions" className="text-xs font-bold uppercase tracking-wider text-stone-500 hover:text-brand-800 transition-colors">
-              Conditions
-            </Link>
-            <span className="text-stone-300">/</span>
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-700">
-              Condition Overview
-            </span>
-          </div>
+          <FadeUp className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Link href="/conditions" className="text-xs font-bold uppercase tracking-wider text-stone-500 hover:text-brand-800 transition-colors">
+                Conditions
+              </Link>
+              <span className="text-stone-300">/</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-brand-700">
+                Condition Overview
+              </span>
+            </div>
 
-          <div className="max-w-4xl space-y-4">
-            <h1 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight leading-tight">
-              {condition.name}
-            </h1>
-            <p className="text-base sm:text-lg text-stone-600 leading-relaxed">
-              {condition.short_description}
-            </p>
-          </div>
+            <div className="max-w-4xl space-y-4">
+              <h1 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight leading-tight">
+                {condition.name}
+              </h1>
+              <p className="text-base sm:text-lg text-stone-600 leading-relaxed">
+                {condition.short_description}
+              </p>
+            </div>
+          </FadeUp>
         </div>
       </section>
 
@@ -51,7 +54,7 @@ export default async function ConditionDetailPage({ params }: { params: { slug: 
             {/* Main Column */}
             <div className="lg:col-span-8 space-y-8">
 
-              <div className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-4">
+              <FadeUp className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-4">
                 <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block">
                   Clinical Overview
                 </span>
@@ -61,9 +64,9 @@ export default async function ConditionDetailPage({ params }: { params: { slug: 
                 <p className="text-stone-600 leading-relaxed text-sm sm:text-base whitespace-pre-line">
                   {condition.description}
                 </p>
-              </div>
+              </FadeUp>
 
-              <div className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-6">
+              <FadeUp delay={0.1} className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-6">
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-1">
                     Multidisciplinary Care
@@ -92,14 +95,14 @@ export default async function ConditionDetailPage({ params }: { params: { slug: 
                     </Link>
                   ))}
                 </div>
-              </div>
+              </FadeUp>
 
             </div>
 
             {/* Sidebar Column */}
             <div className="lg:col-span-4 space-y-6 sticky top-28">
 
-              <div className="bg-[#062622] text-white rounded-3xl p-8 border border-brand-900/80 shadow-card space-y-5">
+              <FadeIn delay={0.15} className="bg-[#062622] text-white rounded-3xl p-8 border border-brand-900/80 shadow-card space-y-5">
                 <div className="w-10 h-10 rounded-2xl bg-brand-900 text-brand-300 flex items-center justify-center border border-brand-800">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
@@ -137,7 +140,7 @@ export default async function ConditionDetailPage({ params }: { params: { slug: 
                     <span>WhatsApp Guidance</span>
                   </a>
                 </div>
-              </div>
+              </FadeIn>
 
             </div>
 

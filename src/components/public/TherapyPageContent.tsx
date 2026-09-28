@@ -1,9 +1,16 @@
 import React from 'react';
 import Link from 'next/link';
 import { Service } from '@/types';
-import { Calendar, Check, ArrowRight, Phone, MessageSquare } from 'lucide-react';
+import { Calendar, Check, Phone, MessageSquare } from 'lucide-react';
 import { HERO, SITE } from '@/constants';
 import { CTASection } from '@/components/public/CTASection';
+import {
+  FadeUp,
+  FadeIn,
+  ImageReveal,
+  StaggerContainer,
+  StaggerItem,
+} from '@/components/ui/motion';
 
 interface TherapyPageContentProps {
   service: Service;
@@ -32,7 +39,7 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
           <div className="bg-white rounded-3xl p-8 sm:p-12 border border-stone-200/90 shadow-card grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            <div className="lg:col-span-7 space-y-5">
+            <FadeUp className="lg:col-span-7 space-y-5">
               <div className="flex items-center gap-2">
                 <Link href="/therapies" className="text-xs font-bold uppercase tracking-wider text-stone-500 hover:text-brand-800 transition-colors">
                   Therapies
@@ -68,17 +75,19 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
                   <span>Call {SITE.phone}</span>
                 </a>
               </div>
-            </div>
+            </FadeUp>
 
             <div className="lg:col-span-5">
               {imageUrl && (
-                <div className="rounded-3xl overflow-hidden aspect-[4/3] bg-stone-100 border border-stone-200/90 shadow-soft">
-                  <img
-                    src={imageUrl}
-                    alt={service.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <ImageReveal delay={0.15}>
+                  <div className="rounded-3xl overflow-hidden aspect-[4/3] bg-stone-100 border border-stone-200/90 shadow-soft">
+                    <img
+                      src={imageUrl}
+                      alt={service.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </ImageReveal>
               )}
             </div>
           </div>
@@ -94,7 +103,7 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
             {/* Left Content Column */}
             <div className="lg:col-span-8 space-y-8">
 
-              <div className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-4">
+              <FadeUp className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-4">
                 <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block">
                   Clinical Overview
                 </span>
@@ -104,10 +113,10 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
                 <p className="text-stone-600 leading-relaxed text-sm sm:text-base">
                   {service.description}
                 </p>
-              </div>
+              </FadeUp>
 
               {service.who_it_helps && (
-                <div className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-4">
+                <FadeUp delay={0.08} className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-4">
                   <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block">
                     Target Developmental Areas
                   </span>
@@ -117,11 +126,11 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
                   <p className="text-stone-600 leading-relaxed text-sm sm:text-base">
                     {service.who_it_helps}
                   </p>
-                </div>
+                </FadeUp>
               )}
 
               {service.benefits && (
-                <div className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-4">
+                <FadeUp delay={0.12} className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-4">
                   <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block">
                     Therapeutic Outcomes
                   </span>
@@ -131,11 +140,11 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
                   <p className="text-stone-600 leading-relaxed text-sm sm:text-base">
                     {service.benefits}
                   </p>
-                </div>
+                </FadeUp>
               )}
 
               {service.process_steps && service.process_steps.length > 0 && (
-                <div className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-6">
+                <FadeUp delay={0.16} className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-soft space-y-6">
                   <div>
                     <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-1">
                       Structured Framework
@@ -158,7 +167,7 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
                       </div>
                     ))}
                   </div>
-                </div>
+                </FadeUp>
               )}
 
             </div>
@@ -167,7 +176,7 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
             <div className="lg:col-span-4 space-y-6 sticky top-28">
 
               {service.skills_supported && service.skills_supported.length > 0 && (
-                <div className="bg-white rounded-3xl p-7 border border-stone-200/90 shadow-soft space-y-4">
+                <FadeIn delay={0.15} className="bg-white rounded-3xl p-7 border border-stone-200/90 shadow-soft space-y-4">
                   <h4 className="font-serif-heading text-lg font-bold text-brand-950">Skills We Build</h4>
                   <div className="space-y-2.5 text-xs font-medium text-stone-700">
                     {service.skills_supported.map((skill, idx) => (
@@ -179,11 +188,11 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
                       </div>
                     ))}
                   </div>
-                </div>
+                </FadeIn>
               )}
 
               {/* Consultation Card */}
-              <div className="bg-[#062622] text-white rounded-3xl p-8 border border-brand-900/80 shadow-card space-y-5">
+              <FadeIn delay={0.2} className="bg-[#062622] text-white rounded-3xl p-8 border border-brand-900/80 shadow-card space-y-5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-brand-300 block">
                   Interactive Minds Guidance
                 </span>
@@ -213,7 +222,7 @@ export const TherapyPageContent: React.FC<TherapyPageContentProps> = ({ service 
                     <span>WhatsApp Enquiry</span>
                   </a>
                 </div>
-              </div>
+              </FadeIn>
 
             </div>
 

@@ -5,6 +5,14 @@ import { ArrowRight } from 'lucide-react';
 import { Service } from '@/types';
 import { ServiceCard } from './ServiceCard';
 import { TherapyDetailModal } from './TherapyDetailModal';
+import {
+  FadeUp,
+  ImageReveal,
+  StaggerContainer,
+  StaggerItem,
+} from '@/components/ui/motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import { EDITORIAL_EASE } from '@/components/ui/motion';
 
 interface TherapiesSectionProps {
   featuredService: Service | null;
@@ -18,6 +26,7 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
   allServices,
 }) => {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const handleBookingScroll = () => {
     const element = document.getElementById('appointment');
@@ -32,7 +41,7 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Section Title Header */}
-          <div className="max-w-3xl mb-14">
+          <FadeUp className="max-w-3xl mb-14">
             <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">
               Specialized Programs
             </span>
@@ -42,13 +51,19 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
             <p className="text-stone-600 text-base mt-3">
               Every discipline is led by qualified pediatric clinicians, structured to nurture communication, motor coordination, cognitive progress, and self-confidence.
             </p>
-          </div>
+          </FadeUp>
 
           {/* FEATURED SPOTLIGHT CARD: Occupational Therapy / Selected */}
           {featuredService && (
-            <div
+            <motion.div
+              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.65, ease: EDITORIAL_EASE }}
+              whileHover={shouldReduceMotion ? undefined : { y: -3, transition: { duration: 0.25 } }}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.99, transition: { duration: 0.1 } }}
               onClick={() => setSelectedService(featuredService)}
-              className="mb-12 bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-brand-200/80 shadow-card hover:shadow-card-hover transition-all duration-300 relative overflow-hidden cursor-pointer group text-left"
+              className="mb-12 bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-brand-200/80 shadow-card hover:shadow-card-hover transition-shadow duration-300 relative overflow-hidden cursor-pointer group text-left"
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -119,19 +134,20 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
                 </div>
 
               </div>
-            </div>
+            </motion.div>
           )}
 
-          {/* Remaining Services Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Remaining Services Grid - Sequential Stagger */}
+          <StaggerContainer staggerDelay={0.07} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {otherServices.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                onSelect={setSelectedService}
-              />
+              <StaggerItem key={service.id} distance={20}>
+                <ServiceCard
+                  service={service}
+                  onSelect={setSelectedService}
+                />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
 
         </div>
       </section>

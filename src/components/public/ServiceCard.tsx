@@ -1,8 +1,12 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Service } from '@/types';
 import { UI_TEXT } from '@/constants';
+import { SMOOTH_EASE } from '@/components/ui/motion';
 
 interface ServiceCardProps {
   service: Service;
@@ -10,8 +14,10 @@ interface ServiceCardProps {
 }
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect }) => {
+  const shouldReduceMotion = useReducedMotion();
+
   const cardContent = (
-    <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full text-left">
+    <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 transition-all duration-300 flex flex-col justify-between group h-full text-left">
       <div className="space-y-3.5">
         <div className="flex items-center justify-between">
           <div className="w-10 h-10 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center group-hover:bg-brand-100 group-hover:text-brand-900 transition-colors">
@@ -63,16 +69,25 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect }) =
 
   if (onSelect) {
     return (
-      <button
+      <motion.button
         type="button"
+        whileHover={shouldReduceMotion ? undefined : { y: -3, transition: { duration: 0.25, ease: SMOOTH_EASE } }}
+        whileTap={shouldReduceMotion ? undefined : { scale: 0.99, transition: { duration: 0.1 } }}
         onClick={() => onSelect(service)}
         className="w-full text-left h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 rounded-3xl"
         aria-label={`View clinical details for ${service.name}`}
       >
         {cardContent}
-      </button>
+      </motion.button>
     );
   }
 
-  return cardContent;
+  return (
+    <motion.div
+      whileHover={shouldReduceMotion ? undefined : { y: -3, transition: { duration: 0.25, ease: SMOOTH_EASE } }}
+      className="h-full"
+    >
+      {cardContent}
+    </motion.div>
+  );
 };

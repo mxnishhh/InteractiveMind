@@ -3,6 +3,7 @@ import { ContactForm } from '@/components/public/ContactForm';
 import { MapPin, Mail, Phone, Clock, MessageSquare } from 'lucide-react';
 import { getSiteSettingsDB } from '@/lib/db';
 import { CONTACT_PAGE, SITE } from '@/constants';
+import { FadeUp, FadeIn } from '@/components/ui/motion';
 
 export default async function ContactPage() {
   const settings = await getSiteSettingsDB();
@@ -12,7 +13,7 @@ export default async function ContactPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
 
         {/* Banner */}
-        <div className="max-w-3xl space-y-3">
+        <FadeUp className="max-w-3xl space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block">
             {CONTACT_PAGE.eyebrow}
           </span>
@@ -22,12 +23,12 @@ export default async function ContactPage() {
           <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
             {CONTACT_PAGE.description}
           </p>
-        </div>
+        </FadeUp>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
           {/* Contact Details Card */}
-          <div className="lg:col-span-5 space-y-6">
+          <FadeUp delay={0.1} className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-card space-y-6">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-1">Direct Contact</span>
@@ -110,10 +111,10 @@ export default async function ContactPage() {
                 </a>
               </div>
             </div>
-          </div>
+          </FadeUp>
 
           {/* Interactive Form Card */}
-          <div className="lg:col-span-7">
+          <FadeIn delay={0.2} className="lg:col-span-7">
             <div className="bg-white rounded-3xl p-8 sm:p-10 border border-stone-200/90 shadow-card space-y-6">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-1">Direct Message</span>
@@ -121,7 +122,7 @@ export default async function ContactPage() {
               </div>
               <ContactForm />
             </div>
-          </div>
+          </FadeIn>
 
         </div>
 
