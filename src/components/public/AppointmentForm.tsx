@@ -101,17 +101,20 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
 
   if (successResult) {
     return (
-      <div className="bg-slate-50 border border-slate-200 rounded-xl p-8 text-center space-y-4">
-        <h3 className="text-xl font-bold text-slate-900">{APPOINTMENT_PAGE.successTitle}</h3>
-        <p className="text-slate-600 text-xs max-w-md mx-auto">{successResult.message}</p>
-        <div className="inline-block bg-white px-6 py-3 rounded-lg border border-slate-200 shadow-sm">
-          <span className="block text-[10px] font-bold text-slate-400 uppercase">Reference Code</span>
-          <span className="block text-lg font-extrabold text-slate-900 mt-0.5">{successResult.reference}</span>
+      <div className="bg-brand-50/70 border border-brand-200/90 rounded-2xl p-8 text-center space-y-5 animate-fade-in">
+        <div className="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mx-auto shadow-xs">
+          <span className="text-xl">✓</span>
+        </div>
+        <h3 className="font-serif-heading text-2xl font-bold text-brand-950">{APPOINTMENT_PAGE.successTitle}</h3>
+        <p className="text-stone-600 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">{successResult.message}</p>
+        <div className="inline-block bg-white px-6 py-3.5 rounded-2xl border border-brand-200/90 shadow-soft">
+          <span className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider">Reference Code</span>
+          <span className="block font-mono text-lg font-extrabold text-brand-950 mt-0.5 tracking-wider">{successResult.reference}</span>
         </div>
         <div className="pt-2">
           <button
             onClick={() => setSuccessResult(null)}
-            className="text-xs font-bold text-slate-900 hover:underline"
+            className="text-xs font-bold text-brand-850 hover:text-brand-700 hover:underline transition-colors focus:outline-none"
           >
             {APPOINTMENT_PAGE.submitAnotherText}
           </button>
@@ -121,10 +124,10 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {errorMsg && <Toast type="error" message={errorMsg} onClose={() => setErrorMsg(null)} />}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Input
           label="Parent / Guardian Name"
           name="parent_name"
@@ -143,7 +146,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Input
           label="Email Address"
           type="email"
@@ -164,7 +167,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Select
           label="Child's Age Group"
           name="child_age"
@@ -184,7 +187,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Input
           label="Preferred Date"
           type="date"
@@ -213,11 +216,13 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
         placeholder="Please share any developmental goals or concerns..."
       />
 
-      <Button type="submit" size="lg" isLoading={isLoading} className="w-full">
-        Submit Appointment Request
-      </Button>
+      <div className="pt-2">
+        <Button type="submit" size="lg" isLoading={isLoading} className="w-full shadow-card hover:shadow-card-hover py-3.5 text-sm">
+          Submit Appointment Request
+        </Button>
+      </div>
 
-      <p className="text-xs text-center text-slate-500 italic">
+      <p className="text-[11px] text-center text-stone-500 italic leading-relaxed">
         {APPOINTMENT_PAGE.formNotice}
       </p>
     </form>

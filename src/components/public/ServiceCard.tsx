@@ -11,13 +11,13 @@ interface ServiceCardProps {
 
 export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect }) => {
   const cardContent = (
-    <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full text-left">
+    <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group h-full text-left">
       <div className="space-y-3.5">
         <div className="flex items-center justify-between">
-          <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-850 flex items-center justify-center group-hover:bg-brand-100 transition-colors">
-            <Sparkles className="w-5 h-5 text-brand-700" />
+          <div className="w-10 h-10 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center group-hover:bg-brand-100 group-hover:text-brand-900 transition-colors">
+            <Sparkles className="w-5 h-5 text-brand-700 group-hover:text-brand-850 transition-colors" />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-brand-700 bg-brand-50 px-2.5 py-1 rounded-full">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-brand-800 bg-brand-100/60 border border-brand-200/60 px-2.5 py-1 rounded-full">
             Clinical Care
           </span>
         </div>
@@ -33,7 +33,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect }) =
         {service.skills_supported && service.skills_supported.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-1">
             {service.skills_supported.slice(0, 2).map((skill, i) => (
-              <span key={i} className="text-[11px] text-stone-600 bg-stone-100 px-2 py-0.5 rounded-md">
+              <span key={i} className="text-[11px] text-stone-600 bg-stone-100/80 border border-stone-200/60 px-2 py-0.5 rounded-md">
                 {skill}
               </span>
             ))}

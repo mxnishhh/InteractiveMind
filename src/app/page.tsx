@@ -26,7 +26,7 @@ export default async function HomePage() {
   const otherConditions = conditions.filter((c) => c.id !== featuredCondition?.id);
 
   return (
-    <div className="space-y-0 text-slate-800">
+    <div className="space-y-0 text-stone-800">
 
       {/* 1 & 2. Hero Section */}
       <Hero />
@@ -105,7 +105,7 @@ export default async function HomePage() {
             <div className="lg:col-span-7 space-y-4">
               <h3 className="font-serif-heading text-xl font-bold text-brand-950 mb-2">Our Clinical Highlights</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70">
+                <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70 hover:border-brand-200 hover:shadow-soft transition-all duration-200">
                   <div className="mt-0.5 text-brand-700">
                     <Check className="w-5 h-5" strokeWidth={2.5} />
                   </div>
@@ -115,7 +115,7 @@ export default async function HomePage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70">
+                <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70 hover:border-brand-200 hover:shadow-soft transition-all duration-200">
                   <div className="mt-0.5 text-brand-700">
                     <Check className="w-5 h-5" strokeWidth={2.5} />
                   </div>
@@ -125,7 +125,7 @@ export default async function HomePage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70">
+                <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70 hover:border-brand-200 hover:shadow-soft transition-all duration-200">
                   <div className="mt-0.5 text-brand-700">
                     <Check className="w-5 h-5" strokeWidth={2.5} />
                   </div>
@@ -135,7 +135,7 @@ export default async function HomePage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70">
+                <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70 hover:border-brand-200 hover:shadow-soft transition-all duration-200">
                   <div className="mt-0.5 text-brand-700">
                     <Check className="w-5 h-5" strokeWidth={2.5} />
                   </div>
@@ -251,34 +251,34 @@ export default async function HomePage() {
             </div>
 
             {/* Right 7 Cols: The 4 Principles in a 2x2 Grid */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
 
-              <div className="bg-brand-900/60 p-6 rounded-2xl border border-brand-800 backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-lg bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4">01</div>
+              <div className="bg-brand-900/60 p-6 rounded-2xl border border-brand-800/90 hover:border-brand-700/90 hover:bg-brand-900/80 transition-all duration-300 backdrop-blur-sm shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4 border border-brand-700/60 shadow-xs">01</div>
                 <h3 className="font-serif-heading text-lg font-bold text-white mb-2">Child-Centred Care</h3>
                 <p className="text-xs text-stone-300 leading-relaxed">
                   Every child is recognized as a complete individual with distinct emotional needs, sensory thresholds, and expressive abilities.
                 </p>
               </div>
 
-              <div className="bg-brand-900/60 p-6 rounded-2xl border border-brand-800 backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-lg bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4">02</div>
+              <div className="bg-brand-900/60 p-6 rounded-2xl border border-brand-800/90 hover:border-brand-700/90 hover:bg-brand-900/80 transition-all duration-300 backdrop-blur-sm shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4 border border-brand-700/60 shadow-xs">02</div>
                 <h3 className="font-serif-heading text-lg font-bold text-white mb-2">Individualized Programs</h3>
                 <p className="text-xs text-stone-300 leading-relaxed">
                   No cookie-cutter routines. Plans are designed specifically around the child&apos;s developmental profile and updated continuously.
                 </p>
               </div>
 
-              <div className="bg-brand-900/60 p-6 rounded-2xl border border-brand-800 backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-lg bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4">03</div>
+              <div className="bg-brand-900/60 p-6 rounded-2xl border border-brand-800/90 hover:border-brand-700/90 hover:bg-brand-900/80 transition-all duration-300 backdrop-blur-sm shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4 border border-brand-700/60 shadow-xs">03</div>
                 <h3 className="font-serif-heading text-lg font-bold text-white mb-2">Experienced Specialists</h3>
                 <p className="text-xs text-stone-300 leading-relaxed">
                   Care administered by committed clinical professionals utilizing recognized pediatric therapeutic frameworks.
                 </p>
               </div>
 
-              <div className="bg-brand-900/60 p-6 rounded-2xl border border-brand-800 backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-lg bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4">04</div>
+              <div className="bg-brand-900/60 p-6 rounded-2xl border border-brand-800/90 hover:border-brand-700/90 hover:bg-brand-900/80 transition-all duration-300 backdrop-blur-sm shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4 border border-brand-700/60 shadow-xs">04</div>
                 <h3 className="font-serif-heading text-lg font-bold text-white mb-2">Parent Partnership</h3>
                 <p className="text-xs text-stone-300 leading-relaxed">
                   Parents are essential co-therapists. We share transparent insights, visual schedules, and home strategies every week.
@@ -310,13 +310,13 @@ export default async function HomePage() {
           {/* 4 Connected Steps */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
 
-            <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft flex flex-col justify-between">
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center font-bold text-lg mb-6 shadow-sm border border-brand-100">
+                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center font-bold text-lg mb-6 shadow-sm border border-brand-100 group-hover:bg-brand-100 group-hover:text-brand-900 transition-colors">
                   01
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Step One</span>
-                <h3 className="font-serif-heading text-xl font-bold text-stone-900 mb-2">Initial Assessment</h3>
+                <h3 className="font-serif-heading text-xl font-bold text-stone-900 mb-2 group-hover:text-brand-900 transition-colors">Initial Assessment</h3>
                 <p className="text-xs text-stone-600 leading-relaxed">
                   Comprehensive evaluation by our multidisciplinary team to assess sensory profile, communication, motor skills, and behavior patterns.
                 </p>
@@ -326,13 +326,13 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft flex flex-col justify-between">
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center font-bold text-lg mb-6 shadow-sm border border-brand-100">
+                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center font-bold text-lg mb-6 shadow-sm border border-brand-100 group-hover:bg-brand-100 group-hover:text-brand-900 transition-colors">
                   02
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Step Two</span>
-                <h3 className="font-serif-heading text-xl font-bold text-stone-900 mb-2">Custom Care Plan</h3>
+                <h3 className="font-serif-heading text-xl font-bold text-stone-900 mb-2 group-hover:text-brand-900 transition-colors">Custom Care Plan</h3>
                 <p className="text-xs text-stone-600 leading-relaxed">
                   Collaborative formulation of an Individualized Education &amp; Therapy Plan (IEP) with transparent, measurable developmental milestones.
                 </p>
@@ -342,13 +342,13 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft flex flex-col justify-between">
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center font-bold text-lg mb-6 shadow-sm border border-brand-100">
+                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center font-bold text-lg mb-6 shadow-sm border border-brand-100 group-hover:bg-brand-100 group-hover:text-brand-900 transition-colors">
                   03
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Step Three</span>
-                <h3 className="font-serif-heading text-xl font-bold text-stone-900 mb-2">Therapy Sessions</h3>
+                <h3 className="font-serif-heading text-xl font-bold text-stone-900 mb-2 group-hover:text-brand-900 transition-colors">Therapy Sessions</h3>
                 <p className="text-xs text-stone-600 leading-relaxed">
                   Engaging, 1-on-1 and small group therapy sessions conducted in structured, sensory-friendly therapeutic environments.
                 </p>
@@ -358,13 +358,13 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft flex flex-col justify-between">
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center font-bold text-lg mb-6 shadow-sm border border-brand-100">
+                <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center font-bold text-lg mb-6 shadow-sm border border-brand-100 group-hover:bg-brand-100 group-hover:text-brand-900 transition-colors">
                   04
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Step Four</span>
-                <h3 className="font-serif-heading text-xl font-bold text-stone-900 mb-2">Progress &amp; Home Link</h3>
+                <h3 className="font-serif-heading text-xl font-bold text-stone-900 mb-2 group-hover:text-brand-900 transition-colors">Progress &amp; Home Link</h3>
                 <p className="text-xs text-stone-600 leading-relaxed">
                   Regular progress reviews, objective data tracking, and active parent coaching to reinforce therapeutic gains at home and school.
                 </p>
@@ -447,13 +447,13 @@ export default async function HomePage() {
           {/* 3 Discipline Team Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-            <div className="bg-alabaster-100 rounded-3xl p-8 border border-stone-200 flex flex-col justify-between shadow-soft">
+            <div className="bg-alabaster-100 rounded-3xl p-8 border border-stone-200/90 flex flex-col justify-between shadow-soft hover:shadow-card-hover hover:border-brand-300/80 hover:-translate-y-1 transition-all duration-300 group">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mb-6 group-hover:bg-brand-200/80 transition-colors">
                   <Users className="w-6 h-6 text-brand-700" />
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Assessment &amp; Screening</span>
-                <h3 className="font-serif-heading text-2xl font-bold text-stone-900 mb-2">Child Development Team</h3>
+                <h3 className="font-serif-heading text-2xl font-bold text-stone-900 mb-2 group-hover:text-brand-900 transition-colors">Child Development Team</h3>
                 <p className="text-xs text-stone-600 leading-relaxed mb-6">
                   Specialists leading pediatric intake screenings, standardized developmental evaluations, and formulating baseline clinical recommendations for early intervention.
                 </p>
@@ -463,13 +463,13 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="bg-alabaster-100 rounded-3xl p-8 border border-stone-200 flex flex-col justify-between shadow-soft">
+            <div className="bg-alabaster-100 rounded-3xl p-8 border border-stone-200/90 flex flex-col justify-between shadow-soft hover:shadow-card-hover hover:border-brand-300/80 hover:-translate-y-1 transition-all duration-300 group">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mb-6 group-hover:bg-brand-200/80 transition-colors">
                   <Sparkles className="w-6 h-6 text-brand-700" />
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Clinical Intervention</span>
-                <h3 className="font-serif-heading text-2xl font-bold text-stone-900 mb-2">Therapy Specialist Team</h3>
+                <h3 className="font-serif-heading text-2xl font-bold text-stone-900 mb-2 group-hover:text-brand-900 transition-colors">Therapy Specialist Team</h3>
                 <p className="text-xs text-stone-600 leading-relaxed mb-6">
                   Licensed pediatric clinicians delivering focused 1-on-1 sessions across Occupational Therapy, Speech &amp; Language Therapy, and Sensory Gym integration.
                 </p>
@@ -479,13 +479,13 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="bg-alabaster-100 rounded-3xl p-8 border border-stone-200 flex flex-col justify-between shadow-soft">
+            <div className="bg-alabaster-100 rounded-3xl p-8 border border-stone-200/90 flex flex-col justify-between shadow-soft hover:shadow-card-hover hover:border-brand-300/80 hover:-translate-y-1 transition-all duration-300 group">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mb-6 group-hover:bg-brand-200/80 transition-colors">
                   <Heart className="w-6 h-6 text-brand-700" />
                 </div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Academic &amp; Cognitive</span>
-                <h3 className="font-serif-heading text-2xl font-bold text-stone-900 mb-2">Special Education Team</h3>
+                <h3 className="font-serif-heading text-2xl font-bold text-stone-900 mb-2 group-hover:text-brand-900 transition-colors">Special Education Team</h3>
                 <p className="text-xs text-stone-600 leading-relaxed mb-6">
                   Educators designing customized Individualized Education Plans (IEP), pre-academic task breakdown, and school readiness transition coaching.
                 </p>

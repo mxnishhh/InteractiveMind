@@ -51,27 +51,33 @@ export const Hero: React.FC = () => {
             </div>
 
             {/* Trust & Clinical Highlights Strip */}
-            <div className="pt-8 border-t border-stone-200/80 grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-brand-700 shrink-0" strokeWidth={2.5} />
-                  <span className="font-serif-heading text-base font-bold text-brand-900 leading-tight">Child-Centred Care</span>
+            <div className="pt-8 border-t border-stone-200/80 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              <div className="space-y-1 p-3.5 sm:p-0 rounded-2xl bg-white/70 sm:bg-transparent border border-stone-200/60 sm:border-0 shadow-2xs sm:shadow-none">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-brand-100 text-brand-850 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-brand-750" strokeWidth={3} />
+                  </div>
+                  <span className="font-serif-heading text-sm sm:text-base font-bold text-brand-900 leading-tight">Child-Centred Care</span>
                 </div>
-                <p className="text-xs text-stone-500 font-medium leading-relaxed">Recognizing distinct emotional &amp; sensory needs</p>
+                <p className="text-xs text-stone-500 font-medium leading-relaxed pl-7 sm:pl-0">Recognizing distinct emotional &amp; sensory needs</p>
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-brand-700 shrink-0" strokeWidth={2.5} />
-                  <span className="font-serif-heading text-base font-bold text-brand-900 leading-tight">Individualized Pathways</span>
+              <div className="space-y-1 p-3.5 sm:p-0 rounded-2xl bg-white/70 sm:bg-transparent border border-stone-200/60 sm:border-0 shadow-2xs sm:shadow-none">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-brand-100 text-brand-850 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-brand-750" strokeWidth={3} />
+                  </div>
+                  <span className="font-serif-heading text-sm sm:text-base font-bold text-brand-900 leading-tight">Individualized Pathways</span>
                 </div>
-                <p className="text-xs text-stone-500 font-medium leading-relaxed">Tailored goals co-designed for home &amp; school</p>
+                <p className="text-xs text-stone-500 font-medium leading-relaxed pl-7 sm:pl-0">Tailored goals co-designed for home &amp; school</p>
               </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-brand-700 shrink-0" strokeWidth={2.5} />
-                  <span className="font-serif-heading text-base font-bold text-brand-900 leading-tight">Parent Partnership</span>
+              <div className="space-y-1 p-3.5 sm:p-0 rounded-2xl bg-white/70 sm:bg-transparent border border-stone-200/60 sm:border-0 shadow-2xs sm:shadow-none">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-brand-100 text-brand-850 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-brand-750" strokeWidth={3} />
+                  </div>
+                  <span className="font-serif-heading text-sm sm:text-base font-bold text-brand-900 leading-tight">Parent Partnership</span>
                 </div>
-                <p className="text-xs text-stone-500 font-medium leading-relaxed">Collaborative guidance &amp; active home strategies</p>
+                <p className="text-xs text-stone-500 font-medium leading-relaxed pl-7 sm:pl-0">Collaborative guidance &amp; active home strategies</p>
               </div>
             </div>
           </div>
