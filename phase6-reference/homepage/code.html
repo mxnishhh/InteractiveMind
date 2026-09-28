@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Minds — Autism Care & Child Development Centre</title>
+  <!-- Google Fonts: Fraunces (Editorial Display Serif) & Plus Jakarta Sans (Modern Clean Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Fraunces', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              950: '#062622',
+              900: '#08332f',
+              850: '#0c4a45',
+              800: '#0f5953',
+              700: '#0f766e',
+              600: '#14b8a6',
+              500: '#2dd4bf',
+              100: '#ccfbf1',
+              50: '#f0fdfa',
+            },
+            alabaster: {
+              DEFAULT: '#faf9f7',
+              50: '#ffffff',
+              100: '#faf9f7',
+              200: '#f4f3f0',
+              300: '#ebe9e3',
+            }
+          },
+          boxShadow: {
+            'soft': '0 2px 10px rgba(12, 74, 69, 0.04)',
+            'card': '0 4px 20px -2px rgba(12, 74, 69, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
+            'card-hover': '0 20px 30px -10px rgba(12, 74, 69, 0.12), 0 8px 10px -4px rgba(0, 0, 0, 0.04)',
+            'elevated': '0 25px 50px -12px rgba(8, 51, 47, 0.15)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #faf9f7;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-serif-heading {
+      font-family: 'Fraunces', Georgia, serif;
+      font-variation-settings: 'SOFT' 50, 'WONK' 0;
+    }
+    .nav-link.active-section {
+      color: #0c4a45;
+      font-weight: 600;
+      position: relative;
+    }
+    .nav-link.active-section::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 12%;
+      width: 76%;
+      height: 2px;
+      background-color: #0f766e;
+      border-radius: 9999px;
+    }
+    .subtle-mesh {
+      background-image: radial-gradient(at 0% 0%, rgba(204, 251, 241, 0.4) 0px, transparent 50%),
+                        radial-gradient(at 100% 100%, rgba(254, 243, 199, 0.25) 0px, transparent 50%);
+    }
+  </style>
+</head>
+<body class="selection:bg-brand-100 selection:text-brand-900 relative">
+
+  <!-- ============================================================== -->
+  <!-- 1. STICKY EDITORIAL NAVIGATION                                  -->
+  <!-- ============================================================== -->
+  <header id="site-header" class="sticky top-0 z-50 transition-all duration-300 bg-[#faf9f7]/90 backdrop-blur-md border-b border-stone-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo Brand -->
+        <a href="#hero" class="flex items-center gap-3 group focus:outline-none">
+          <div class="h-11 flex items-center">
+            <img src="https://lh3.googleusercontent.com/aida/AEtjO1XmVAaJBwS9gWc-jEZlWAldIf3WihiAEroi0nARbu4qlrUz8eREmBM5UI8xBxnxDM3ZD_p6mJDudOcK6FG7ay1WLTpNv91uJWYsHjtyVHX3P2FfC-T1GUgTSQCiJ0y2b-CeCGIkh2BQzlELtIK0ZEkRDuhGeAj6EHK771tEDyL_6NEfk8y-I5oyjeVlS_YD1IcWXuS6c-C0efg56rPWv21rnc52mvZltFIXZgP675FEKFf4cP73FDITiWZr" alt="Interactive Minds Logo" class="h-10 w-auto object-contain">
+          </div>
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <nav class="hidden lg:flex items-center space-x-1" aria-label="Main Navigation">
+          <a href="#hero" class="nav-link active-section px-3.5 py-2 text-sm text-stone-600 hover:text-brand-850 transition-colors">Home</a>
+          <a href="#about" class="nav-link px-3.5 py-2 text-sm text-stone-600 hover:text-brand-850 transition-colors">About</a>
+          <a href="#therapies" class="nav-link px-3.5 py-2 text-sm text-stone-600 hover:text-brand-850 transition-colors">Therapies</a>
+          <a href="#conditions" class="nav-link px-3.5 py-2 text-sm text-stone-600 hover:text-brand-850 transition-colors">Conditions</a>
+          <a href="#approach" class="nav-link px-3.5 py-2 text-sm text-stone-600 hover:text-brand-850 transition-colors">Approach</a>
+          <a href="#journey" class="nav-link px-3.5 py-2 text-sm text-stone-600 hover:text-brand-850 transition-colors">Journey</a>
+          <a href="#team" class="nav-link px-3.5 py-2 text-sm text-stone-600 hover:text-brand-850 transition-colors">Team</a>
+          <a href="#faq" class="nav-link px-3.5 py-2 text-sm text-stone-600 hover:text-brand-850 transition-colors">FAQ</a>
+        </nav>
+
+        <!-- Right Side Direct Contact & Primary Booking CTA -->
+        <div class="hidden sm:flex items-center gap-4">
+          <a href="tel:+919876543210" class="hidden xl:flex items-center gap-2 text-xs font-semibold tracking-wide text-brand-850 hover:text-brand-700 transition-colors px-3 py-1.5 rounded-full bg-brand-50 border border-brand-100">
+            <svg class="w-3.5 h-3.5 text-brand-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+            </svg>
+            <span>+91 98765 43210</span>
+          </a>
+          <a href="#appointment" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold tracking-wide text-white bg-brand-850 hover:bg-brand-900 rounded-full shadow-sm hover:shadow-card transition-all duration-200">
+            Book an Assessment
+          </a>
+        </div>
+
+        <!-- Mobile Drawer Toggle Button -->
+        <div class="flex lg:hidden">
+          <button id="mobile-menu-btn" type="button" class="p-2 text-stone-600 hover:text-brand-850 rounded-lg hover:bg-stone-100" aria-label="Toggle navigation menu" onclick="document.getElementById('mobile-drawer').classList.toggle('hidden');">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Dropdown -->
+    <div id="mobile-drawer" class="lg:hidden hidden bg-white border-b border-stone-200 px-6 py-6 shadow-xl">
+      <div class="flex flex-col space-y-3">
+        <a href="#hero" class="text-base font-medium text-stone-700 hover:text-brand-850 py-1" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Home</a>
+        <a href="#about" class="text-base font-medium text-stone-700 hover:text-brand-850 py-1" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">About Our Centre</a>
+        <a href="#therapies" class="text-base font-medium text-stone-700 hover:text-brand-850 py-1" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Therapies (9 Programs)</a>
+        <a href="#conditions" class="text-base font-medium text-stone-700 hover:text-brand-850 py-1" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Conditions We Support</a>
+        <a href="#approach" class="text-base font-medium text-stone-700 hover:text-brand-850 py-1" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Clinical Philosophy</a>
+        <a href="#journey" class="text-base font-medium text-stone-700 hover:text-brand-850 py-1" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">The 4-Step Journey</a>
+        <a href="#team" class="text-base font-medium text-stone-700 hover:text-brand-850 py-1" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Multidisciplinary Team</a>
+        <a href="#faq" class="text-base font-medium text-stone-700 hover:text-brand-850 py-1" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">Parent FAQs</a>
+        <div class="pt-4 mt-2 border-t border-stone-100 flex flex-col gap-3">
+          <a href="tel:+919876543210" class="flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-brand-850 bg-brand-50 rounded-xl">
+            <span>Call Center: +91 98765 43210</span>
+          </a>
+          <a href="#appointment" class="w-full py-3 text-center text-sm font-semibold text-white bg-brand-850 rounded-xl shadow-sm" onclick="document.getElementById('mobile-drawer').classList.add('hidden')">
+            Book an Assessment
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================== -->
+  <!-- 2. HERO: PARENT + CHILD CONNECTION PHOTOGRAPHY                 -->
+  <!-- ============================================================== -->
+  <section id="hero" class="relative pt-8 pb-20 lg:pt-16 lg:pb-32 overflow-hidden subtle-mesh">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Top Eyebrow Tag -->
+      <div class="flex items-center gap-2 mb-6">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-brand-850 bg-brand-100/70 border border-brand-200">
+          <span class="w-2 h-2 rounded-full bg-brand-700 animate-pulse"></span>
+          Autism Care &amp; Child Development Centre • Patna
+        </span>
+        <span class="hidden md:inline-block text-xs font-medium text-stone-500">
+          Evidence-Informed Pediatric Developmental Therapies
+        </span>
+      </div>
+
+      <!-- Asymmetrical Editorial Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        
+        <!-- Left Column: Typography & Intent (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          <h1 class="font-serif-heading text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-brand-950 leading-[1.12]">
+            Nurturing every child’s voice, confidence, and potential.
+          </h1>
+          <p class="text-lg sm:text-xl text-stone-600 leading-relaxed font-normal max-w-2xl">
+            Every child develops on their own unique timeline. At Interactive Minds, we partner closely with families to understand your child's innate strengths, celebrate their individuality, and nurture meaningful growth through gentle, evidence-informed developmental care.
+          </p>
+
+          <!-- Dual Primary / Secondary CTAs -->
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <a href="#appointment" class="inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-white bg-brand-850 hover:bg-brand-900 rounded-full shadow-card hover:shadow-card-hover transition-all duration-300">
+              <span>Book an Assessment</span>
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </a>
+            <a href="#therapies" class="inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-brand-850 bg-white hover:bg-stone-50 border border-stone-300/80 rounded-full shadow-sm hover:border-brand-700 transition-all duration-200">
+              Explore Our 9 Therapies
+            </a>
+          </div>
+
+          <!-- Trust & Clinical Highlights Strip -->
+          <div class="pt-8 border-t border-stone-200/80 grid grid-cols-3 gap-6">
+            <div class="space-y-1">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-brand-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                <span class="font-serif-heading text-base sm:text-lg font-bold text-brand-900 leading-tight">Child-Centred Care</span>
+              </div>
+              <p class="text-xs text-stone-500 font-medium leading-relaxed">Recognizing distinct emotional &amp; sensory needs</p>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-brand-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                <span class="font-serif-heading text-base sm:text-lg font-bold text-brand-900 leading-tight">Individualized Pathways</span>
+              </div>
+              <p class="text-xs text-stone-500 font-medium leading-relaxed">Tailored goals co-designed for home &amp; school</p>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-brand-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                <span class="font-serif-heading text-base sm:text-lg font-bold text-brand-900 leading-tight">Parent Partnership</span>
+              </div>
+              <p class="text-xs text-stone-500 font-medium leading-relaxed">Collaborative guidance &amp; active home strategies</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Layered Editorial Parent+Child Image (5 cols) -->
+        <div class="lg:col-span-5 relative">
+          <div class="relative mx-auto rounded-3xl overflow-hidden shadow-elevated border-4 border-white bg-stone-100 aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] w-full">
+            <img src="https://lh3.googleusercontent.com/aida/AEtjO1U1Kjrq3nfZ5WcI6xWH7YP3TnScQIzuNfhdmiqyUlKaDQNfOeD8yESXOf8ALaxK7p5NtytCvth9w_9v1L0PdfWaCI2KGcT66S4JCaiClzJ9eKslksVDY5GgbkDAvW6Z74YcmZcnzTW24QKxT75aCT5C81zy3Z08J2Q-0rcdIkHKCbFO9hS3OPEl__FvU40HIOMMTHX0krAyYXD-UkU55buftsmLtUu5f9DuhmjuJr9XBk9UOYWGumfO3PJy" alt="Caregiver and child gently engaged in a calm creative developmental activity together" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-950/40 via-transparent to-transparent"></div>
+            
+            <!-- Inset Badge on Image -->
+            <div class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/60 shadow-lg flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                </div>
+                <div>
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-brand-700 block">FAMILY-CENTERED CARE</span>
+                  <span class="text-xs font-semibold text-stone-800">Partnering with parents every step of the journey</span>
+                </div>
+              </div>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+            </div>
+          </div>
+
+          <!-- Floating Child-Centred Badge -->
+          <div class="hidden sm:flex absolute -top-5 -left-6 bg-white rounded-2xl p-4 shadow-card border border-stone-200/90 items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-stone-900 leading-tight">Neurodiversity-Affirming</p>
+              <p class="text-[11px] text-stone-500">Strengths-Based Approach</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 3. ABOUT & PHILOSOPHY: LUMINOUS SENSORY GYM PHOTOGRAPHY        -->
+  <!-- ============================================================== -->
+  <section id="about" class="py-20 lg:py-28 bg-white border-y border-stone-200/70">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="max-w-3xl mb-14">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">Who We Are</span>
+        <h2 class="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight leading-tight">
+          A dedicated centre where clinical excellence meets genuine compassion.
+        </h2>
+      </div>
+
+      <!-- Photographic Architectural Feature + Narrative Asymmetry -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center mb-14">
+        
+        <!-- Left 6 Cols: Architectural Sensory Environment Photo with Floating Badge -->
+        <div class="lg:col-span-6 relative">
+          <div class="relative rounded-3xl overflow-hidden shadow-elevated border-4 border-[#faf9f7] bg-stone-100 aspect-[16/10] sm:aspect-[16/9] lg:aspect-[4/3] group">
+            <img src="https://lh3.googleusercontent.com/aida/AEtjO1VtjOz5-Z5-g63rFfHlMlVZ0CD0m4ehBMI6Rxtf4Syz966Ja0cHfAWWbSwFldArjSNrRlxbJtDduCZhA0tbHCJt0MNK6V9lkDWo52HQ1NG97YrMWJopjeKYPNVZdmKDrweGWwJvuGbSLoBNfx6OvjsrF2rjjN0fIMbWxQWue7lRlCPJhRLzES0d3uzOMnTPHNpMj2JkVJHnFhb30bO5ZtqTWiJI2yoy6uA0Nwygn_tljYvJnsN4vKtfCqcm" alt="Luminous pediatric sensory gym with natural wood beams, calming acoustic panels, and gentle sensory swings" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-950/60 via-transparent to-transparent"></div>
+            
+            <!-- Floating Editorial Caption Badge -->
+            <div class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-stone-200/80 shadow-card flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-brand-100 flex items-center justify-center text-brand-850 flex-shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-brand-800 block">Sensory Integration Architecture</span>
+                <span class="text-xs font-semibold text-stone-800">Designed for Sensory Comfort &amp; Exploration</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 6 Cols: Core Narrative & Mission -->
+        <div class="lg:col-span-6 space-y-6">
+          <p class="text-lg text-stone-700 leading-relaxed font-normal">
+            <strong class="font-semibold text-stone-900">Interactive Minds</strong> is an Autism Care &amp; Child Development Centre established to guide children through their developmental milestones. Every child is born with individual strengths, unique sensory profiles, and boundless potential.
+          </p>
+          <p class="text-base text-stone-600 leading-relaxed">
+            Rather than forcing conformity, our team creates an evidence-informed, positive learning environment where children feel secure to explore, express themselves, and build the life skills necessary for classroom and social success.
+          </p>
+          <div class="p-4 rounded-2xl bg-brand-50/70 border border-brand-100 flex items-center gap-3.5">
+            <div class="w-2.5 h-2.5 rounded-full bg-brand-600 animate-pulse"></div>
+            <p class="text-xs text-brand-900 font-medium leading-relaxed">
+              Every room in our Sadikpur centre is acoustically buffered and lit to minimize sensory overload while fostering active developmental engagement.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Lower Grid: 4 Clinical Highlights + 3 Guiding Pillars -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        
+        <!-- Left: 4 Documented Highlights from Spec (7 cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          <h3 class="font-serif-heading text-xl font-bold text-brand-950 mb-2">Our Clinical Highlights</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70">
+              <div class="mt-0.5 text-brand-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-stone-900">Child-Centred Care</h4>
+                <p class="text-xs text-stone-600 mt-1">Interventions tailored specifically to each child's sensory, communication, and motor profile.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70">
+              <div class="mt-0.5 text-brand-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-stone-900">Individualized Programs</h4>
+                <p class="text-xs text-stone-600 mt-1">Customized plans (IEP) set with actionable, realistic milestones for home and school.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70">
+              <div class="mt-0.5 text-brand-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-stone-900">Experienced Professionals</h4>
+                <p class="text-xs text-stone-600 mt-1">Pediatric specialists across developmental assessments, therapies, and special education.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70">
+              <div class="mt-0.5 text-brand-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-stone-900">Parent Partnership</h4>
+                <p class="text-xs text-stone-600 mt-1">Active parent coaching to ensure therapeutic strategies naturally translate into the home routine.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: 3 Documented Approach Pillars (5 cols) -->
+        <div class="lg:col-span-5 bg-stone-100/70 p-6 sm:p-7 rounded-3xl border border-stone-200 space-y-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-brand-850 block mb-1">Our Guiding Pillars</span>
+            <h3 class="font-serif-heading text-xl sm:text-2xl font-bold text-stone-900">How We Care</h3>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-3.5 rounded-2xl bg-white border border-stone-200/80 shadow-soft">
+              <div class="flex items-center gap-3 mb-1">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-brand-100 text-brand-850 font-bold text-xs">01</span>
+                <h4 class="font-bold text-stone-900 text-sm">Understand</h4>
+              </div>
+              <p class="text-xs text-stone-600 leading-relaxed pl-9">
+                Comprehensive evaluation of sensory profiles, communication style, motor coordination, and emotional regulation triggers.
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-white border border-stone-200/80 shadow-soft">
+              <div class="flex items-center gap-3 mb-1">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-brand-100 text-brand-850 font-bold text-xs">02</span>
+                <h4 class="font-bold text-stone-900 text-sm">Develop</h4>
+              </div>
+              <p class="text-xs text-stone-600 leading-relaxed pl-9">
+                Engaging, structured, play-based therapy sessions targeting daily autonomy, articulation, executive focus, and peer play.
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-white border border-stone-200/80 shadow-soft">
+              <div class="flex items-center gap-3 mb-1">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-brand-100 text-brand-850 font-bold text-xs">03</span>
+                <h4 class="font-bold text-stone-900 text-sm">Empower</h4>
+              </div>
+              <p class="text-xs text-stone-600 leading-relaxed pl-9">
+                Co-designing home strategies with parents and teachers so progress extends into every room of the child's life.
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-1">
+            <a href="#appointment" class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-brand-850 hover:bg-brand-900 text-white text-xs font-semibold tracking-wide transition-colors shadow-sm">
+              Schedule an Initial Consultation
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 4. THERAPIES: FEATURED OCCUPATIONAL THERAPY PHOTOGRAPHY SPOTLIGHT-->
+  <!-- ============================================================== -->
+  <section id="therapies" class="py-20 lg:py-28 bg-[#faf9f7]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Title Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">Specialized Programs</span>
+          <h2 class="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
+            Our 9 Developmental Therapies
+          </h2>
+          <p class="text-stone-600 text-base max-w-2xl mt-3">
+            Every discipline is led by qualified pediatric clinicians, structured to nurture communication, motor coordination, cognitive progress, and self-confidence.
+          </p>
+        </div>
+        <div class="mt-6 md:mt-0">
+          <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium text-stone-600 bg-white border border-stone-200">
+            All 9 Programs Available in Sadikpur, Patna
+          </span>
+        </div>
+      </div>
+
+      <!-- FEATURED SPOTLIGHT CARD: Occupational Therapy WITH REAL EDITORIAL PHOTOGRAPHY -->
+      <div class="mb-12 bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-brand-200/80 shadow-card hover:shadow-card-hover transition-all duration-300 relative overflow-hidden">
+        <div class="absolute top-0 right-0 bg-brand-100 text-brand-850 px-4 py-1.5 rounded-bl-2xl text-xs font-bold uppercase tracking-wider z-10">
+          Featured Discipline
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          
+          <!-- Image Column (5 cols) -->
+          <div class="lg:col-span-5 relative">
+            <div class="rounded-2xl overflow-hidden aspect-[4/3] bg-stone-100 shadow-md border-2 border-stone-100">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpsmC6mBGC9-VKEleAFv4DffQo1YL7b9yvouqe079taEZTi3XNSJLGv6IXzjurwS7NRYswpE-vR5hM9ivIaCWrlykPoraPVhPO-msNOlBOzZSub8Qj4m8lEL7SUkx5j1gCuzK_mgRSw4RV4FHs7NLfE1WwytEcSztrRVM2Dyezu0Xxt9sMgoOw_8Aj4TVFhnyqjML-JUORkFrTnD_Ynvpjoaceuk4oDT-GDQrRWq5n8tLP2ZB5t8gZCg" alt="Therapist and child in sensory and fine motor coordination with tactile wooden rings and blocks" class="w-full h-full object-cover">
+            </div>
+            <div class="absolute -bottom-3 -right-3 bg-brand-850 text-white text-[11px] font-semibold px-3 py-1.5 rounded-xl shadow">
+              Sensory &amp; Motor Mastery
+            </div>
+          </div>
+
+          <!-- Content Column (7 cols) -->
+          <div class="lg:col-span-7 space-y-4">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-brand-700">Early Motor &amp; Daily Living</span>
+            </div>
+            <h3 class="font-serif-heading text-2xl sm:text-3xl font-bold text-brand-950">
+              Occupational Therapy (OT)
+            </h3>
+            <p class="text-base text-stone-700 leading-relaxed">
+              Pediatric Occupational Therapy helps children master everyday activities such as dressing, eating, writing, playing, and sensory regulation through structured, engaging activities.
+            </p>
+            
+            <!-- Benefits from Spec -->
+            <div class="pt-1 flex flex-wrap gap-2">
+              <span class="inline-flex items-center text-xs font-medium bg-alabaster-200 text-stone-800 px-3 py-1.5 rounded-lg border border-stone-200/80">Fine Motor Control &amp; Pencil Grip</span>
+              <span class="inline-flex items-center text-xs font-medium bg-alabaster-200 text-stone-800 px-3 py-1.5 rounded-lg border border-stone-200/80">Gross Motor Balance &amp; Coordination</span>
+              <span class="inline-flex items-center text-xs font-medium bg-alabaster-200 text-stone-800 px-3 py-1.5 rounded-lg border border-stone-200/80">Sensory Processing &amp; Regulation</span>
+              <span class="inline-flex items-center text-xs font-medium bg-alabaster-200 text-stone-800 px-3 py-1.5 rounded-lg border border-stone-200/80">Self-Dressing &amp; Hygiene</span>
+            </div>
+
+            <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-stone-100">
+              <span class="text-xs text-stone-500 font-medium">Target: Motor delays, sensory sensitivity, balance challenges</span>
+              <a href="#appointment" class="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-semibold text-white bg-brand-850 hover:bg-brand-900 transition-colors shadow-sm">
+                Request Assessment for OT
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Remaining 8 Real Therapies in an Elegant Responsive Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- 1. ABA Therapy -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+            </div>
+            <h3 class="font-serif-heading text-lg font-bold text-brand-950 mb-2">ABA Therapy</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Applied Behavior Analysis uses structured and positive teaching approaches to develop functional communication, social interaction, and emotional self-regulation.
+            </p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Discrete Trial Teaching (DTT)</span>
+              </div>
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Positive Reinforcement Strategies</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-brand-700">ASD Focus</span>
+            <a href="#appointment" class="text-xs font-semibold text-brand-850 hover:underline">Learn More →</a>
+          </div>
+        </div>
+
+        <!-- 2. Speech Therapy -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            </div>
+            <h3 class="font-serif-heading text-lg font-bold text-brand-950 mb-2">Speech Therapy</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Supportive and child-friendly therapy focused on articulation, vocabulary, expressive speech, receptive comprehension, and social turn-taking.
+            </p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Speech Clarity &amp; Articulation</span>
+              </div>
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Language Facilitation</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-brand-700">Voice &amp; Articulation</span>
+            <a href="#appointment" class="text-xs font-semibold text-brand-850 hover:underline">Learn More →</a>
+          </div>
+        </div>
+
+        <!-- 3. Special Education -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+            </div>
+            <h3 class="font-serif-heading text-lg font-bold text-brand-950 mb-2">Special Education</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Individualized learning plans (IEP), cognitive skill training, and task decomposition to help children master reading, problem solving, and classroom integration.
+            </p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Individualized Plan (IEP)</span>
+              </div>
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Cognitive Skill Building</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-brand-700">Academic &amp; Cognitive</span>
+            <a href="#appointment" class="text-xs font-semibold text-brand-850 hover:underline">Learn More →</a>
+          </div>
+        </div>
+
+        <!-- 4. Sensory Integration -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="font-serif-heading text-lg font-bold text-brand-950 mb-2">Sensory Integration</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Guided play in our sensory gym with swings, tactile equipment, and weighted tools to help children process vestibular, proprioceptive, and auditory stimuli safely.
+            </p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Sensory Diet Customization</span>
+              </div>
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Regulation &amp; Vestibular Swings</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-brand-700">Sensory Gym</span>
+            <a href="#appointment" class="text-xs font-semibold text-brand-850 hover:underline">Learn More →</a>
+          </div>
+        </div>
+
+        <!-- 5. Clinical Psychology -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <h3 class="font-serif-heading text-lg font-bold text-brand-950 mb-2">Clinical Psychology</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Diagnostic developmental evaluations, cognitive testing, emotional-behavioral coping, and parent psychological counseling in a confidential, supportive setting.
+            </p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Diagnostic &amp; Cognitive Profiling</span>
+              </div>
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Emotional Coping Strategies</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-brand-700">Confidential Evaluation</span>
+            <a href="#appointment" class="text-xs font-semibold text-brand-850 hover:underline">Learn More →</a>
+          </div>
+        </div>
+
+        <!-- 6. School Readiness Program -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <h3 class="font-serif-heading text-lg font-bold text-brand-950 mb-2">School Readiness</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Early intervention bridging preschool into formal schooling: following group instructions, circle time, desk-work focus, sharing, and peer interactions.
+            </p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Classroom Routine Simulation</span>
+              </div>
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Peer Sharing &amp; Attention</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-brand-700">Preschool Transition</span>
+            <a href="#appointment" class="text-xs font-semibold text-brand-850 hover:underline">Learn More →</a>
+          </div>
+        </div>
+
+        <!-- 7. Physiotherapy -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <h3 class="font-serif-heading text-lg font-bold text-brand-950 mb-2">Pediatric Physiotherapy</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Targeted physical movement exercises, balance boards, and posture training to enhance core muscle strength, walking stability, and gross motor mobility.
+            </p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Gait Stability &amp; Posture</span>
+              </div>
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Core Strength Training</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-brand-700">Gross Motor &amp; Gait</span>
+            <a href="#appointment" class="text-xs font-semibold text-brand-850 hover:underline">Learn More →</a>
+          </div>
+        </div>
+
+        <!-- 8. Parent Guidance -->
+        <div class="bg-white rounded-2xl p-6 border border-stone-200/80 shadow-soft hover:shadow-card hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+            <h3 class="font-serif-heading text-lg font-bold text-brand-950 mb-2">Parent Guidance</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Collaborative consultations empowering parents with positive reinforcement strategies, visual routines, sensory adaptation, and stress management at home.
+            </p>
+            <div class="space-y-1.5 mb-4">
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Home Routines &amp; Schedules</span>
+              </div>
+              <div class="flex items-center text-xs text-stone-500 gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+                <span>Family Bonding Support</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+            <span class="text-[11px] font-semibold text-brand-700">Caregiver Coaching</span>
+            <a href="#appointment" class="text-xs font-semibold text-brand-850 hover:underline">Learn More →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 5. CONDITIONS WE SUPPORT (NEURODIVERSITY BANNER)               -->
+  <!-- ============================================================== -->
+  <section id="conditions" class="py-20 lg:py-28 bg-white border-t border-stone-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="max-w-3xl mb-12">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">Individualized Understanding</span>
+        <h2 class="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
+          Conditions We Support
+        </h2>
+        <p class="text-stone-600 text-base mt-3">
+          Every diagnosis is approached with clinical precision, dignity, and a commitment to helping each child navigate everyday life with comfort and self-expression.
+        </p>
+      </div>
+
+      <!-- Subtle Neurodiversity Ambient Banner -->
+      <div class="mb-10 p-5 rounded-2xl bg-gradient-to-r from-brand-50 via-alabaster-100 to-amber-50/50 border border-brand-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span class="flex-shrink-0 w-3 h-3 rounded-full bg-brand-600"></span>
+          <p class="text-xs sm:text-sm text-brand-950 font-medium">
+            <strong class="font-bold">Affirming Care Pathway:</strong> We do not define children by labels; our clinical assessments identify functional baselines and personal strengths.
+          </p>
+        </div>
+        <span class="text-[11px] font-semibold text-brand-800 uppercase tracking-wider bg-white px-3 py-1 rounded-full border border-stone-200 self-start sm:self-auto">5 Primary Clinical Focuses</span>
+      </div>
+
+      <!-- 5 Conditions Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- 1. ASD (2 cols) -->
+        <div class="lg:col-span-2 bg-[#f4f7f6] rounded-3xl p-8 border border-brand-100/90 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-brand-850 bg-brand-100 px-3 py-1 rounded-full">
+                Neurodevelopmental Focus
+              </span>
+              <span class="text-xs text-stone-500">Core Specialty</span>
+            </div>
+            <h3 class="font-serif-heading text-2xl sm:text-3xl font-bold text-brand-950 mb-3">
+              Autism Spectrum Disorder (ASD)
+            </h3>
+            <p class="text-sm text-stone-700 leading-relaxed mb-6">
+              Autism Spectrum Disorder is a developmental difference that affects how a person perceives the world, communicates, and interacts with others. At Interactive Minds, we provide neurodiversity-affirming programs centered on functional communication, social engagement, sensory comfort, and independence.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="text-xs bg-white text-brand-900 px-3 py-1 rounded-md border border-brand-100 font-medium">Recommended: ABA Therapy</span>
+              <span class="text-xs bg-white text-brand-900 px-3 py-1 rounded-md border border-brand-100 font-medium">Speech &amp; Language</span>
+              <span class="text-xs bg-white text-brand-900 px-3 py-1 rounded-md border border-brand-100 font-medium">Sensory Integration</span>
+              <span class="text-xs bg-white text-brand-900 px-3 py-1 rounded-md border border-brand-100 font-medium">Parent Guidance</span>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-brand-200/50 flex items-center justify-between">
+            <span class="text-xs font-semibold text-brand-850">Individualized Assessment Protocol</span>
+            <a href="#appointment" class="text-xs font-bold text-brand-900 hover:text-brand-700">Consult Specialist →</a>
+          </div>
+        </div>
+
+        <!-- 2. ADHD -->
+        <div class="bg-alabaster-100 rounded-3xl p-7 border border-stone-200 flex flex-col justify-between">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-3 py-1 rounded-full inline-block mb-3">
+              Executive Function
+            </span>
+            <h3 class="font-serif-heading text-xl font-bold text-brand-950 mb-2">
+              ADHD
+            </h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Attention-Deficit/Hyperactivity Disorder affects concentration, impulse control, and energy levels. We offer structured behavioral strategies and occupational therapy to develop sustained task focus and regulation.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-200 flex items-center justify-between">
+            <span class="text-xs font-medium text-stone-500">Special Ed • OT</span>
+            <a href="#appointment" class="text-xs font-bold text-brand-900 hover:text-brand-700">View Program →</a>
+          </div>
+        </div>
+
+        <!-- 3. Dyslexia -->
+        <div class="bg-alabaster-100 rounded-3xl p-7 border border-stone-200 flex flex-col justify-between">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-brand-700 bg-brand-50 px-3 py-1 rounded-full inline-block mb-3">
+              Learning Differences
+            </span>
+            <h3 class="font-serif-heading text-xl font-bold text-brand-950 mb-2">
+              Dyslexia
+            </h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Specific learning difference affecting reading, decoding, spelling, and phonological processing. Our teams utilize structured phonics and multi-sensory techniques to build reading confidence.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-200 flex items-center justify-between">
+            <span class="text-xs font-medium text-stone-500">Special Ed • Speech</span>
+            <a href="#appointment" class="text-xs font-bold text-brand-900 hover:text-brand-700">View Program →</a>
+          </div>
+        </div>
+
+        <!-- 4. Down Syndrome -->
+        <div class="bg-alabaster-100 rounded-3xl p-7 border border-stone-200 flex flex-col justify-between">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-700 bg-stone-100 px-3 py-1 rounded-full inline-block mb-3">
+              Genetic &amp; Developmental
+            </span>
+            <h3 class="font-serif-heading text-xl font-bold text-brand-950 mb-2">
+              Down Syndrome
+            </h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Holistic multidisciplinary care including Speech Therapy, Occupational Therapy, Physiotherapy, and Special Education to foster everyday autonomy and communication milestones.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-200 flex items-center justify-between">
+            <span class="text-xs font-medium text-stone-500">Speech • Physio • OT</span>
+            <a href="#appointment" class="text-xs font-bold text-brand-900 hover:text-brand-700">View Program →</a>
+          </div>
+        </div>
+
+        <!-- 5. Cerebral Palsy -->
+        <div class="bg-alabaster-100 rounded-3xl p-7 border border-stone-200 flex flex-col justify-between">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-700 bg-stone-100 px-3 py-1 rounded-full inline-block mb-3">
+              Motor &amp; Postural
+            </span>
+            <h3 class="font-serif-heading text-xl font-bold text-brand-950 mb-2">
+              Cerebral Palsy
+            </h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-4">
+              Specialized pediatric Physiotherapy and Occupational Therapy targeting muscle tone, posture, joint flexibility, and physical coordination to improve independent mobility.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-200 flex items-center justify-between">
+            <span class="text-xs font-medium text-stone-500">Physiotherapy • OT</span>
+            <a href="#appointment" class="text-xs font-bold text-brand-900 hover:text-brand-700">View Program →</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 6. CLINICAL CARE APPROACH: DEEP TEAL + CINEMATIC THERAPY PHOTO -->
+  <!-- ============================================================== -->
+  <section id="approach" class="py-20 lg:py-28 bg-brand-950 text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      
+      <!-- Section Header -->
+      <div class="max-w-3xl mb-14">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-500 block mb-2">Our Clinical Principles</span>
+        <h2 class="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight">
+          Grounded in evidence, guided by respect.
+        </h2>
+        <p class="text-stone-300 text-base mt-4 leading-relaxed">
+          We operate on 4 foundational principles that guide every clinician, diagnostic evaluation, and therapy session at Interactive Minds.
+        </p>
+      </div>
+
+      <!-- Elevated Grid: Cinematic Photograph on Left + 4 Principles on Right -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        
+        <!-- Left 5 Cols: Warm, Deep-Toned Editorial Therapy Photograph -->
+        <div class="lg:col-span-5 relative">
+          <div class="relative rounded-3xl overflow-hidden shadow-elevated border-2 border-brand-800 bg-brand-900 aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] group">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgJGVMgzsekbt9sYSARSMfuKIT1rciNael7NJLyQTIp3AnE7EpBflXd2UIKPxCh9huhe7ZYedTtRWEQprqNBVK7lyfQ-xa-9IB1InYcXP6hLwyG8ig7kaac0gdQj5AzrGLLRW2aunJyQS9vxZcdqXYxPQbOWpaNXlIuYXRukEPL0dfGYvF49sQtdc6EGCCDZN6gZjGR00gChnaWM-b2VCIbuCiNKyWxOh1gUKFBuMZkZPVVygRdahTPg" alt="Pediatric developmental therapist warmly engaged at eye level with a young child in a calm sensory room" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-transparent to-transparent"></div>
+            
+            <div class="absolute bottom-4 left-4 right-4 bg-brand-900/90 backdrop-blur-md p-4 rounded-2xl border border-brand-700/60 shadow">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-brand-200 block">Compassionate Connection</span>
+              <p class="text-xs text-stone-200 font-medium mt-0.5">Meeting every child at eye level with patience, trust, and dignity.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 7 Cols: The 4 Principles in a Balanced 2x2 Grid -->
+        <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          
+          <div class="bg-brand-900/60 p-6 rounded-2xl border border-brand-800 backdrop-blur-sm">
+            <div class="w-10 h-10 rounded-lg bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4">01</div>
+            <h3 class="font-serif-heading text-lg font-bold text-white mb-2">Child-Centred Care</h3>
+            <p class="text-xs text-stone-300 leading-relaxed">
+              Every child is recognized as a complete individual with distinct emotional needs, sensory thresholds, and expressive abilities.
+            </p>
+          </div>
+
+          <div class="bg-brand-900/60 p-6 rounded-2xl border border-brand-800 backdrop-blur-sm">
+            <div class="w-10 h-10 rounded-lg bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4">02</div>
+            <h3 class="font-serif-heading text-lg font-bold text-white mb-2">Individualized Programs</h3>
+            <p class="text-xs text-stone-300 leading-relaxed">
+              No cookie-cutter routines. Plans are designed specifically around the child's developmental profile and updated continuously.
+            </p>
+          </div>
+
+          <div class="bg-brand-900/60 p-6 rounded-2xl border border-brand-800 backdrop-blur-sm">
+            <div class="w-10 h-10 rounded-lg bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4">03</div>
+            <h3 class="font-serif-heading text-lg font-bold text-white mb-2">Experienced Specialists</h3>
+            <p class="text-xs text-stone-300 leading-relaxed">
+              Care administered by committed clinical professionals utilizing recognized pediatric therapeutic frameworks.
+            </p>
+          </div>
+
+          <div class="bg-brand-900/60 p-6 rounded-2xl border border-brand-800 backdrop-blur-sm">
+            <div class="w-10 h-10 rounded-lg bg-brand-800 text-brand-200 flex items-center justify-center font-bold text-sm mb-4">04</div>
+            <h3 class="font-serif-heading text-lg font-bold text-white mb-2">Parent Partnership</h3>
+            <p class="text-xs text-stone-300 leading-relaxed">
+              Parents are essential co-therapists. We share transparent insights, visual schedules, and home strategies every week.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 7. THE 4-STEP THERAPY JOURNEY                                   -->
+  <!-- ============================================================== -->
+  <section id="journey" class="py-20 lg:py-28 bg-[#faf9f7]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">Structured Progression</span>
+        <h2 class="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
+          The 4-Step Therapy Journey
+        </h2>
+        <p class="text-stone-600 text-base mt-3">
+          A clear, reassuring roadmap designed so parents always know where their child is and what milestone comes next.
+        </p>
+      </div>
+
+      <!-- 4 Connected Steps -->
+      <div class="relative">
+        <div class="hidden lg:block absolute top-1/2 left-10 right-10 h-0.5 bg-stone-300 -translate-y-8 z-0"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+          
+          <div class="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-brand-850 text-white font-serif-heading font-bold text-xl flex items-center justify-center mb-6 shadow-md">1</div>
+              <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-1">Step 01</span>
+              <h3 class="font-serif-heading text-xl font-bold text-stone-900 mb-2">Comprehensive Assessment</h3>
+              <p class="text-xs text-stone-600 leading-relaxed">
+                Thorough evaluation of the child's communication, motor skills, sensory thresholds, and behavioral development.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-stone-100 text-[11px] font-semibold text-stone-500">
+              Diagnostic &amp; Functional Profiling
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-brand-850 text-white font-serif-heading font-bold text-xl flex items-center justify-center mb-6 shadow-md">2</div>
+              <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-1">Step 02</span>
+              <h3 class="font-serif-heading text-xl font-bold text-stone-900 mb-2">Individualized Plan</h3>
+              <p class="text-xs text-stone-600 leading-relaxed">
+                Creation of a customized Individualized Education &amp; Therapy Plan (IEP) defining targeted milestones and therapy frequency.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-stone-100 text-[11px] font-semibold text-stone-500">
+              Clear Measurable Milestones
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-brand-850 text-white font-serif-heading font-bold text-xl flex items-center justify-center mb-6 shadow-md">3</div>
+              <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-1">Step 03</span>
+              <h3 class="font-serif-heading text-xl font-bold text-stone-900 mb-2">Active Therapy Sessions</h3>
+              <p class="text-xs text-stone-600 leading-relaxed">
+                Engaging one-on-one sessions in low-distraction spaces and our sensory gym using play-guided, positive techniques.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-stone-100 text-[11px] font-semibold text-stone-500">
+              Consistent 1-on-1 Clinical Work
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-brand-850 text-white font-serif-heading font-bold text-xl flex items-center justify-center mb-6 shadow-md">4</div>
+              <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-1">Step 04</span>
+              <h3 class="font-serif-heading text-xl font-bold text-stone-900 mb-2">Progress Monitoring</h3>
+              <p class="text-xs text-stone-600 leading-relaxed">
+                Regular reviews, objective milestone tracking, and adjustments with weekly parent debriefs and home adaptations.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-stone-100 text-[11px] font-semibold text-stone-500">
+              Ongoing Parent Collaboration
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 8. TEAM: EDITORIAL COLLABORATION PHOTOGRAPHY FEATURE           -->
+  <!-- ============================================================== -->
+  <section id="team" class="py-20 lg:py-28 bg-white border-t border-stone-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="max-w-3xl mb-14">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">Interdisciplinary Excellence</span>
+        <h2 class="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
+          Multidisciplinary Team Roles
+        </h2>
+        <p class="text-stone-600 text-base mt-3">
+          Our center functions as an integrated clinical ecosystem. Rather than isolated appointments, specialists collaborate across disciplines for every child.
+        </p>
+      </div>
+
+      <!-- Editorial Collaboration Visual Feature -->
+      <div class="mb-14 bg-stone-50 rounded-3xl p-6 sm:p-8 lg:p-10 border border-stone-200/90 shadow-soft">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          <!-- Image Column (6 cols) -->
+          <div class="lg:col-span-6 relative">
+            <div class="rounded-2xl overflow-hidden shadow-card border-2 border-white aspect-[4/3] bg-stone-100">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbUFrhchiwba2Hq4QxX5Lj6mfXuax36jDyBD765G4eY4D9xkuXJ0SP89rRVZ6-djdSqDApTSxrs_37j1YPSNpQ8MBYnfm4ZCEo5OPih5ZiGb7XRssa_hbFXaUGrILVUjpdRJ_Cta4BMO2tpHsZlT5qPd6wBhKal4ubAONyd6bxIbc06-deEitfKqYlusSjVtora1YiZMaTS96OdXcmTzfYZZtuxoOG9c6b0gs03L5YI9V39px2fIRvMQ" alt="Child development professionals collaboratively reviewing an individualized child progress chart and learning materials at an oak table" class="w-full h-full object-cover">
+            </div>
+            <div class="absolute -bottom-3 -right-2 bg-brand-850 text-white text-[11px] font-semibold px-3.5 py-1.5 rounded-xl shadow-md">
+              Case Review &amp; IEP Alignment
+            </div>
+          </div>
+
+          <!-- Description Column (6 cols) -->
+          <div class="lg:col-span-6 space-y-4">
+            <span class="text-xs font-bold uppercase tracking-wider text-brand-700">Team Case Conferencing</span>
+            <h3 class="font-serif-heading text-2xl sm:text-3xl font-bold text-brand-950">
+              Collaborative Clinical Reviews
+            </h3>
+            <p class="text-stone-600 text-sm sm:text-base leading-relaxed">
+              Every child's development is assessed holistically. Speech pathologists, occupational therapists, and special educators meet weekly around the table to calibrate interventions, review objective progress data, and coordinate seamless home strategies.
+            </p>
+            <div class="pt-2 grid grid-cols-2 gap-3 text-xs text-stone-700 font-medium">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-brand-600"></span>
+                <span>Cross-Disciplinary IEP Goals</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-brand-600"></span>
+                <span>Objective Data Tracking</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-brand-600"></span>
+                <span>Weekly Clinical Calibration</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-brand-600"></span>
+                <span>Co-Designed Home Tools</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 3 Authentic Spec Teams (NO fake doctors or fictional degrees) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Team 1 -->
+        <div class="bg-alabaster-100 rounded-3xl p-8 border border-stone-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mb-6">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+            </div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Assessment &amp; Screening</span>
+            <h3 class="font-serif-heading text-2xl font-bold text-stone-900 mb-2">Child Development Team</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-6">
+              Specialists leading pediatric intake screenings, standardized developmental evaluations, and formulating baseline clinical recommendations for early intervention.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-200">
+            <span class="text-xs font-semibold text-stone-800">Pediatric Assessment &amp; Early Intervention</span>
+          </div>
+        </div>
+
+        <!-- Team 2 -->
+        <div class="bg-alabaster-100 rounded-3xl p-8 border border-stone-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mb-6">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+            </div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Clinical Intervention</span>
+            <h3 class="font-serif-heading text-2xl font-bold text-stone-900 mb-2">Therapy Specialist Team</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-6">
+              Licensed pediatric clinicians delivering focused 1-on-1 sessions across Occupational Therapy, Speech &amp; Language Therapy, and Sensory Gym integration.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-200">
+            <span class="text-xs font-semibold text-stone-800">Occupational, Speech &amp; Physical Therapy</span>
+          </div>
+        </div>
+
+        <!-- Team 3 -->
+        <div class="bg-alabaster-100 rounded-3xl p-8 border border-stone-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-850 flex items-center justify-center mb-6">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+            </div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-brand-700 block mb-1">Academic &amp; Cognitive</span>
+            <h3 class="font-serif-heading text-2xl font-bold text-stone-900 mb-2">Special Education Team</h3>
+            <p class="text-xs text-stone-600 leading-relaxed mb-6">
+              Educators designing customized Individualized Education Plans (IEP), pre-academic task breakdown, and school readiness transition coaching.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-stone-200">
+            <span class="text-xs font-semibold text-stone-800">Individualized Learning &amp; School Readiness</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 9. FREQUENTLY ASKED QUESTIONS (ACCORDION)                      -->
+  <!-- ============================================================== -->
+  <section id="faq" class="py-20 lg:py-28 bg-[#faf9f7]">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center mb-16">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">Clarity For Parents</span>
+        <h2 class="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
+          Frequently Asked Questions
+        </h2>
+        <p class="text-stone-600 text-base mt-3 max-w-xl mx-auto">
+          We understand seeking developmental therapy brings many questions. Here are clear answers to the most common parent inquiries.
+        </p>
+      </div>
+
+      <!-- FAQ Accordion Container -->
+      <div class="space-y-4">
+        
+        <!-- FAQ 1 (Open by default) -->
+        <div class="faq-item bg-white rounded-2xl border border-stone-200/90 shadow-soft overflow-hidden transition-all duration-200">
+          <button type="button" class="faq-toggle w-full px-6 py-5 text-left flex items-center justify-between gap-4 focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180');">
+            <span class="font-serif-heading text-lg font-bold text-stone-900">What is Interactive Minds?</span>
+            <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 transition-transform duration-300 faq-icon rotate-180">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div class="faq-content px-6 pb-6 pt-0 block text-stone-600 text-sm leading-relaxed border-t border-stone-100 mt-2">
+            Interactive Minds is an Autism Care &amp; Child Development Centre dedicated to helping children learn, communicate, participate, and become more independent through individualized, neurodiversity-affirming therapies.
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="faq-item bg-white rounded-2xl border border-stone-200/90 shadow-soft overflow-hidden transition-all duration-200">
+          <button type="button" class="faq-toggle w-full px-6 py-5 text-left flex items-center justify-between gap-4 focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180');">
+            <span class="font-serif-heading text-lg font-bold text-stone-900">How do I get started with an assessment?</span>
+            <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 transition-transform duration-300 faq-icon">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div class="faq-content px-6 pb-6 pt-0 hidden text-stone-600 text-sm leading-relaxed border-t border-stone-100 mt-2">
+            You can submit an Appointment Request form through our website or call our center. Our intake coordinator will reach out within 24 hours to schedule an initial consultation and guide you through the process.
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="faq-item bg-white rounded-2xl border border-stone-200/90 shadow-soft overflow-hidden transition-all duration-200">
+          <button type="button" class="faq-toggle w-full px-6 py-5 text-left flex items-center justify-between gap-4 focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180');">
+            <span class="font-serif-heading text-lg font-bold text-stone-900">What age groups do you support?</span>
+            <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 transition-transform duration-300 faq-icon">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div class="faq-content px-6 pb-6 pt-0 hidden text-stone-600 text-sm leading-relaxed border-t border-stone-100 mt-2">
+            We provide specialized developmental support for children from early intervention (0–3 years), preschool age (3–5 years), up to school age and youth (5+ years).
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="faq-item bg-white rounded-2xl border border-stone-200/90 shadow-soft overflow-hidden transition-all duration-200">
+          <button type="button" class="faq-toggle w-full px-6 py-5 text-left flex items-center justify-between gap-4 focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180');">
+            <span class="font-serif-heading text-lg font-bold text-stone-900">Do you involve parents in therapy sessions?</span>
+            <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 transition-transform duration-300 faq-icon">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div class="faq-content px-6 pb-6 pt-0 hidden text-stone-600 text-sm leading-relaxed border-t border-stone-100 mt-2">
+            Yes! Family co-design and parent involvement are central to our philosophy. We offer dedicated Parent Guidance &amp; Coaching sessions to empower parents with practical strategies at home.
+          </div>
+        </div>
+
+        <!-- FAQ 5 -->
+        <div class="faq-item bg-white rounded-2xl border border-stone-200/90 shadow-soft overflow-hidden transition-all duration-200">
+          <button type="button" class="faq-toggle w-full px-6 py-5 text-left flex items-center justify-between gap-4 focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180');">
+            <span class="font-serif-heading text-lg font-bold text-stone-900">Are your therapy plans customized for each child?</span>
+            <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 transition-transform duration-300 faq-icon">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div class="faq-content px-6 pb-6 pt-0 hidden text-stone-600 text-sm leading-relaxed border-t border-stone-100 mt-2">
+            Absolutely. Every child receives an individualized assessment and a tailored plan built around their unique strengths, interests, sensory preferences, and developmental goals.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 10. ASSESSMENT REQUEST: REASSURING FAMILY ENTRANCE PHOTOGRAPHY  -->
+  <!-- ============================================================== -->
+  <section id="appointment" class="py-20 lg:py-28 bg-brand-950 text-white relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        
+        <!-- Left Column: Trust, Reassuring Family Photograph, and Contact Info (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-brand-500 block">Take the First Step</span>
+          <h2 class="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
+            Schedule an Assessment for Your Child
+          </h2>
+          <p class="text-stone-300 text-base leading-relaxed">
+            Our clinical intake coordinator will review your request confidentially and reach out within 24 hours to guide you through scheduling an evaluation.
+          </p>
+
+          <!-- Reassuring Editorial Photograph: Family entering the centre -->
+          <div class="relative rounded-2xl overflow-hidden shadow-elevated border-2 border-brand-800 bg-brand-900 aspect-[16/10] group">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuApvbp4yyhxmDYKZJpopq_mKmR8q1UdbHSPLYGI8XhXrno8SjNEYrC1Q72a6g2h5cZor6KGCI30a78p4xB9JD3P_J8D3UxbJ4r90h4QSa663SoTVk5mWj-jrXxTO6L5gwrXU8wsCNounJfLdkwISdF-BGJFciwPHelecMFTD5T-yhOYBX29fE2W8Z5z7faVuDtDTHRIvThQaycrBnY3kOZ58pOjArq6bITLkwg0-mZeNGdWZ8YBni6u6w" alt="Indian parents walking happily with their child toward the sunlit entrance of the centre" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent"></div>
+            <div class="absolute bottom-3 left-3 right-3 bg-brand-950/80 backdrop-blur-sm px-3.5 py-2 rounded-xl border border-brand-800/60">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-brand-200">A Safe, Warm Welcome</span>
+              <p class="text-[11px] text-stone-300">Hope &amp; Harmony Pediatric Developmental Centre, Sadikpur</p>
+            </div>
+          </div>
+
+          <!-- Authentic Center Info from Specification -->
+          <div class="pt-2 space-y-4 border-t border-brand-850">
+            <div class="flex items-start gap-3">
+              <div class="mt-1 text-brand-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white uppercase tracking-wider">Center Location</p>
+                <p class="text-xs text-stone-300 mt-0.5 leading-relaxed">
+                  1st Floor, Hira Shiv Palace, Ashok Rajpath Rd, Gudari Bazar, Khamji Begum Colony, Sadikpur, Patna, Bihar 800008
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="mt-1 text-brand-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white uppercase tracking-wider">Phone Inquiries</p>
+                <p class="text-xs text-stone-300 mt-0.5">+91 98765 43210 &nbsp;|&nbsp; (555) 234-5678</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="mt-1 text-brand-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white uppercase tracking-wider">Operating Hours</p>
+                <p class="text-xs text-stone-300 mt-0.5">Monday – Friday: 8:00 AM – 5:00 PM</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trust & Confidentiality Notice from Spec -->
+          <div class="p-4 rounded-2xl bg-brand-900/80 border border-brand-800 text-xs text-stone-300 leading-relaxed">
+            <strong class="text-white block mb-1">Confidential &amp; Procedural Notice:</strong>
+            Submitting this request connects you directly with our clinical intake team. All child and family information is kept strictly confidential.
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Appointment Request Form (7 cols) -->
+        <div class="lg:col-span-7 bg-white text-stone-900 rounded-3xl p-6 sm:p-10 shadow-elevated border border-stone-200">
+          <h3 class="font-serif-heading text-2xl font-bold text-brand-950 mb-1">Appointment Intake Request</h3>
+          <p class="text-xs text-stone-500 mb-6">Complete this form and our intake coordinator will contact you to confirm available slots.</p>
+
+          <form id="appointment-form" class="space-y-4" onsubmit="event.preventDefault(); document.getElementById('form-success-box').classList.remove('hidden'); document.getElementById('appointment-form').classList.add('hidden');">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="parent_name" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">Parent / Guardian Name *</label>
+                <input type="text" id="parent_name" required placeholder="e.g. Priya Sharma" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm focus:ring-2 focus:ring-brand-700 focus:border-brand-700 outline-none transition-all">
+              </div>
+              <div>
+                <label for="child_name" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">Child's Name *</label>
+                <input type="text" id="child_name" required placeholder="e.g. Aarav" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm focus:ring-2 focus:ring-brand-700 focus:border-brand-700 outline-none transition-all">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="phone" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">Phone Number *</label>
+                <input type="tel" id="phone" required placeholder="+91 98765 XXXXX" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm focus:ring-2 focus:ring-brand-700 focus:border-brand-700 outline-none transition-all">
+              </div>
+              <div>
+                <label for="email" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">Email Address *</label>
+                <input type="email" id="email" required placeholder="parent@example.com" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm focus:ring-2 focus:ring-brand-700 focus:border-brand-700 outline-none transition-all">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="child_age" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">Child's Age Group *</label>
+                <select id="child_age" required class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm focus:ring-2 focus:ring-brand-700 focus:border-brand-700 outline-none transition-all bg-white">
+                  <option value="" disabled selected>Select age bracket</option>
+                  <option value="0-3">Early Intervention (0–3 Years)</option>
+                  <option value="3-5">Preschool (3–5 Years)</option>
+                  <option value="5-8">School Age (5–8 Years)</option>
+                  <option value="8+">8+ Years / Adolescents</option>
+                </select>
+              </div>
+              <div>
+                <label for="service_id" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">Therapy Service Needed</label>
+                <select id="service_id" class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm focus:ring-2 focus:ring-brand-700 focus:border-brand-700 outline-none transition-all bg-white">
+                  <option value="">General Developmental Assessment</option>
+                  <option value="aba">ABA Therapy</option>
+                  <option value="ot">Occupational Therapy (OT)</option>
+                  <option value="speech">Speech &amp; Language Therapy</option>
+                  <option value="special-ed">Special Education</option>
+                  <option value="sensory">Sensory Integration</option>
+                  <option value="psych">Clinical Psychology</option>
+                  <option value="school-ready">School Readiness Program</option>
+                  <option value="physio">Physiotherapy</option>
+                  <option value="parent">Parent Guidance &amp; Coaching</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="message" class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">Specific Concerns or Goals (Optional)</label>
+              <textarea id="message" rows="3" placeholder="Tell us about your child's communication, motor, or sensory tendencies..." class="w-full px-4 py-3 rounded-xl border border-stone-300 text-sm focus:ring-2 focus:ring-brand-700 focus:border-brand-700 outline-none transition-all"></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-4 text-center text-sm font-semibold tracking-wide text-white bg-brand-850 hover:bg-brand-900 rounded-xl shadow-card transition-all duration-200">
+              Submit Assessment Request
+            </button>
+            <p class="text-[11px] text-stone-400 text-center">
+              Our clinical intake coordinator will call or email you to confirm appointment timings.
+            </p>
+          </form>
+
+          <!-- Success State Container -->
+          <div id="form-success-box" class="hidden p-8 rounded-2xl bg-brand-50 border border-brand-200 text-center space-y-3">
+            <div class="w-12 h-12 rounded-full bg-brand-700 text-white flex items-center justify-center mx-auto">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h4 class="font-serif-heading text-xl font-bold text-brand-950">Assessment Request Received</h4>
+            <p class="text-xs text-stone-600 max-w-md mx-auto">
+              Thank you for trusting Interactive Minds. Your intake request has been logged under reference code <strong class="text-brand-850">IM-48291</strong>. Our coordinator will contact you within 24 hours.
+            </p>
+            <div class="pt-2">
+              <button onclick="document.getElementById('form-success-box').classList.add('hidden'); document.getElementById('appointment-form').classList.remove('hidden');" class="text-xs font-semibold text-brand-700 underline">
+                Submit another request
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- 11. EDITORIAL 4-COLUMN FOOTER                                  -->
+  <!-- ============================================================== -->
+  <footer class="bg-[#051c1a] text-stone-300 py-16 border-t border-brand-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-brand-900/60">
+        
+        <!-- Col 1: Brand & Tagline (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="h-10 flex items-center">
+            <span class="font-serif-heading text-2xl font-bold text-white tracking-tight">INTERACTIVE MINDS</span>
+          </div>
+          <p class="text-xs text-brand-300 font-semibold tracking-wider uppercase">
+            Autism Care &amp; Child Development Centre
+          </p>
+          <p class="text-xs text-stone-400 leading-relaxed max-w-sm">
+            Dedicated pediatric developmental center offering individualized therapies for children with diverse neurodevelopmental strengths in Patna, Bihar.
+          </p>
+          <div class="pt-2">
+            <a href="https://wa.me/919876543210" target="_blank" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold text-emerald-300 bg-emerald-950/60 border border-emerald-800 hover:bg-emerald-900 transition-colors">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>Direct WhatsApp Chat</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation Links (2 cols) -->
+        <div class="lg:col-span-2 space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-white">Experience</h4>
+          <ul class="space-y-2 text-xs text-stone-400">
+            <li><a href="#hero" class="hover:text-white transition-colors">Home</a></li>
+            <li><a href="#about" class="hover:text-white transition-colors">About Our Centre</a></li>
+            <li><a href="#therapies" class="hover:text-white transition-colors">All 9 Therapies</a></li>
+            <li><a href="#conditions" class="hover:text-white transition-colors">Conditions Supported</a></li>
+            <li><a href="#approach" class="hover:text-white transition-colors">Clinical Principles</a></li>
+            <li><a href="#journey" class="hover:text-white transition-colors">Therapy Journey</a></li>
+            <li><a href="#team" class="hover:text-white transition-colors">Multidisciplinary Team</a></li>
+            <li><a href="#faq" class="hover:text-white transition-colors">Parent FAQs</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Core Therapies (3 cols) -->
+        <div class="lg:col-span-3 space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-white">Core Therapies</h4>
+          <ul class="space-y-2 text-xs text-stone-400">
+            <li><a href="#therapies" class="hover:text-white transition-colors">ABA Therapy</a></li>
+            <li><a href="#therapies" class="hover:text-white transition-colors">Occupational Therapy (OT)</a></li>
+            <li><a href="#therapies" class="hover:text-white transition-colors">Speech &amp; Language Therapy</a></li>
+            <li><a href="#therapies" class="hover:text-white transition-colors">Special Education (IEP)</a></li>
+            <li><a href="#therapies" class="hover:text-white transition-colors">Sensory Integration Gym</a></li>
+            <li><a href="#therapies" class="hover:text-white transition-colors">Clinical Psychology</a></li>
+            <li><a href="#therapies" class="hover:text-white transition-colors">School Readiness Program</a></li>
+            <li><a href="#therapies" class="hover:text-white transition-colors">Pediatric Physiotherapy</a></li>
+            <li><a href="#therapies" class="hover:text-white transition-colors">Parent Guidance &amp; Coaching</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Centre Coordinates (3 cols) -->
+        <div class="lg:col-span-3 space-y-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-white">Sadikpur Centre</h4>
+          <p class="text-xs text-stone-400 leading-relaxed">
+            1st Floor, Hira Shiv Palace, Ashok Rajpath Rd, Gudari Bazar, Khamji Begum Colony, Sadikpur, Patna, Bihar 800008
+          </p>
+          <div class="pt-2 space-y-1.5 text-xs text-stone-400">
+            <p><strong class="text-stone-300">Email:</strong> interactiveminds@gmail.com</p>
+            <p><strong class="text-stone-300">Phone:</strong> +91 98765 43210</p>
+            <p><strong class="text-stone-300">Hours:</strong> Mon–Fri 8:00 AM – 5:00 PM</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Bar: Legal & Staff Gateway -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-4">
+        <p>© 2025 Interactive Minds Autism Care &amp; Child Development Centre. All rights reserved.</p>
+        <div class="flex items-center gap-6">
+          <a href="#hero" class="hover:text-stone-400 transition-colors">Back to top ↑</a>
+          <a href="/admin/login" class="hover:text-stone-400 transition-colors">Staff Gateway</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ============================================================== -->
+  <!-- 12. FLOATING WHATSAPP ACTION BUTTON                            -->
+  <!-- ============================================================== -->
+  <a href="https://wa.me/919876543210?text=Hello%20Interactive%20Minds%2C%20I%20would%20like%20to%20inquire%20about%20an%20assessment" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-[#25D366] text-white rounded-full shadow-card-hover hover:scale-105 active:scale-95 transition-all duration-300 group focus:outline-none focus:ring-4 focus:ring-emerald-300" aria-label="Chat with Interactive Minds on WhatsApp">
+    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+    </svg>
+    <span class="text-xs font-bold tracking-wide">WhatsApp</span>
+  </a>
+
+</body>
+</html>

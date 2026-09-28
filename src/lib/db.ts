@@ -1,17 +1,132 @@
 import mysql from 'mysql2/promise';
-import { 
-  INITIAL_SERVICES, 
-  INITIAL_CONDITIONS, 
-  INITIAL_FAQS, 
-  INITIAL_SITE_SETTINGS, 
+import {
+  INITIAL_SERVICES,
+  INITIAL_CONDITIONS,
+  INITIAL_FAQS,
+  INITIAL_SITE_SETTINGS,
   INITIAL_TEAM_MEMBERS,
   INITIAL_TESTIMONIALS,
-  INITIAL_MEDIA 
+  INITIAL_MEDIA
 } from './site-data';
 import { Appointment, ContactMessage, Service, Condition, FAQ, TeamMember, Testimonial, MediaItem, SiteSettings } from '@/types';
 
-// In-memory fallback database state
-let memoryState = {
+// Helper to safely parse JSON arrays from MySQL TEXT/LONGTEXT columns
+function parseJsonArray(val: unknown): string[] {
+  if (Array.isArray(val)) {
+    return val.filter((item): item is string => typeof item === 'string');
+  }
+  if (typeof val === 'string') {
+    const trimmed = val.trim();
+    if (!trimmed) return [];
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return parsed.filter((item): item is string => typeof item === 'string');
+      }
+    } catch {
+      return [trimmed];
+    }
+  }
+  return [];
+}
+
+export function normalizeService(row: any): Service {
+  return {
+    id: Number(row.id),
+    name: String(row.name || ''),
+    slug: String(row.slug || ''),
+    short_description: String(row.short_description || ''),
+    description: String(row.description || ''),
+    image_url: row.image_url ? String(row.image_url) : undefined,
+    who_it_helps: row.who_it_helps ? String(row.who_it_helps) : undefined,
+    benefits: row.benefits ? String(row.benefits) : undefined,
+    approach: row.approach ? String(row.approach) : undefined,
+    process_steps: parseJsonArray(row.process_steps),
+    skills_supported: parseJsonArray(row.skills_supported),
+    active: Boolean(row.active),
+    display_order: Number(row.display_order ?? 0),
+    created_at: row.created_at ? String(row.created_at) : undefined,
+    updated_at: row.updated_at ? String(row.updated_at) : undefined,
+  };
+}
+
+export function normalizeCondition(row: any): Condition {
+  return {
+    id: Number(row.id),
+    name: String(row.name || ''),
+    slug: String(row.slug || ''),
+    short_description: String(row.short_description || ''),
+    description: String(row.description || ''),
+    image_url: row.image_url ? String(row.image_url) : undefined,
+    active: Boolean(row.active),
+    display_order: Number(row.display_order ?? 0),
+    created_at: row.created_at ? String(row.created_at) : undefined,
+    updated_at: row.updated_at ? String(row.updated_at) : undefined,
+  };
+}
+
+export function normalizeFAQ(row: any): FAQ {
+  return {
+    id: Number(row.id),
+    question: String(row.question || ''),
+    answer: String(row.answer || ''),
+    category: String(row.category || 'General'),
+    active: Boolean(row.active),
+    display_order: Number(row.display_order ?? 0),
+    created_at: row.created_at ? String(row.created_at) : undefined,
+    updated_at: row.updated_at ? String(row.updated_at) : undefined,
+  };
+}
+
+export function normalizeTeamMember(row: any): TeamMember {
+  return {
+    id: Number(row.id),
+    name: String(row.name || ''),
+    role: String(row.role || ''),
+    specialization: row.specialization ? String(row.specialization) : undefined,
+    bio: row.bio ? String(row.bio) : undefined,
+    image_url: row.image_url ? String(row.image_url) : undefined,
+    active: Boolean(row.active),
+    display_order: Number(row.display_order ?? 0),
+    created_at: row.created_at ? String(row.created_at) : undefined,
+    updated_at: row.updated_at ? String(row.updated_at) : undefined,
+  };
+}
+
+export function normalizeTestimonial(row: any): Testimonial {
+  return {
+    id: Number(row.id),
+    display_name: String(row.display_name || ''),
+    content: String(row.content || ''),
+    rating: Number(row.rating ?? 5),
+    image_url: row.image_url ? String(row.image_url) : undefined,
+    active: Boolean(row.active),
+    featured: Boolean(row.featured),
+    display_order: Number(row.display_order ?? 0),
+    created_at: row.created_at ? String(row.created_at) : undefined,
+    updated_at: row.updated_at ? String(row.updated_at) : undefined,
+  };
+}
+
+export function normalizeMediaItem(row: any): MediaItem {
+  return {
+    id: Number(row.id),
+    title: String(row.title || ''),
+    description: row.description ? String(row.description) : undefined,
+    type: row.type === 'video' ? 'video' : 'image',
+    url: String(row.url || ''),
+    thumbnail_url: row.thumbnail_url ? String(row.thumbnail_url) : undefined,
+    category: String(row.category || 'Activities'),
+    featured: Boolean(row.featured),
+    active: Boolean(row.active),
+    display_order: Number(row.display_order ?? 0),
+    created_at: row.created_at ? String(row.created_at) : undefined,
+    updated_at: row.updated_at ? String(row.updated_at) : undefined,
+  };
+}
+
+// In-memory fallback database state (development only)
+const memoryState = {
   services: [...INITIAL_SERVICES],
   conditions: [...INITIAL_CONDITIONS],
   faqs: [...INITIAL_FAQS],
@@ -21,15 +136,21 @@ let memoryState = {
   media: [...INITIAL_MEDIA],
   appointments: [] as Appointment[],
   messages: [] as ContactMessage[],
-  nextAppointmentId: 1,
-  nextMessageId: 1,
+  nextAppointmentId: 10,
+  nextMessageId: 10,
+  nextServiceId: 10,
+  nextConditionId: 10,
+  nextFaqId: 10,
+  nextTeamId: 10,
+  nextTestimonialId: 10,
+  nextMediaId: 10,
 };
 
 let pool: mysql.Pool | null = null;
 
 export function getDbPool(): mysql.Pool | null {
   if (pool) return pool;
-  
+
   const host = process.env.DB_HOST;
   const user = process.env.DB_USER;
   const password = process.env.DB_PASSWORD;
@@ -49,107 +170,666 @@ export function getDbPool(): mysql.Pool | null {
       });
       return pool;
     } catch (e) {
-      console.warn('MySQL pool creation failed, falling back to memory store:', e);
+      console.error('MySQL pool creation failed:', e);
       pool = null;
     }
   }
+
+  // In development mode, allow fallback with clear warning
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('No database connection available. Falling back to in-memory store for DEVELOPMENT ONLY.');
+  }
+
   return null;
 }
 
 export async function queryDb<T = any>(sql: string, params: any[] = []): Promise<T[]> {
   const p = getDbPool();
   if (!p) {
-    throw new Error('No DB connection available');
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Database connection unavailable');
+    }
+    throw new Error('Database connection unavailable (development mode)');
   }
-  const [rows] = await p.execute(sql, params);
-  return rows as T[];
+
+  try {
+    const [rows] = await p.execute(sql, params);
+    return rows as T[];
+  } catch (error) {
+    console.error('Database query failed:', error);
+    throw new Error(`Database query failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
-// ----------------------------------------------------
-// DB Services & Repositories with In-Memory Fallback
-// ----------------------------------------------------
+// ====================================================
+// 1. SERVICES (THERAPIES) REPOSITORY
+// ====================================================
 
 export async function getServicesDB(): Promise<Service[]> {
   try {
     const rows = await queryDb('SELECT * FROM services WHERE active = 1 ORDER BY display_order ASC, id ASC');
-    if (rows && rows.length > 0) return rows;
-  } catch (e) {
-    // Fallback to memory
+    if (rows && rows.length > 0) return rows.map(normalizeService);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for services (dev mode)');
+      return memoryState.services.filter(s => s.active).map(normalizeService);
+    }
+    throw error;
   }
-  return memoryState.services.filter(s => s.active);
+  return [];
 }
 
 export async function getAllServicesDB(): Promise<Service[]> {
   try {
     const rows = await queryDb('SELECT * FROM services ORDER BY display_order ASC, id ASC');
-    if (rows && rows.length > 0) return rows;
-  } catch (e) {
-    // Fallback
+    if (rows && rows.length > 0) return rows.map(normalizeService);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for all services (dev mode)');
+      return memoryState.services.map(normalizeService);
+    }
+    throw error;
   }
-  return memoryState.services;
+  return [];
 }
 
 export async function getServiceBySlugDB(slug: string): Promise<Service | null> {
   try {
     const rows = await queryDb('SELECT * FROM services WHERE slug = ? LIMIT 1', [slug]);
-    if (rows && rows.length > 0) return rows[0];
-  } catch (e) {
-    // Fallback
+    if (rows && rows.length > 0) return normalizeService(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for service by slug (dev mode)');
+      const found = memoryState.services.find(s => s.slug === slug);
+      return found ? normalizeService(found) : null;
+    }
+    throw error;
   }
-  const found = memoryState.services.find(s => s.slug === slug);
-  return found || null;
+  return null;
 }
+
+export async function getServiceByIdDB(id: number): Promise<Service | null> {
+  try {
+    const rows = await queryDb('SELECT * FROM services WHERE id = ? LIMIT 1', [id]);
+    if (rows && rows.length > 0) return normalizeService(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const found = memoryState.services.find(s => s.id === id);
+      return found ? normalizeService(found) : null;
+    }
+    throw error;
+  }
+  return null;
+}
+
+export async function createServiceDB(data: Omit<Service, 'id' | 'created_at' | 'updated_at'>): Promise<Service> {
+  const processStepsJson = JSON.stringify(data.process_steps || []);
+  const skillsJson = JSON.stringify(data.skills_supported || []);
+
+  const res = await queryDb(
+    `INSERT INTO services
+     (name, slug, short_description, description, image_url, who_it_helps, benefits, approach, process_steps, skills_supported, active, display_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      data.name,
+      data.slug,
+      data.short_description,
+      data.description,
+      data.image_url || null,
+      data.who_it_helps || null,
+      data.benefits || null,
+      data.approach || null,
+      processStepsJson,
+      skillsJson,
+      data.active ? 1 : 0,
+      data.display_order ?? 0,
+    ]
+  );
+
+  const insertId = (res as any).insertId;
+  const created = await getServiceByIdDB(insertId);
+  return created || { id: insertId, ...data, process_steps: data.process_steps || [], skills_supported: data.skills_supported || [] };
+}
+
+export async function updateServiceDB(id: number, data: Partial<Omit<Service, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> {
+  const existing = await getServiceByIdDB(id);
+  if (!existing) return false;
+
+  const merged = {
+    ...existing,
+    ...data,
+  };
+
+  const processStepsJson = JSON.stringify(merged.process_steps || []);
+  const skillsJson = JSON.stringify(merged.skills_supported || []);
+
+  await queryDb(
+    `UPDATE services SET
+     name = ?, slug = ?, short_description = ?, description = ?, image_url = ?, who_it_helps = ?, benefits = ?, approach = ?, process_steps = ?, skills_supported = ?, active = ?, display_order = ?
+     WHERE id = ?`,
+    [
+      merged.name,
+      merged.slug,
+      merged.short_description,
+      merged.description,
+      merged.image_url || null,
+      merged.who_it_helps || null,
+      merged.benefits || null,
+      merged.approach || null,
+      processStepsJson,
+      skillsJson,
+      merged.active ? 1 : 0,
+      merged.display_order ?? 0,
+      id,
+    ]
+  );
+
+  return true;
+}
+
+export async function deleteServiceDB(id: number): Promise<boolean> {
+  const res = await queryDb('DELETE FROM services WHERE id = ?', [id]);
+  return (res as any).affectedRows > 0;
+}
+
+// ====================================================
+// 2. CONDITIONS REPOSITORY
+// ====================================================
 
 export async function getConditionsDB(): Promise<Condition[]> {
   try {
     const rows = await queryDb('SELECT * FROM conditions WHERE active = 1 ORDER BY display_order ASC, id ASC');
-    if (rows && rows.length > 0) return rows;
-  } catch (e) {
-    // Fallback
+    if (rows && rows.length > 0) return rows.map(normalizeCondition);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for conditions (dev mode)');
+      return memoryState.conditions.filter(c => c.active).map(normalizeCondition);
+    }
+    throw error;
   }
-  return memoryState.conditions.filter(c => c.active);
+  return [];
 }
 
 export async function getAllConditionsDB(): Promise<Condition[]> {
   try {
     const rows = await queryDb('SELECT * FROM conditions ORDER BY display_order ASC, id ASC');
-    if (rows && rows.length > 0) return rows;
-  } catch (e) {
-    // Fallback
+    if (rows && rows.length > 0) return rows.map(normalizeCondition);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for all conditions (dev mode)');
+      return memoryState.conditions.map(normalizeCondition);
+    }
+    throw error;
   }
-  return memoryState.conditions;
+  return [];
 }
 
 export async function getConditionBySlugDB(slug: string): Promise<Condition | null> {
   try {
     const rows = await queryDb('SELECT * FROM conditions WHERE slug = ? LIMIT 1', [slug]);
-    if (rows && rows.length > 0) return rows[0];
-  } catch (e) {
-    // Fallback
+    if (rows && rows.length > 0) return normalizeCondition(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for condition by slug (dev mode)');
+      const found = memoryState.conditions.find(c => c.slug === slug);
+      return found ? normalizeCondition(found) : null;
+    }
+    throw error;
   }
-  const found = memoryState.conditions.find(c => c.slug === slug);
-  return found || null;
+  return null;
 }
+
+export async function getConditionByIdDB(id: number): Promise<Condition | null> {
+  try {
+    const rows = await queryDb('SELECT * FROM conditions WHERE id = ? LIMIT 1', [id]);
+    if (rows && rows.length > 0) return normalizeCondition(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const found = memoryState.conditions.find(c => c.id === id);
+      return found ? normalizeCondition(found) : null;
+    }
+    throw error;
+  }
+  return null;
+}
+
+export async function createConditionDB(data: Omit<Condition, 'id' | 'created_at' | 'updated_at'>): Promise<Condition> {
+  const res = await queryDb(
+    `INSERT INTO conditions (name, slug, short_description, description, image_url, active, display_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      data.name,
+      data.slug,
+      data.short_description,
+      data.description,
+      data.image_url || null,
+      data.active ? 1 : 0,
+      data.display_order ?? 0,
+    ]
+  );
+
+  const insertId = (res as any).insertId;
+  const created = await getConditionByIdDB(insertId);
+  return created || { id: insertId, ...data };
+}
+
+export async function updateConditionDB(id: number, data: Partial<Omit<Condition, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> {
+  const existing = await getConditionByIdDB(id);
+  if (!existing) return false;
+
+  const merged = { ...existing, ...data };
+
+  await queryDb(
+    `UPDATE conditions SET
+     name = ?, slug = ?, short_description = ?, description = ?, image_url = ?, active = ?, display_order = ?
+     WHERE id = ?`,
+    [
+      merged.name,
+      merged.slug,
+      merged.short_description,
+      merged.description,
+      merged.image_url || null,
+      merged.active ? 1 : 0,
+      merged.display_order ?? 0,
+      id,
+    ]
+  );
+
+  return true;
+}
+
+export async function deleteConditionDB(id: number): Promise<boolean> {
+  const res = await queryDb('DELETE FROM conditions WHERE id = ?', [id]);
+  return (res as any).affectedRows > 0;
+}
+
+// ====================================================
+// 3. FAQS REPOSITORY
+// ====================================================
 
 export async function getFaqsDB(): Promise<FAQ[]> {
   try {
     const rows = await queryDb('SELECT * FROM faqs WHERE active = 1 ORDER BY display_order ASC, id ASC');
-    if (rows && rows.length > 0) return rows;
-  } catch (e) {
-    // Fallback
+    if (rows && rows.length > 0) return rows.map(normalizeFAQ);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for FAQs (dev mode)');
+      return memoryState.faqs.filter(f => f.active).map(normalizeFAQ);
+    }
+    throw error;
   }
-  return memoryState.faqs.filter(f => f.active);
+  return [];
 }
 
 export async function getAllFaqsDB(): Promise<FAQ[]> {
   try {
     const rows = await queryDb('SELECT * FROM faqs ORDER BY display_order ASC, id ASC');
-    if (rows && rows.length > 0) return rows;
-  } catch (e) {
-    // Fallback
+    if (rows && rows.length > 0) return rows.map(normalizeFAQ);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for all FAQs (dev mode)');
+      return memoryState.faqs.map(normalizeFAQ);
+    }
+    throw error;
   }
-  return memoryState.faqs;
+  return [];
 }
+
+export async function getFaqByIdDB(id: number): Promise<FAQ | null> {
+  try {
+    const rows = await queryDb('SELECT * FROM faqs WHERE id = ? LIMIT 1', [id]);
+    if (rows && rows.length > 0) return normalizeFAQ(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const found = memoryState.faqs.find(f => f.id === id);
+      return found ? normalizeFAQ(found) : null;
+    }
+    throw error;
+  }
+  return null;
+}
+
+export async function createFaqDB(data: Omit<FAQ, 'id' | 'created_at' | 'updated_at'>): Promise<FAQ> {
+  const res = await queryDb(
+    `INSERT INTO faqs (question, answer, category, active, display_order)
+     VALUES (?, ?, ?, ?, ?)`,
+    [
+      data.question,
+      data.answer,
+      data.category || 'General',
+      data.active ? 1 : 0,
+      data.display_order ?? 0,
+    ]
+  );
+
+  const insertId = (res as any).insertId;
+  const created = await getFaqByIdDB(insertId);
+  return created || { id: insertId, ...data };
+}
+
+export async function updateFaqDB(id: number, data: Partial<Omit<FAQ, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> {
+  const existing = await getFaqByIdDB(id);
+  if (!existing) return false;
+
+  const merged = { ...existing, ...data };
+
+  await queryDb(
+    `UPDATE faqs SET
+     question = ?, answer = ?, category = ?, active = ?, display_order = ?
+     WHERE id = ?`,
+    [
+      merged.question,
+      merged.answer,
+      merged.category || 'General',
+      merged.active ? 1 : 0,
+      merged.display_order ?? 0,
+      id,
+    ]
+  );
+
+  return true;
+}
+
+export async function deleteFaqDB(id: number): Promise<boolean> {
+  const res = await queryDb('DELETE FROM faqs WHERE id = ?', [id]);
+  return (res as any).affectedRows > 0;
+}
+
+// ====================================================
+// 4. TEAM MEMBERS REPOSITORY
+// ====================================================
+
+export async function getTeamMembersDB(): Promise<TeamMember[]> {
+  try {
+    const rows = await queryDb('SELECT * FROM team_members WHERE active = 1 ORDER BY display_order ASC, id ASC');
+    if (rows && rows.length > 0) return rows.map(normalizeTeamMember);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for team members (dev mode)');
+      return memoryState.team.filter(t => t.active).map(normalizeTeamMember);
+    }
+    throw error;
+  }
+  return [];
+}
+
+export async function getAllTeamMembersDB(): Promise<TeamMember[]> {
+  try {
+    const rows = await queryDb('SELECT * FROM team_members ORDER BY display_order ASC, id ASC');
+    if (rows && rows.length > 0) return rows.map(normalizeTeamMember);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for all team members (dev mode)');
+      return memoryState.team.map(normalizeTeamMember);
+    }
+    throw error;
+  }
+  return [];
+}
+
+export async function getTeamMemberByIdDB(id: number): Promise<TeamMember | null> {
+  try {
+    const rows = await queryDb('SELECT * FROM team_members WHERE id = ? LIMIT 1', [id]);
+    if (rows && rows.length > 0) return normalizeTeamMember(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const found = memoryState.team.find(t => t.id === id);
+      return found ? normalizeTeamMember(found) : null;
+    }
+    throw error;
+  }
+  return null;
+}
+
+export async function createTeamMemberDB(data: Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>): Promise<TeamMember> {
+  const res = await queryDb(
+    `INSERT INTO team_members (name, role, specialization, bio, image_url, active, display_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      data.name,
+      data.role,
+      data.specialization || null,
+      data.bio || null,
+      data.image_url || null,
+      data.active ? 1 : 0,
+      data.display_order ?? 0,
+    ]
+  );
+
+  const insertId = (res as any).insertId;
+  const created = await getTeamMemberByIdDB(insertId);
+  return created || { id: insertId, ...data };
+}
+
+export async function updateTeamMemberDB(id: number, data: Partial<Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> {
+  const existing = await getTeamMemberByIdDB(id);
+  if (!existing) return false;
+
+  const merged = { ...existing, ...data };
+
+  await queryDb(
+    `UPDATE team_members SET
+     name = ?, role = ?, specialization = ?, bio = ?, image_url = ?, active = ?, display_order = ?
+     WHERE id = ?`,
+    [
+      merged.name,
+      merged.role,
+      merged.specialization || null,
+      merged.bio || null,
+      merged.image_url || null,
+      merged.active ? 1 : 0,
+      merged.display_order ?? 0,
+      id,
+    ]
+  );
+
+  return true;
+}
+
+export async function deleteTeamMemberDB(id: number): Promise<boolean> {
+  const res = await queryDb('DELETE FROM team_members WHERE id = ?', [id]);
+  return (res as any).affectedRows > 0;
+}
+
+// ====================================================
+// 5. TESTIMONIALS REPOSITORY
+// ====================================================
+
+export async function getTestimonialsDB(): Promise<Testimonial[]> {
+  try {
+    const rows = await queryDb('SELECT * FROM testimonials WHERE active = 1 ORDER BY display_order ASC, id ASC');
+    if (rows) return rows.map(normalizeTestimonial);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for testimonials (dev mode)');
+      return memoryState.testimonials.filter(t => t.active).map(normalizeTestimonial);
+    }
+    throw error;
+  }
+  return [];
+}
+
+export async function getAllTestimonialsDB(): Promise<Testimonial[]> {
+  try {
+    const rows = await queryDb('SELECT * FROM testimonials ORDER BY display_order ASC, id ASC');
+    if (rows) return rows.map(normalizeTestimonial);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for all testimonials (dev mode)');
+      return memoryState.testimonials.map(normalizeTestimonial);
+    }
+    throw error;
+  }
+  return [];
+}
+
+export async function getTestimonialByIdDB(id: number): Promise<Testimonial | null> {
+  try {
+    const rows = await queryDb('SELECT * FROM testimonials WHERE id = ? LIMIT 1', [id]);
+    if (rows && rows.length > 0) return normalizeTestimonial(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const found = memoryState.testimonials.find(t => t.id === id);
+      return found ? normalizeTestimonial(found) : null;
+    }
+    throw error;
+  }
+  return null;
+}
+
+export async function createTestimonialDB(data: Omit<Testimonial, 'id' | 'created_at' | 'updated_at'>): Promise<Testimonial> {
+  const res = await queryDb(
+    `INSERT INTO testimonials (display_name, content, rating, image_url, active, featured, display_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      data.display_name,
+      data.content,
+      data.rating ?? 5,
+      data.image_url || null,
+      data.active ? 1 : 0,
+      data.featured ? 1 : 0,
+      data.display_order ?? 0,
+    ]
+  );
+
+  const insertId = (res as any).insertId;
+  const created = await getTestimonialByIdDB(insertId);
+  return created || { id: insertId, ...data };
+}
+
+export async function updateTestimonialDB(id: number, data: Partial<Omit<Testimonial, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> {
+  const existing = await getTestimonialByIdDB(id);
+  if (!existing) return false;
+
+  const merged = { ...existing, ...data };
+
+  await queryDb(
+    `UPDATE testimonials SET
+     display_name = ?, content = ?, rating = ?, image_url = ?, active = ?, featured = ?, display_order = ?
+     WHERE id = ?`,
+    [
+      merged.display_name,
+      merged.content,
+      merged.rating ?? 5,
+      merged.image_url || null,
+      merged.active ? 1 : 0,
+      merged.featured ? 1 : 0,
+      merged.display_order ?? 0,
+      id,
+    ]
+  );
+
+  return true;
+}
+
+export async function deleteTestimonialDB(id: number): Promise<boolean> {
+  const res = await queryDb('DELETE FROM testimonials WHERE id = ?', [id]);
+  return (res as any).affectedRows > 0;
+}
+
+// ====================================================
+// 6. MEDIA GALLERY REPOSITORY
+// ====================================================
+
+export async function getMediaDB(): Promise<MediaItem[]> {
+  try {
+    const rows = await queryDb('SELECT * FROM media WHERE active = 1 ORDER BY display_order ASC, id ASC');
+    if (rows) return rows.map(normalizeMediaItem);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for media (dev mode)');
+      return memoryState.media.filter(m => m.active).map(normalizeMediaItem);
+    }
+    throw error;
+  }
+  return [];
+}
+
+export async function getAllMediaDB(): Promise<MediaItem[]> {
+  try {
+    const rows = await queryDb('SELECT * FROM media ORDER BY display_order ASC, id ASC');
+    if (rows) return rows.map(normalizeMediaItem);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for all media (dev mode)');
+      return memoryState.media.map(normalizeMediaItem);
+    }
+    throw error;
+  }
+  return [];
+}
+
+export async function getMediaByIdDB(id: number): Promise<MediaItem | null> {
+  try {
+    const rows = await queryDb('SELECT * FROM media WHERE id = ? LIMIT 1', [id]);
+    if (rows && rows.length > 0) return normalizeMediaItem(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const found = memoryState.media.find(m => m.id === id);
+      return found ? normalizeMediaItem(found) : null;
+    }
+    throw error;
+  }
+  return null;
+}
+
+export async function createMediaDB(data: Omit<MediaItem, 'id' | 'created_at' | 'updated_at'>): Promise<MediaItem> {
+  const res = await queryDb(
+    `INSERT INTO media (title, description, type, url, thumbnail_url, category, featured, active, display_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      data.title,
+      data.description || null,
+      data.type || 'image',
+      data.url,
+      data.thumbnail_url || null,
+      data.category || 'Activities',
+      data.featured ? 1 : 0,
+      data.active ? 1 : 0,
+      data.display_order ?? 0,
+    ]
+  );
+
+  const insertId = (res as any).insertId;
+  const created = await getMediaByIdDB(insertId);
+  return created || { id: insertId, ...data };
+}
+
+export async function updateMediaDB(id: number, data: Partial<Omit<MediaItem, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> {
+  const existing = await getMediaByIdDB(id);
+  if (!existing) return false;
+
+  const merged = { ...existing, ...data };
+
+  await queryDb(
+    `UPDATE media SET
+     title = ?, description = ?, type = ?, url = ?, thumbnail_url = ?, category = ?, featured = ?, active = ?, display_order = ?
+     WHERE id = ?`,
+    [
+      merged.title,
+      merged.description || null,
+      merged.type || 'image',
+      merged.url,
+      merged.thumbnail_url || null,
+      merged.category || 'Activities',
+      merged.featured ? 1 : 0,
+      merged.active ? 1 : 0,
+      merged.display_order ?? 0,
+      id,
+    ]
+  );
+
+  return true;
+}
+
+export async function deleteMediaDB(id: number): Promise<boolean> {
+  const res = await queryDb('DELETE FROM media WHERE id = ?', [id]);
+  return (res as any).affectedRows > 0;
+}
+
+// ====================================================
+// 7. SITE SETTINGS REPOSITORY
+// ====================================================
 
 export async function getSiteSettingsDB(): Promise<SiteSettings> {
   try {
@@ -161,10 +841,14 @@ export async function getSiteSettingsDB(): Promise<SiteSettings> {
       });
       return settingsMap;
     }
-  } catch (e) {
-    // Fallback
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Falling back to memory for site settings (dev mode)');
+      return memoryState.settings;
+    }
+    throw error;
   }
-  return memoryState.settings;
+  return { ...INITIAL_SITE_SETTINGS };
 }
 
 export async function updateSiteSettingsDB(key: string, value: string): Promise<void> {
@@ -173,189 +857,119 @@ export async function updateSiteSettingsDB(key: string, value: string): Promise<
       'INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
       [key, value]
     );
-  } catch (e) {
-    // Fallback
+    return;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Cannot update site settings in memory (dev mode)');
+      memoryState.settings[key] = value;
+      return;
+    }
+    throw error;
   }
-  memoryState.settings[key] = value;
 }
+
+// ====================================================
+// 8. APPOINTMENTS & MESSAGES REPOSITORY
+// ====================================================
 
 export async function createAppointmentDB(data: Omit<Appointment, 'id' | 'appointment_reference' | 'status' | 'created_at'>): Promise<Appointment> {
   const ref = 'IM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
   const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
-  try {
-    const res = await queryDb(
-      `INSERT INTO appointments 
-       (appointment_reference, parent_name, child_name, email, phone, child_age, service_id, preferred_date, preferred_time, message, preferred_contact_method, status, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)`,
-      [
-        ref,
-        data.parent_name,
-        data.child_name,
-        data.email,
-        data.phone,
-        data.child_age,
-        data.service_id || null,
-        data.preferred_date,
-        data.preferred_time,
-        data.message || null,
-        data.preferred_contact_method || 'phone',
-        now
-      ]
-    );
-    const insertId = (res as any).insertId || memoryState.nextAppointmentId++;
-    return {
-      id: insertId,
-      appointment_reference: ref,
-      ...data,
-      status: 'PENDING',
-      created_at: now
-    };
-  } catch (e) {
-    console.warn('DB appointment creation failed, writing to memory state:', e);
-  }
+  const res = await queryDb(
+    `INSERT INTO appointments
+     (appointment_reference, parent_name, child_name, email, phone, child_age, service_id, preferred_date, preferred_time, message, preferred_contact_method, status, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)`,
+    [
+      ref,
+      data.parent_name,
+      data.child_name,
+      data.email,
+      data.phone,
+      data.child_age,
+      data.service_id || null,
+      data.preferred_date,
+      data.preferred_time,
+      data.message || null,
+      data.preferred_contact_method || 'phone',
+      now
+    ]
+  );
 
-  const appt: Appointment = {
-    id: memoryState.nextAppointmentId++,
+  const insertId = (res as any).insertId;
+
+  return {
+    id: insertId,
     appointment_reference: ref,
     ...data,
     status: 'PENDING',
     created_at: now
   };
-  memoryState.appointments.unshift(appt);
-  return appt;
 }
 
 export async function getAppointmentsDB(): Promise<Appointment[]> {
-  try {
-    const rows = await queryDb(`
-      SELECT a.*, s.name as service_name 
-      FROM appointments a 
-      LEFT JOIN services s ON a.service_id = s.id 
-      ORDER BY a.created_at DESC
-    `);
-    if (rows) return rows;
-  } catch (e) {
-    // Fallback
-  }
-  return memoryState.appointments;
+  const rows = await queryDb(`
+    SELECT a.*, s.name as service_name
+    FROM appointments a
+    LEFT JOIN services s ON a.service_id = s.id
+    ORDER BY a.created_at DESC
+  `);
+  return rows || [];
 }
 
-export async function updateAppointmentStatusDB(id: number, status: Appointment['status'], admin_notes?: string): Promise<boolean> {
-  try {
-    await queryDb('UPDATE appointments SET status = ?, admin_notes = ? WHERE id = ?', [status, admin_notes || null, id]);
-    return true;
-  } catch (e) {
-    // Fallback
+export async function getAppointmentByIdDB(id: number): Promise<(Appointment & { service_name?: string }) | null> {
+  const rows = await queryDb(
+    `SELECT a.*, s.name as service_name
+     FROM appointments a
+     LEFT JOIN services s ON a.service_id = s.id
+     WHERE a.id = ?
+     LIMIT 1`,
+    [id]
+  );
+  if (rows && rows.length > 0) {
+    return rows[0];
   }
-  const appt = memoryState.appointments.find(a => a.id === id);
-  if (appt) {
-    appt.status = status;
-    if (admin_notes !== undefined) appt.admin_notes = admin_notes;
-    return true;
-  }
-  return false;
+  return null;
+}
+
+export async function updateAppointmentStatusDB(id: number, status: Appointment['status'], admin_notes?: string | null): Promise<boolean> {
+  await queryDb('UPDATE appointments SET status = ?, admin_notes = ? WHERE id = ?', [status, admin_notes || null, id]);
+  return true;
 }
 
 export async function createContactMessageDB(data: Omit<ContactMessage, 'id' | 'status' | 'created_at'>): Promise<ContactMessage> {
   const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
-  try {
-    const res = await queryDb(
-      `INSERT INTO contact_messages (name, email, phone, subject, message, preferred_contact_method, status, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, 'NEW', ?)`,
-      [
-        data.name,
-        data.email,
-        data.phone,
-        data.subject || null,
-        data.message,
-        data.preferred_contact_method || 'email',
-        now
-      ]
-    );
-    const insertId = (res as any).insertId || memoryState.nextMessageId++;
-    return {
-      id: insertId,
-      ...data,
-      status: 'NEW',
-      created_at: now
-    };
-  } catch (e) {
-    console.warn('DB contact creation failed, writing to memory state:', e);
-  }
+  const res = await queryDb(
+    `INSERT INTO contact_messages (name, email, phone, subject, message, preferred_contact_method, status, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, 'NEW', ?)`,
+    [
+      data.name,
+      data.email,
+      data.phone,
+      data.subject || null,
+      data.message,
+      data.preferred_contact_method || 'email',
+      now
+    ]
+  );
 
-  const msg: ContactMessage = {
-    id: memoryState.nextMessageId++,
+  const insertId = (res as any).insertId;
+
+  return {
+    id: insertId,
     ...data,
     status: 'NEW',
     created_at: now
   };
-  memoryState.messages.unshift(msg);
-  return msg;
 }
 
 export async function getContactMessagesDB(): Promise<ContactMessage[]> {
-  try {
-    const rows = await queryDb('SELECT * FROM contact_messages ORDER BY created_at DESC');
-    if (rows) return rows;
-  } catch (e) {
-    // Fallback
-  }
-  return memoryState.messages;
+  const rows = await queryDb('SELECT * FROM contact_messages ORDER BY created_at DESC');
+  return rows || [];
 }
 
 export async function updateContactMessageStatusDB(id: number, status: ContactMessage['status']): Promise<boolean> {
-  try {
-    await queryDb('UPDATE contact_messages SET status = ? WHERE id = ?', [status, id]);
-    return true;
-  } catch (e) {
-    // Fallback
-  }
-  const msg = memoryState.messages.find(m => m.id === id);
-  if (msg) {
-    msg.status = status;
-    return true;
-  }
-  return false;
-}
-
-export async function getTeamMembersDB(): Promise<TeamMember[]> {
-  try {
-    const rows = await queryDb('SELECT * FROM team_members WHERE active = 1 ORDER BY display_order ASC, id ASC');
-    if (rows && rows.length > 0) return rows;
-  } catch (e) {
-    // Fallback
-  }
-  return memoryState.team.filter(t => t.active);
-}
-
-export async function getAllTeamMembersDB(): Promise<TeamMember[]> {
-  try {
-    const rows = await queryDb('SELECT * FROM team_members ORDER BY display_order ASC, id ASC');
-    if (rows && rows.length > 0) return rows;
-  } catch (e) {
-    // Fallback
-  }
-  return memoryState.team;
-}
-
-export async function getTestimonialsDB(): Promise<Testimonial[]> {
-  try {
-    const rows = await queryDb('SELECT * FROM testimonials WHERE active = 1 ORDER BY display_order ASC, id ASC');
-    if (rows) return rows;
-  } catch (e) {
-    // Fallback
-  }
-  return memoryState.testimonials.filter(t => t.active);
-}
-
-export async function getMediaDB(): Promise<MediaItem[]> {
-  try {
-    const rows = await queryDb('SELECT * FROM media WHERE active = 1 ORDER BY display_order ASC, id ASC');
-    if (rows) return rows;
-  } catch (e) {
-    // Fallback
-  }
-  return memoryState.media.filter(m => m.active);
+  await queryDb('UPDATE contact_messages SET status = ? WHERE id = ?', [status, id]);
+  return true;
 }

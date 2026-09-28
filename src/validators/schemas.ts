@@ -17,7 +17,7 @@ export const ContactMessageSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
   phone: z.string().min(8, 'Phone number must be at least 8 digits'),
-  subject: z.string().optional(),
+  subject: z.string().optional().nullable(),
   message: z.string().min(10, 'Message must be at least 10 characters'),
   preferred_contact_method: z.string().optional().default('email'),
 });
@@ -29,74 +29,92 @@ export const AdminLoginSchema = z.object({
 
 export const AppointmentStatusUpdateSchema = z.object({
   status: z.enum(['PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED']),
-  admin_notes: z.string().optional(),
+  admin_notes: z.string().optional().nullable(),
 });
 
 export const MessageStatusUpdateSchema = z.object({
   status: z.enum(['NEW', 'READ', 'RESPONDED', 'ARCHIVED']),
 });
 
+// Service (Therapy) CRUD Schemas
 export const ServiceSchema = z.object({
-  name: z.string().min(2),
-  slug: z.string().min(2),
-  short_description: z.string().min(10),
-  description: z.string().min(20),
-  image_url: z.string().optional(),
-  who_it_helps: z.string().optional(),
-  benefits: z.string().optional(),
-  approach: z.string().optional(),
-  process_steps: z.array(z.string()).optional(),
-  skills_supported: z.array(z.string()).optional(),
+  name: z.string().min(2, 'Service name must be at least 2 characters'),
+  slug: z.string().min(2, 'Slug must be at least 2 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
+  short_description: z.string().min(10, 'Short description must be at least 10 characters'),
+  description: z.string().min(20, 'Description must be at least 20 characters'),
+  image_url: z.string().optional().nullable(),
+  who_it_helps: z.string().optional().nullable(),
+  benefits: z.string().optional().nullable(),
+  approach: z.string().optional().nullable(),
+  process_steps: z.array(z.string()).optional().default([]),
+  skills_supported: z.array(z.string()).optional().default([]),
   active: z.boolean().default(true),
   display_order: z.number().default(0),
 });
 
+export const ServiceUpdateSchema = ServiceSchema.partial();
+
+// Condition CRUD Schemas
 export const ConditionSchema = z.object({
-  name: z.string().min(2),
-  slug: z.string().min(2),
-  short_description: z.string().min(10),
-  description: z.string().min(20),
-  image_url: z.string().optional(),
+  name: z.string().min(2, 'Condition name must be at least 2 characters'),
+  slug: z.string().min(2, 'Slug must be at least 2 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
+  short_description: z.string().min(10, 'Short description must be at least 10 characters'),
+  description: z.string().min(20, 'Description must be at least 20 characters'),
+  image_url: z.string().optional().nullable(),
   active: z.boolean().default(true),
   display_order: z.number().default(0),
 });
 
+export const ConditionUpdateSchema = ConditionSchema.partial();
+
+// FAQ CRUD Schemas
 export const FAQSchema = z.object({
-  question: z.string().min(5),
-  answer: z.string().min(5),
-  category: z.string().default('General'),
+  question: z.string().min(5, 'Question must be at least 5 characters'),
+  answer: z.string().min(5, 'Answer must be at least 5 characters'),
+  category: z.string().min(2, 'Category must be at least 2 characters').default('General'),
   active: z.boolean().default(true),
   display_order: z.number().default(0),
 });
 
+export const FAQUpdateSchema = FAQSchema.partial();
+
+// Team Member CRUD Schemas
 export const TeamMemberSchema = z.object({
-  name: z.string().min(2),
-  role: z.string().min(2),
-  specialization: z.string().optional(),
-  bio: z.string().optional(),
-  image_url: z.string().optional(),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  role: z.string().min(2, 'Role must be at least 2 characters'),
+  specialization: z.string().optional().nullable(),
+  bio: z.string().optional().nullable(),
+  image_url: z.string().optional().nullable(),
   active: z.boolean().default(true),
   display_order: z.number().default(0),
 });
 
+export const TeamMemberUpdateSchema = TeamMemberSchema.partial();
+
+// Testimonial CRUD Schemas
 export const TestimonialSchema = z.object({
-  display_name: z.string().min(2),
-  content: z.string().min(10),
-  rating: z.number().min(1).max(5).default(5),
-  image_url: z.string().optional(),
+  display_name: z.string().min(2, 'Display name must be at least 2 characters'),
+  content: z.string().min(10, 'Content must be at least 10 characters'),
+  rating: z.number().min(1, 'Minimum rating is 1').max(5, 'Maximum rating is 5').default(5),
+  image_url: z.string().optional().nullable(),
   active: z.boolean().default(true),
   featured: z.boolean().default(false),
   display_order: z.number().default(0),
 });
 
+export const TestimonialUpdateSchema = TestimonialSchema.partial();
+
+// Media Item CRUD Schemas
 export const MediaItemSchema = z.object({
-  title: z.string().min(2),
-  description: z.string().optional(),
+  title: z.string().min(2, 'Title must be at least 2 characters'),
+  description: z.string().optional().nullable(),
   type: z.enum(['image', 'video']).default('image'),
-  url: z.string().min(5),
-  thumbnail_url: z.string().optional(),
-  category: z.string().default('Activities'),
+  url: z.string().min(5, 'Valid media URL is required'),
+  thumbnail_url: z.string().optional().nullable(),
+  category: z.string().min(2, 'Category must be at least 2 characters').default('Activities'),
   featured: z.boolean().default(false),
   active: z.boolean().default(true),
   display_order: z.number().default(0),
 });
+
+export const MediaItemUpdateSchema = MediaItemSchema.partial();

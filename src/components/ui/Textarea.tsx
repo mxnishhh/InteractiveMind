@@ -3,10 +3,11 @@ import React from 'react';
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
+  helperText?: string;
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, className = '', id, ...props }, ref) => {
+  ({ label, error, helperText, className = '', id, ...props }, ref) => {
     const textareaId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
@@ -28,6 +29,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && <p className="mt-1 text-xs text-rose-600 font-medium">{error}</p>}
+        {helperText && !error && <p className="mt-1 text-xs text-slate-500">{helperText}</p>}
       </div>
     );
   }

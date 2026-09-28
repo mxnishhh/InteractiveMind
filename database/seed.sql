@@ -3,7 +3,7 @@ USE `interactive_minds`;
 
 -- 1. Initial Admin User (Default Password: AdminSecurePass123! - Bcrypt hash generated)
 INSERT INTO `admins` (`name`, `email`, `password_hash`, `role`) VALUES
-('Administrator', 'admin@interactivemind.in', '$2a$12$e0V.4w.3p9jS0x/7YjA2h.W7x9E1Gz9V2m3n4o5p6q7r8s9t0u1v2', 'superadmin')
+('Administrator', 'admin@interactivemind.in', '$2a$12$H5oPi/pEpNhHC58/P6h00eEjjL96IH6kbOjO.Sx8ifXDyfLGDF5yu', 'superadmin')
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 
 -- 2. Services (Therapies)

@@ -8,10 +8,10 @@ export interface Service {
   slug: string;
   short_description: string;
   description: string;
-  image_url?: string;
-  who_it_helps?: string;
-  benefits?: string;
-  approach?: string;
+  image_url?: string | null;
+  who_it_helps?: string | null;
+  benefits?: string | null;
+  approach?: string | null;
   process_steps?: string[];
   skills_supported?: string[];
   active: boolean;
@@ -26,7 +26,7 @@ export interface Condition {
   slug: string;
   short_description: string;
   description: string;
-  image_url?: string;
+  image_url?: string | null;
   active: boolean;
   display_order: number;
   created_at?: string;
@@ -45,10 +45,10 @@ export interface Appointment {
   service_name?: string;
   preferred_date: string;
   preferred_time: string;
-  message?: string;
+  message?: string | null;
   preferred_contact_method?: string;
   status: AppointmentStatus;
-  admin_notes?: string;
+  admin_notes?: string | null;
   created_at: string;
   updated_at?: string;
 }
@@ -58,7 +58,7 @@ export interface ContactMessage {
   name: string;
   email: string;
   phone: string;
-  subject?: string;
+  subject?: string | null;
   message: string;
   preferred_contact_method?: string;
   status: MessageStatus;
@@ -70,9 +70,9 @@ export interface TeamMember {
   id: number;
   name: string;
   role: string;
-  specialization?: string;
-  bio?: string;
-  image_url?: string;
+  specialization?: string | null;
+  bio?: string | null;
+  image_url?: string | null;
   active: boolean;
   display_order: number;
   created_at?: string;
@@ -95,7 +95,7 @@ export interface Testimonial {
   display_name: string;
   content: string;
   rating: number;
-  image_url?: string;
+  image_url?: string | null;
   active: boolean;
   featured: boolean;
   display_order: number;
@@ -106,10 +106,10 @@ export interface Testimonial {
 export interface MediaItem {
   id: number;
   title: string;
-  description?: string;
+  description?: string | null;
   type: MediaType;
   url: string;
-  thumbnail_url?: string;
+  thumbnail_url?: string | null;
   category: string;
   featured: boolean;
   active: boolean;

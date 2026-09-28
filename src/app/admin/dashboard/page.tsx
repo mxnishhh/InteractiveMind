@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { StatsCard } from '@/components/admin/StatsCard';
-import { Badge } from '@/ui/Badge';
+import { Badge } from '@/components/ui/Badge';
 import { Calendar, MessageSquare, Activity, ShieldAlert, ArrowRight } from 'lucide-react';
 import { Appointment, ContactMessage } from '@/types';
 

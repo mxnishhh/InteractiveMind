@@ -1,13 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AppointmentRequestSchema } from '@/validators/schemas';
-import { createAppointmentDB } from '@/lib/db';
+import { createAppointmentDB, getServiceByIdDB } from '@/lib/db';
+import { sendAppointmentAdminNotification } from '@/lib/email';
+import { checkRateLimit, getRateLimitIdentifier } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limiting check for public appointment form
+    const identifier = getRateLimitIdentifier(req);
+    const limitResult = checkRateLimit(identifier, 10, 60_000); // 10 requests per minute
+    if (!limitResult.allowed) {
+      const retryAfterSeconds = Math.ceil(limitResult.resetInMs / 1000);
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please wait a moment and try again.' },
+        { status: 429, headers: { 'Retry-After': String(retryAfterSeconds) } }
+      );
+    }
+
     const body = await req.json();
     const validatedData = AppointmentRequestSchema.parse(body);
 
     const appointment = await createAppointmentDB(validatedData);
+
+    // Fetch service name for email readability if service_id was provided
+    let serviceName: string | undefined = undefined;
+    if (appointment.service_id) {
+      try {
+        const service = await getServiceByIdDB(appointment.service_id);
+        if (service) serviceName = service.name;
+      } catch (e) {
+        // Non-critical fallback
+      }
+    }
+
+    // Trigger secondary email notification (isolated from DB outcome)
+    sendAppointmentAdminNotification({
+      ...appointment,
+      service_name: serviceName,
+    }).catch((emailErr) => {
+      console.error('[EMAIL] Background notification dispatch error:', emailErr);
+    });
 
     return NextResponse.json({
       success: true,

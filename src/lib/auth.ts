@@ -5,18 +5,34 @@ import { NextRequest, NextResponse } from 'next/server';
 import { queryDb } from './db';
 import { AdminUser } from '@/types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_change_in_production_2026';
+/**
+ * JWT secret is read strictly from the environment.
+ * A missing secret in production is a fatal configuration error.
+ */
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: JWT_SECRET environment variable is not set. Refusing to start insecurely.');
+  }
+  console.warn('[AUTH] JWT_SECRET is not set. Using a temporary development-only secret. DO NOT deploy like this.');
+}
+
 export const AUTH_COOKIE_NAME = 'admin_token';
 
-// Default Fallback Admin Credentials for dev/seed setup
-const DEFAULT_ADMIN = {
-  id: 1,
-  name: 'Administrator',
-  email: 'admin@interactivemind.in',
-  // bcrypt hash for 'AdminSecurePass123!'
-  password_hash: '$2a$12$e0V.4w.3p9jS0x/7YjA2h.W7x9E1Gz9V2m3n4o5p6q7r8s9t0u1v2',
-  role: 'superadmin',
-};
+/**
+ * Enforce a minimum secret length to prevent trivially weak tokens.
+ */
+function assertSecretStrength(): string {
+  const secret = JWT_SECRET;
+  if (!secret || secret.length < 32) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('FATAL: JWT_SECRET must be at least 32 characters in production.');
+    }
+    console.warn('[AUTH] JWT_SECRET is shorter than 32 characters. This is insecure for production use.');
+  }
+  return secret || '';
+}
 
 export async function hashPassword(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(12);
@@ -24,10 +40,6 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  // If fallback hash matches default testing password
-  if (password === 'AdminSecurePass123!' || password === 'admin123') {
-    return true;
-  }
   try {
     return await bcrypt.compare(password, hash);
   } catch (e) {
@@ -36,6 +48,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export function generateToken(user: AdminUser): string {
+  const secret = assertSecretStrength();
   return jwt.sign(
     {
       id: user.id,
@@ -43,14 +56,15 @@ export function generateToken(user: AdminUser): string {
       name: user.name,
       role: user.role,
     },
-    JWT_SECRET,
+    secret,
     { expiresIn: '8h' }
   );
 }
 
 export function verifyToken(token: string): AdminUser | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const secret = assertSecretStrength();
+    const decoded = jwt.verify(token, secret) as any;
     return {
       id: decoded.id,
       name: decoded.name,
@@ -63,6 +77,10 @@ export function verifyToken(token: string): AdminUser | null {
 }
 
 export async function authenticateAdminByEmail(email: string, pass: string): Promise<AdminUser | null> {
+  if (!email || typeof email !== 'string' || !pass || typeof pass !== 'string') {
+    return null;
+  }
+
   let dbUser = null;
   try {
     const rows = await queryDb('SELECT * FROM admins WHERE email = ? LIMIT 1', [email]);
@@ -70,21 +88,23 @@ export async function authenticateAdminByEmail(email: string, pass: string): Pro
       dbUser = rows[0];
     }
   } catch (e) {
-    // DB unreachable, fallback to default admin email check
+    // Database unreachable — do NOT silently fall back to hardcoded credentials.
+    console.error('[AUTH] Failed to query admin_users table during authentication:', e);
+    return null;
   }
 
-  const user = dbUser || (email === DEFAULT_ADMIN.email ? DEFAULT_ADMIN : null);
+  if (!dbUser) {
+    return null;
+  }
 
-  if (!user) return null;
-
-  const valid = await verifyPassword(pass, user.password_hash);
+  const valid = await verifyPassword(pass, dbUser.password_hash);
   if (!valid) return null;
 
   return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
+    id: dbUser.id,
+    name: dbUser.name,
+    email: dbUser.email,
+    role: dbUser.role,
   };
 }
 

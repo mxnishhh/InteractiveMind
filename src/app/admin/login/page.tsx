@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Input } from '@/ui/Input';
-import { Button } from '@/ui/Button';
-import { Toast } from '@/ui/Toast';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Toast } from '@/components/ui/Toast';
 import { HeartHandshake, Lock } from 'lucide-react';
 
 export default function AdminLoginPage() {

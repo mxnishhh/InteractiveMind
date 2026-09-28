@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Badge } from '@/ui/Badge';
-import { Modal } from '@/ui/Modal';
-import { Button } from '@/ui/Button';
-import { Toast } from '@/ui/Toast';
+import { Badge } from '@/components/ui/Badge';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+import { Toast } from '@/components/ui/Toast';
 import { Appointment, AppointmentStatus } from '@/types';
 import { Search, Filter, Eye, Edit } from 'lucide-react';
 
