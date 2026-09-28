@@ -1,30 +1,109 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Menu, X, Phone } from 'lucide-react';
 import { SITE, HERO } from '@/constants';
 
+interface NavLinkItem {
+  id: string;
+  label: string;
+  href: string;
+}
+
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('hero');
   const pathname = usePathname();
+  const shouldReduceMotion = useReducedMotion();
 
   const isHome = pathname === '/';
 
-  const navLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'About', href: isHome ? '#about' : '/#about' },
-    { label: 'Therapies', href: isHome ? '#therapies' : '/therapies' },
-    { label: 'Conditions', href: isHome ? '#conditions' : '/conditions' },
-    { label: 'Approach', href: isHome ? '#approach' : '/#approach' },
-    { label: 'Journey', href: isHome ? '#journey' : '/#journey' },
-    { label: 'Team', href: isHome ? '#team' : '/#team' },
-    { label: 'FAQ', href: isHome ? '#faq' : '/#faq' },
+  const navLinks: NavLinkItem[] = [
+    { id: 'hero', label: 'Home', href: isHome ? '#hero' : '/' },
+    { id: 'about', label: 'About', href: isHome ? '#about' : '/#about' },
+    { id: 'therapies', label: 'Therapies', href: isHome ? '#therapies' : '/#therapies' },
+    { id: 'conditions', label: 'Conditions', href: isHome ? '#conditions' : '/#conditions' },
+    { id: 'approach', label: 'Approach', href: isHome ? '#approach' : '/#approach' },
+    { id: 'journey', label: 'Journey', href: isHome ? '#journey' : '/#journey' },
+    { id: 'team', label: 'Team', href: isHome ? '#team' : '/#team' },
+    { id: 'faq', label: 'FAQ', href: isHome ? '#faq' : '/#faq' },
   ];
 
+  // Active section tracking via IntersectionObserver
+  useEffect(() => {
+    if (!isHome) return;
+
+    const sectionIds = ['hero', 'about', 'therapies', 'conditions', 'approach', 'journey', 'team', 'faq'];
+    const elements = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (elements.length === 0) return;
+
+    const handleScrollTop = () => {
+      if (window.scrollY < 120) {
+        setActiveSection('hero');
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollTop, { passive: true });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find visible entries sorted by how prominent they are in the viewport
+        const visibleEntries = entries.filter((e) => e.isIntersecting);
+        if (visibleEntries.length > 0) {
+          // Sort by intersection ratio or bounding rect top proximity to navbar
+          visibleEntries.sort((a, b) => Math.abs(a.boundingClientRect.top - 80) - Math.abs(b.boundingClientRect.top - 80));
+          setActiveSection(visibleEntries[0].target.id);
+        }
+      },
+      {
+        rootMargin: '-80px 0px -45% 0px',
+        threshold: [0, 0.15, 0.3, 0.5],
+      }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollTop);
+      observer.disconnect();
+    };
+  }, [isHome]);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: NavLinkItem) => {
+    if (isHome && link.href.startsWith('#')) {
+      e.preventDefault();
+      const targetId = link.href.substring(1);
+      const element = document.getElementById(targetId);
+      if (element) {
+        setActiveSection(link.id);
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  const handleMobileNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: NavLinkItem) => {
+    setIsOpen(false);
+    if (isHome && link.href.startsWith('#')) {
+      e.preventDefault();
+      const targetId = link.href.substring(1);
+      const element = document.getElementById(targetId);
+      if (element) {
+        setActiveSection(link.id);
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+  };
+
   return (
-    <header id="site-header" className="sticky top-0 z-50 transition-all duration-300 bg-[#faf9f7]/90 backdrop-blur-md border-b border-stone-200/80">
+    <header id="site-header" className="sticky top-0 z-50 transition-all duration-300 bg-[#faf9f7]/95 backdrop-blur-md border-b border-stone-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
 
@@ -47,17 +126,39 @@ export const Navbar: React.FC = () => {
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
+          {/* Desktop Nav Links with Animated Active Indicator */}
           <nav className="hidden lg:flex items-center space-x-1" aria-label="Main Navigation">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="px-3 py-2 text-sm font-medium text-stone-600 hover:text-brand-850 hover:bg-stone-100/60 rounded-lg transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = isHome && activeSection === link.id;
+
+              return (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link)}
+                  className={`relative px-3.5 py-1.5 text-xs font-semibold rounded-full transition-colors duration-200 ${
+                    isActive
+                      ? 'text-brand-900 font-bold'
+                      : 'text-stone-600 hover:text-brand-850 hover:bg-stone-100/60'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {/* Subtle animated active pill background */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="active-nav-pill"
+                      className="absolute inset-0 bg-brand-100/75 border border-brand-200/90 rounded-full -z-10 shadow-soft"
+                      transition={
+                        shouldReduceMotion
+                          ? { duration: 0 }
+                          : { duration: 0.28, ease: [0.25, 0.1, 0.25, 1.0] }
+                      }
+                    />
+                  )}
+                  <span>{link.label}</span>
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right Side Direct Contact & Primary Booking CTA */}
@@ -72,7 +173,7 @@ export const Navbar: React.FC = () => {
 
             <Link
               href={isHome ? '#appointment' : '/appointment'}
-              className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold tracking-wide text-white bg-brand-850 hover:bg-brand-900 rounded-full shadow-sm hover:shadow-card transition-all duration-200"
+              className="inline-flex items-center justify-center px-5 py-2.5 text-xs font-semibold tracking-wide text-white bg-brand-850 hover:bg-brand-900 rounded-full shadow-sm hover:shadow-card transition-all duration-200"
             >
               {HERO.primaryCta.label}
             </Link>
@@ -90,6 +191,7 @@ export const Navbar: React.FC = () => {
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 text-stone-600 hover:text-brand-850 rounded-lg hover:bg-stone-100 focus:outline-none"
               aria-label="Toggle navigation menu"
+              aria-expanded={isOpen}
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -100,22 +202,32 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer Dropdown */}
       {isOpen && (
-        <div className="lg:hidden bg-white border-b border-stone-200 px-6 py-6 shadow-xl animate-fade-in">
-          <div className="flex flex-col space-y-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className="text-base font-medium text-stone-700 hover:text-brand-850 py-2 px-3 rounded-lg hover:bg-stone-50 transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-4 mt-2 border-t border-stone-100 flex flex-col gap-3">
+        <div className="lg:hidden bg-white border-b border-stone-200 px-6 py-5 shadow-xl animate-fade-in">
+          <div className="flex flex-col space-y-1.5">
+            {navLinks.map((link) => {
+              const isActive = isHome && activeSection === link.id;
+
+              return (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  onClick={(e) => handleMobileNavClick(e, link)}
+                  className={`text-sm font-semibold py-2 px-3.5 rounded-xl transition-colors flex items-center justify-between ${
+                    isActive
+                      ? 'bg-brand-50 text-brand-900 font-bold border-l-4 border-brand-700'
+                      : 'text-stone-700 hover:text-brand-850 hover:bg-stone-50'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <span>{link.label}</span>
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-brand-700" />}
+                </Link>
+              );
+            })}
+            <div className="pt-4 mt-2 border-t border-stone-100 flex flex-col gap-2.5">
               <a
                 href={`tel:${SITE.phoneRaw}`}
-                className="flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-brand-850 bg-brand-50 rounded-xl"
+                className="flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-brand-850 bg-brand-50 rounded-xl"
               >
                 <Phone className="w-4 h-4 text-brand-700" />
                 <span>Call Centre: {SITE.phone}</span>
@@ -123,7 +235,7 @@ export const Navbar: React.FC = () => {
               <Link
                 href={isHome ? '#appointment' : '/appointment'}
                 onClick={() => setIsOpen(false)}
-                className="w-full py-3 text-center text-sm font-semibold text-white bg-brand-850 hover:bg-brand-900 rounded-xl shadow-sm transition-colors"
+                className="w-full py-2.5 text-center text-xs font-semibold text-white bg-brand-850 hover:bg-brand-900 rounded-xl shadow-sm transition-colors"
               >
                 {HERO.primaryCta.label}
               </Link>

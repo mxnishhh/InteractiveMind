@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Hero } from '@/components/public/Hero';
-import { ServiceCard } from '@/components/public/ServiceCard';
-import { ConditionCard } from '@/components/public/ConditionCard';
+import { TherapiesSection } from '@/components/public/TherapiesSection';
+import { ConditionsSection } from '@/components/public/ConditionsSection';
 import { Accordion } from '@/components/ui/Accordion';
 import { AppointmentForm } from '@/components/public/AppointmentForm';
 import { getServicesDB, getConditionsDB, getFaqsDB, getTeamMembersDB } from '@/lib/db';
@@ -32,7 +32,7 @@ export default async function HomePage() {
       <Hero />
 
       {/* 3. About & Philosophy: Luminous Sensory Gym Photography */}
-      <section id="about" className="py-20 lg:py-28 bg-white border-y border-stone-200/70">
+      <section id="about" className="py-20 lg:py-28 bg-white border-y border-stone-200/70 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Section Header */}
@@ -201,186 +201,22 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4. Therapies & Developmental Programs */}
-      <section id="therapies" className="py-20 lg:py-28 bg-[#faf9f7]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 4. Therapies & Developmental Programs - Interactive Modal Section */}
+      <TherapiesSection
+        featuredService={featuredService}
+        otherServices={otherServices}
+        allServices={services}
+      />
 
-          {/* Section Title Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">Specialized Programs</span>
-              <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
-                Our 9 Developmental Therapies
-              </h2>
-              <p className="text-stone-600 text-base max-w-2xl mt-3">
-                Every discipline is led by qualified pediatric clinicians, structured to nurture communication, motor coordination, cognitive progress, and self-confidence.
-              </p>
-            </div>
-            <div className="mt-4 md:mt-0">
-              <Link
-                href="/therapies"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-brand-850 bg-white border border-stone-200 hover:border-brand-700 shadow-sm transition-colors"
-              >
-                <span>View All 9 Programs</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* FEATURED SPOTLIGHT CARD: Occupational Therapy */}
-          {featuredService && (
-            <div className="mb-12 bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-brand-200/80 shadow-card hover:shadow-card-hover transition-all duration-300 relative overflow-hidden">
-              <div className="absolute top-0 right-0 bg-brand-100 text-brand-850 px-4 py-1.5 rounded-bl-2xl text-xs font-bold uppercase tracking-wider z-10">
-                Featured Program
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-
-                {/* Image Column (5 cols) */}
-                <div className="lg:col-span-5 relative">
-                  <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-stone-100 shadow-md border-2 border-stone-100">
-                    <img
-                      src={featuredService.image_url || "/images/homepage/occupational-therapy.jpg"}
-                      alt={featuredService.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="absolute -bottom-3 -right-3 bg-brand-850 text-white text-[11px] font-semibold px-3 py-1.5 rounded-xl shadow">
-                    Sensory &amp; Motor Mastery
-                  </div>
-                </div>
-
-                {/* Content Column (7 cols) */}
-                <div className="lg:col-span-7 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-brand-700">Early Motor &amp; Daily Living</span>
-                  </div>
-                  <h3 className="font-serif-heading text-2xl sm:text-3xl font-bold text-brand-950">
-                    {featuredService.name}
-                  </h3>
-                  <p className="text-base text-stone-700 leading-relaxed">
-                    {featuredService.description}
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                    <div className="flex items-center gap-2 text-xs text-stone-600 font-medium">
-                      <Check className="w-3.5 h-3.5 text-brand-700" />
-                      <span>Fine &amp; Gross Motor Coordination</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-stone-600 font-medium">
-                      <Check className="w-3.5 h-3.5 text-brand-700" />
-                      <span>Sensory Modulation &amp; Calming</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-stone-600 font-medium">
-                      <Check className="w-3.5 h-3.5 text-brand-700" />
-                      <span>Handwriting &amp; Grasp Readiness</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-stone-600 font-medium">
-                      <Check className="w-3.5 h-3.5 text-brand-700" />
-                      <span>Self-Care &amp; Daily Autonomy</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 flex items-center gap-4">
-                    <Link
-                      href={`/therapies/${featuredService.slug}`}
-                      className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full bg-brand-850 hover:bg-brand-900 text-white font-semibold text-xs transition-colors shadow-sm"
-                    >
-                      <span>Explore Therapy Details</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          )}
-
-          {/* Remaining Services Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {otherServices.map((service) => (
-              <ServiceCard key={service.id} service={service} />
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* 5. Conditions We Support */}
-      <section id="conditions" className="py-20 lg:py-28 bg-white border-t border-stone-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {/* Section Header */}
-          <div className="max-w-3xl mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">Individualized Understanding</span>
-            <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
-              Conditions We Support
-            </h2>
-            <p className="text-stone-600 text-base mt-3">
-              Every diagnosis is approached with clinical precision, dignity, and a commitment to helping each child navigate everyday life with comfort and self-expression.
-            </p>
-          </div>
-
-          {/* Neurodiversity Ambient Banner */}
-          <div className="mb-10 p-5 rounded-2xl bg-gradient-to-r from-brand-50 via-alabaster-100 to-amber-50/50 border border-brand-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="shrink-0 w-3 h-3 rounded-full bg-brand-600"></span>
-              <p className="text-xs sm:text-sm text-brand-950 font-medium">
-                <strong className="font-bold">Affirming Care Pathway:</strong> We do not define children by labels; our clinical assessments identify functional baselines and personal strengths.
-              </p>
-            </div>
-            <span className="text-[11px] font-semibold text-brand-800 uppercase tracking-wider bg-white px-3 py-1 rounded-full border border-stone-200 self-start sm:self-auto">
-              5 Primary Clinical Focuses
-            </span>
-          </div>
-
-          {/* 5 Conditions Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            {/* Featured ASD 2-Col Card */}
-            {featuredCondition && (
-              <div className="lg:col-span-2 bg-[#f4f7f6] rounded-3xl p-8 border border-brand-100/90 flex flex-col justify-between shadow-soft">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-850 bg-brand-100 px-3 py-1 rounded-full">
-                      Neurodevelopmental Focus
-                    </span>
-                    <span className="text-xs text-stone-500 font-medium">Core Specialty</span>
-                  </div>
-                  <h3 className="font-serif-heading text-2xl sm:text-3xl font-bold text-brand-950 mb-3">
-                    {featuredCondition.name}
-                  </h3>
-                  <p className="text-sm text-stone-700 leading-relaxed mb-6">
-                    {featuredCondition.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="text-xs bg-white text-brand-900 px-3 py-1 rounded-md border border-brand-100 font-medium">Recommended: ABA Therapy</span>
-                    <span className="text-xs bg-white text-brand-900 px-3 py-1 rounded-md border border-brand-100 font-medium">Speech &amp; Language</span>
-                    <span className="text-xs bg-white text-brand-900 px-3 py-1 rounded-md border border-brand-100 font-medium">Sensory Integration</span>
-                    <span className="text-xs bg-white text-brand-900 px-3 py-1 rounded-md border border-brand-100 font-medium">Parent Guidance</span>
-                  </div>
-                </div>
-                <div className="pt-4 border-t border-brand-200/50 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-brand-850">Individualized Assessment Protocol</span>
-                  <Link href={`/conditions/${featuredCondition.slug}`} className="text-xs font-bold text-brand-900 hover:text-brand-700">
-                    Learn More →
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* Remaining Condition Cards */}
-            {otherConditions.map((condition) => (
-              <ConditionCard key={condition.id} condition={condition} />
-            ))}
-
-          </div>
-
-        </div>
-      </section>
+      {/* 5. Conditions We Support - Interactive Modal Section */}
+      <ConditionsSection
+        featuredCondition={featuredCondition}
+        otherConditions={otherConditions}
+        allConditions={conditions}
+      />
 
       {/* 6. Clinical Care Approach: Deep Teal + Therapy Photo */}
-      <section id="approach" className="py-20 lg:py-28 bg-brand-950 text-white relative overflow-hidden">
+      <section id="approach" className="py-20 lg:py-28 bg-brand-950 text-white relative overflow-hidden scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
           {/* Section Header */}
@@ -457,7 +293,7 @@ export default async function HomePage() {
       </section>
 
       {/* 7. The 4-Step Therapy Journey */}
-      <section id="journey" className="py-20 lg:py-28 bg-[#faf9f7]">
+      <section id="journey" className="py-20 lg:py-28 bg-[#faf9f7] scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Section Header */}
@@ -544,7 +380,7 @@ export default async function HomePage() {
       </section>
 
       {/* 8. Team: Editorial Collaboration Feature */}
-      <section id="team" className="py-20 lg:py-28 bg-white border-t border-stone-200/80">
+      <section id="team" className="py-20 lg:py-28 bg-white border-t border-stone-200/80 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Section Header */}
@@ -665,7 +501,7 @@ export default async function HomePage() {
       </section>
 
       {/* 9. Frequently Asked Questions (Accordion) */}
-      <section id="faq" className="py-20 lg:py-28 bg-[#faf9f7]">
+      <section id="faq" className="py-20 lg:py-28 bg-[#faf9f7] scroll-mt-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Section Header */}
@@ -686,7 +522,7 @@ export default async function HomePage() {
       </section>
 
       {/* 10. Assessment Request: Reassuring Family Entrance Photography */}
-      <section id="appointment" className="py-20 lg:py-28 bg-brand-950 text-white relative">
+      <section id="appointment" className="py-20 lg:py-28 bg-brand-950 text-white relative scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
