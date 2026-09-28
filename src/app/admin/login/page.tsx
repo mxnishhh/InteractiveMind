@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Toast } from '@/components/ui/Toast';
-import { HeartHandshake, Lock } from 'lucide-react';
+import { Lock, ShieldCheck, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -30,7 +31,7 @@ export default function AdminLoginPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Authentication failed');
+        throw new Error(data.error || 'Authentication failed. Please verify your credentials.');
       }
 
       router.push('/admin/dashboard');
@@ -42,29 +43,52 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-slate-800 space-y-8">
-        
+    <div className="min-h-screen bg-[#0c2424] flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+      {/* Subtle Background Glow Elements */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-700/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-teal-600/20 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Back to Public Site Link */}
+      <div className="w-full max-w-md mb-6 z-10">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-teal-200/80 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Return to Interactive Minds Website</span>
+        </Link>
+      </div>
+
+      <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-stone-200/90 space-y-6 z-10 relative">
+        {/* Header / Brand */}
         <div className="text-center space-y-3">
-          <div className="w-14 h-14 rounded-2xl bg-brand-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-brand-600/30">
-            <HeartHandshake className="w-8 h-8" />
+          <div className="w-14 h-14 rounded-2xl bg-brand-850 text-white flex items-center justify-center mx-auto shadow-md border border-brand-700/60 font-serif-heading font-bold text-xl">
+            IM
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-900">Admin Authentication</h1>
-          <p className="text-slate-500 text-xs uppercase tracking-wider font-semibold">
-            Interactive Minds Control Panel
-          </p>
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-750 block mb-1">
+              Restricted Operations
+            </span>
+            <h1 className="font-serif-heading text-2xl font-bold text-brand-950 tracking-tight">
+              Clinical Admin Portal
+            </h1>
+            <p className="text-xs text-stone-600 font-medium mt-1">
+              Sign in with your authorized credentials to access management tools.
+            </p>
+          </div>
         </div>
 
         {errorMsg && <Toast type="error" message={errorMsg} onClose={() => setErrorMsg(null)} />}
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleLogin} className="space-y-4">
           <Input
-            label="Admin Email"
+            label="Authorized Email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="admin@interactivemind.in"
+            autoComplete="email"
           />
 
           <Input
@@ -73,17 +97,21 @@ export default function AdminLoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            placeholder="••••••••"
+            placeholder="••••••••••••"
+            autoComplete="current-password"
           />
 
-          <Button type="submit" size="lg" isLoading={isLoading} className="w-full">
-            <Lock className="w-4 h-4 mr-2" />
-            <span>Sign In to Dashboard</span>
-          </Button>
+          <div className="pt-2">
+            <Button type="submit" size="lg" isLoading={isLoading} className="w-full">
+              <Lock className="w-4 h-4 mr-2 shrink-0" />
+              <span>Sign In to Dashboard</span>
+            </Button>
+          </div>
         </form>
 
-        <div className="pt-2 text-center text-xs text-slate-400">
-          Interactive Minds Admin Gateway • Restricted Access
+        <div className="pt-4 border-t border-stone-100 flex items-center justify-center gap-2 text-stone-600 text-[11px] font-medium">
+          <ShieldCheck className="w-4 h-4 text-brand-700 shrink-0" />
+          <span>Interactive Minds Child Development Centre • Patna</span>
         </div>
       </div>
     </div>

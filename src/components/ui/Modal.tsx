@@ -1,32 +1,45 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
+  description?: string;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, maxWidth = 'lg' }) => {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+export const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  description,
+  children,
+  maxWidth = 'lg',
+}) => {
+  const shouldReduceMotion = useReducedMotion();
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = 'hidden';
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') onClose();
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.body.style.overflow = originalStyle;
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [isOpen, onClose]);
 
   const maxWidthClasses = {
     sm: 'max-w-sm',
@@ -38,20 +51,58 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className={`bg-white rounded-2xl ${maxWidthClasses[maxWidth]} w-full p-6 shadow-2xl border border-slate-100 relative animate-scale-up max-h-[90vh] flex flex-col`}>
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4 shrink-0">
-          <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-          <button
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
-            aria-label="Close dialog"
+            aria-hidden="true"
+          />
+
+          {/* Dialog Container */}
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-dialog-title"
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97, y: 16 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98, y: 10 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.24, ease: [0.22, 0.61, 0.36, 1] }}
+            className={`relative bg-[#faf9f7] rounded-t-[28px] sm:rounded-3xl ${maxWidthClasses[maxWidth]} w-full shadow-2xl border border-stone-200/90 overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[88vh] z-10 mx-0 sm:mx-4`}
+            onClick={(e) => e.stopPropagation()}
           >
-            <X className="w-5 h-5" />
-          </button>
+            {/* Header */}
+            <div className="px-6 py-5 bg-white border-b border-stone-200/80 flex items-start justify-between shrink-0">
+              <div>
+                <h3 id="modal-dialog-title" className="font-serif-heading text-lg sm:text-xl font-bold text-brand-950">
+                  {title}
+                </h3>
+                {description && (
+                  <p className="text-xs text-stone-500 font-medium mt-0.5">{description}</p>
+                )}
+              </div>
+              <button
+                onClick={onClose}
+                className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-full transition-colors ml-4 shrink-0 focus:outline-none focus:ring-2 focus:ring-brand-700"
+                aria-label="Close dialog"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scrollable Content Body */}
+            <div className="p-6 overflow-y-auto flex-1 text-stone-800">
+              {children}
+            </div>
+          </motion.div>
         </div>
-        <div className="overflow-y-auto pr-1 flex-grow">{children}</div>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 };

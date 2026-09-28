@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Menu, X, Phone } from 'lucide-react';
+import { Menu, X, Phone, LayoutDashboard } from 'lucide-react';
 import { SITE, HERO } from '@/constants';
 
 interface NavLinkItem {
@@ -53,11 +53,11 @@ export const Navbar: React.FC = () => {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find visible entries sorted by how prominent they are in the viewport
         const visibleEntries = entries.filter((e) => e.isIntersecting);
         if (visibleEntries.length > 0) {
-          // Sort by intersection ratio or bounding rect top proximity to navbar
-          visibleEntries.sort((a, b) => Math.abs(a.boundingClientRect.top - 80) - Math.abs(b.boundingClientRect.top - 80));
+          visibleEntries.sort(
+            (a, b) => Math.abs(a.boundingClientRect.top - 80) - Math.abs(b.boundingClientRect.top - 80)
+          );
           setActiveSection(visibleEntries[0].target.id);
         }
       },
@@ -105,10 +105,10 @@ export const Navbar: React.FC = () => {
   return (
     <header id="site-header" className="sticky top-0 z-50 transition-all duration-300 bg-[#faf9f7]/95 backdrop-blur-md border-b border-stone-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-20 gap-3">
 
           {/* Logo Brand */}
-          <Link href="/" className="flex items-center gap-3 group focus:outline-none">
+          <Link href="/" className="flex items-center gap-3 group focus:outline-none shrink-0">
             <div className="h-10 flex items-center">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-brand-850 text-white flex items-center justify-center font-bold text-sm shadow-sm group-hover:bg-brand-900 transition-colors">
@@ -127,7 +127,7 @@ export const Navbar: React.FC = () => {
           </Link>
 
           {/* Desktop Nav Links with Animated Active Indicator */}
-          <nav className="hidden lg:flex items-center space-x-1" aria-label="Main Navigation">
+          <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1" aria-label="Main Navigation">
             {navLinks.map((link) => {
               const isActive = isHome && activeSection === link.id;
 
@@ -136,7 +136,7 @@ export const Navbar: React.FC = () => {
                   key={link.id}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link)}
-                  className={`relative px-3.5 py-1.5 text-xs font-semibold rounded-full transition-colors duration-200 ${
+                  className={`relative px-2.5 xl:px-3 py-1.5 text-xs font-semibold rounded-full transition-colors duration-200 ${
                     isActive
                       ? 'text-brand-900 font-bold'
                       : 'text-stone-600 hover:text-brand-850 hover:bg-stone-100/60'
@@ -161,21 +161,38 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Right Side Direct Contact & Primary Booking CTA */}
-          <div className="hidden sm:flex items-center gap-3 md:gap-4">
+          {/* Right Side Utility Area: Phone -> Primary CTA -> Divider -> Admin Portal */}
+          <div className="hidden sm:flex items-center gap-2.5 md:gap-3 shrink-0">
+            {/* Direct Phone Line */}
             <a
               href={`tel:${SITE.phoneRaw}`}
-              className="hidden xl:flex items-center gap-2 text-xs font-semibold tracking-wide text-brand-850 hover:text-brand-700 transition-colors px-3 py-1.5 rounded-full bg-brand-50 border border-brand-100"
+              className="hidden 2xl:flex items-center gap-2 text-xs font-semibold tracking-wide text-brand-850 hover:text-brand-700 transition-colors px-3 py-1.5 rounded-full bg-brand-50 border border-brand-100"
             >
               <Phone className="w-3.5 h-3.5 text-brand-700" />
               <span>{SITE.phone}</span>
             </a>
 
+            {/* Primary Public CTA: Book an Assessment */}
             <Link
               href={isHome ? '#appointment' : '/appointment'}
-              className="inline-flex items-center justify-center px-5 py-2.5 text-xs font-semibold tracking-wide text-white bg-brand-850 hover:bg-brand-900 rounded-full shadow-sm hover:shadow-card transition-all duration-200"
+              className="inline-flex items-center justify-center px-4.5 py-2.5 text-xs font-semibold tracking-wide text-white bg-brand-850 hover:bg-brand-900 rounded-full shadow-sm hover:shadow-card transition-all duration-200"
             >
               {HERO.primaryCta.label}
+            </Link>
+
+            {/* Subtle Vertical Divider */}
+            <div className="h-6 w-px bg-stone-200/90 shrink-0" aria-hidden="true" />
+
+            {/* Dedicated Admin Portal Utility on the Far Right */}
+            <Link
+              href="/admin/login"
+              className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider text-brand-950 bg-white hover:bg-brand-50/90 border border-brand-850/20 hover:border-brand-850/40 shadow-2xs hover:shadow-sm transition-all duration-200"
+              title="Admin Portal (Clinical Staff & Operations)"
+              aria-label="Admin Portal"
+            >
+              <LayoutDashboard className="w-[18px] h-[18px] text-brand-750 group-hover:text-brand-900 group-hover:scale-105 transition-transform duration-200 shrink-0" />
+              <span className="hidden xl:inline">Admin Portal</span>
+              <span className="xl:hidden">Admin</span>
             </Link>
           </div>
 
@@ -204,27 +221,32 @@ export const Navbar: React.FC = () => {
       {isOpen && (
         <div className="lg:hidden bg-white border-b border-stone-200 px-6 py-5 shadow-xl animate-fade-in">
           <div className="flex flex-col space-y-1.5">
-            {navLinks.map((link) => {
-              const isActive = isHome && activeSection === link.id;
+            {/* Section 1: Public Section Nav Links */}
+            <div className="space-y-1">
+              {navLinks.map((link) => {
+                const isActive = isHome && activeSection === link.id;
 
-              return (
-                <Link
-                  key={link.id}
-                  href={link.href}
-                  onClick={(e) => handleMobileNavClick(e, link)}
-                  className={`text-sm font-semibold py-2 px-3.5 rounded-xl transition-colors flex items-center justify-between ${
-                    isActive
-                      ? 'bg-brand-50 text-brand-900 font-bold border-l-4 border-brand-700'
-                      : 'text-stone-700 hover:text-brand-850 hover:bg-stone-50'
-                  }`}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  <span>{link.label}</span>
-                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-brand-700" />}
-                </Link>
-              );
-            })}
-            <div className="pt-4 mt-2 border-t border-stone-100 flex flex-col gap-2.5">
+                return (
+                  <Link
+                    key={link.id}
+                    href={link.href}
+                    onClick={(e) => handleMobileNavClick(e, link)}
+                    className={`text-sm font-semibold py-2 px-3.5 rounded-xl transition-colors flex items-center justify-between ${
+                      isActive
+                        ? 'bg-brand-50 text-brand-900 font-bold border-l-4 border-brand-700'
+                        : 'text-stone-700 hover:text-brand-850 hover:bg-stone-50'
+                    }`}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    <span>{link.label}</span>
+                    {isActive && <span className="w-1.5 h-1.5 rounded-full bg-brand-700" />}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Section 2: Contact Line */}
+            <div className="pt-3 mt-1 border-t border-stone-100">
               <a
                 href={`tel:${SITE.phoneRaw}`}
                 className="flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-brand-850 bg-brand-50 rounded-xl"
@@ -232,10 +254,29 @@ export const Navbar: React.FC = () => {
                 <Phone className="w-4 h-4 text-brand-700" />
                 <span>Call Centre: {SITE.phone}</span>
               </a>
+            </div>
+
+            {/* Section 3: Clearly Separated Admin Portal Entry */}
+            <div className="pt-2">
+              <Link
+                href="/admin/login"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between py-2.5 px-4 text-xs font-bold uppercase tracking-wider text-brand-950 bg-[#faf9f7] hover:bg-brand-50/80 border border-stone-200/90 rounded-xl shadow-2xs transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <LayoutDashboard className="w-[18px] h-[18px] text-brand-750" />
+                  <span>Admin Portal</span>
+                </div>
+                <span className="text-[10px] font-semibold text-stone-500 normal-case tracking-normal">Staff Only →</span>
+              </Link>
+            </div>
+
+            {/* Section 4: Primary Public CTA */}
+            <div className="pt-2">
               <Link
                 href={isHome ? '#appointment' : '/appointment'}
                 onClick={() => setIsOpen(false)}
-                className="w-full py-2.5 text-center text-xs font-semibold text-white bg-brand-850 hover:bg-brand-900 rounded-xl shadow-sm transition-colors"
+                className="w-full py-2.5 text-center text-xs font-semibold text-white bg-brand-850 hover:bg-brand-900 rounded-xl shadow-sm transition-colors block"
               >
                 {HERO.primaryCta.label}
               </Link>

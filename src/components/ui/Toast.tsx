@@ -11,23 +11,27 @@ interface ToastProps {
 
 export const Toast: React.FC<ToastProps> = ({ type = 'success', message, onClose }) => {
   const styles = {
-    success: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    error: 'bg-rose-50 text-rose-800 border-rose-200',
-    info: 'bg-sky-50 text-sky-800 border-sky-200',
+    success: 'bg-emerald-50/90 text-emerald-900 border-emerald-200/90 shadow-soft',
+    error: 'bg-rose-50/90 text-rose-900 border-rose-200/90 shadow-soft',
+    info: 'bg-brand-50/90 text-brand-900 border-brand-200/90 shadow-soft',
   };
 
   const icons = {
-    success: <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />,
-    error: <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />,
-    info: <Info className="w-5 h-5 text-sky-600 shrink-0" />,
+    success: <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0" />,
+    error: <AlertCircle className="w-5 h-5 text-rose-700 shrink-0" />,
+    info: <Info className="w-5 h-5 text-brand-700 shrink-0" />,
   };
 
   return (
-    <div className={`flex items-start gap-3 p-4 rounded-xl border text-sm font-medium shadow-sm ${styles[type]}`}>
+    <div className={`flex items-start gap-3 p-4 rounded-2xl border text-xs sm:text-sm font-medium ${styles[type]} transition-all animate-fade-in`}>
       {icons[type]}
-      <div className="flex-1 pt-0.5">{message}</div>
+      <div className="flex-1 pt-0.5 leading-relaxed">{message}</div>
       {onClose && (
-        <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+        <button
+          onClick={onClose}
+          className="text-stone-400 hover:text-stone-700 p-1 rounded-lg hover:bg-black/5 transition-colors"
+          aria-label="Dismiss message"
+        >
           <X className="w-4 h-4" />
         </button>
       )}

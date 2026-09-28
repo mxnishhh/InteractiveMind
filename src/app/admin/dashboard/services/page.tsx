@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Modal } from '@/components/ui/Modal';
 import { Toast } from '@/components/ui/Toast';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
+import { AdminDeleteModal } from '@/components/admin/AdminDeleteModal';
 import {
   Activity,
   Plus,
@@ -15,6 +18,9 @@ import {
   CheckCircle,
   XCircle,
   ExternalLink,
+  Layers,
+  Sparkles,
+  Eye
 } from 'lucide-react';
 
 interface ServiceFormData {
@@ -63,6 +69,7 @@ export default function AdminServicesPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deletingService, setDeletingService] = useState<Service | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState<ServiceFormData>(initialFormData);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -93,7 +100,7 @@ export default function AdminServicesPage() {
     setEditingId(null);
     setFormData({
       ...initialFormData,
-      display_order: (services.length + 1),
+      display_order: services.length + 1,
     });
     setIsModalOpen(true);
   };
@@ -122,7 +129,6 @@ export default function AdminServicesPage() {
     setFormData((prev) => ({
       ...prev,
       name,
-      // Auto-generate slug on creation only if user hasn't explicitly edited slug
       slug: editingId ? prev.slug : slugify(name),
     }));
   };
@@ -172,7 +178,7 @@ export default function AdminServicesPage() {
         throw new Error(data.error || 'Failed to save therapy program');
       }
 
-      setToast({ type: 'success', message: data.message || 'Service saved successfully' });
+      setToast({ type: 'success', message: data.message || 'Therapy program saved successfully' });
       setIsModalOpen(false);
       loadServices();
     } catch (err: any) {
@@ -207,6 +213,7 @@ export default function AdminServicesPage() {
 
   const handleDelete = async () => {
     if (!deletingService) return;
+    setIsDeleting(true);
     try {
       const res = await fetch(`/api/admin/services/${deletingService.id}`, {
         method: 'DELETE',
@@ -217,245 +224,308 @@ export default function AdminServicesPage() {
         throw new Error(data.error || 'Failed to delete service');
       }
 
-      setToast({ type: 'success', message: data.message || 'Service deleted' });
+      setToast({ type: 'success', message: data.message || 'Therapy program deleted' });
       setIsDeleteModalOpen(false);
       setDeletingService(null);
       loadServices();
     } catch (err: any) {
       setToast({ type: 'error', message: err.message || 'Failed to delete service' });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Therapies & Services Management</h1>
-          <p className="text-xs text-slate-500 font-medium mt-1">Manage clinical programs, therapy processes, and skills</p>
-        </div>
-        <Button onClick={handleOpenCreate} variant="primary" size="sm" className="gap-1.5 self-start">
-          <Plus className="w-4 h-4" />
-          <span>Add Therapy Program</span>
-        </Button>
-      </div>
+      <AdminPageHeader
+        eyebrow="Clinical Programs"
+        title="Therapies & Services"
+        description="Manage clinical interventions, therapy methodology, step-by-step processes, and supported skills."
+        actions={
+          <Button onClick={handleOpenCreate} variant="primary" size="sm" className="gap-1.5 shadow-sm">
+            <Plus className="w-4 h-4" />
+            <span>Add Therapy Program</span>
+          </Button>
+        }
+      />
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-100">
-            <tr>
-              <th className="p-4">Order</th>
-              <th className="p-4">Program Name</th>
-              <th className="p-4">Slug / URL</th>
-              <th className="p-4">Process Steps</th>
-              <th className="p-4">Status</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {loading ? (
+      {/* Services Table */}
+      <div className="bg-white rounded-3xl border border-stone-200/80 shadow-soft overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-stone-50/80 text-stone-600 uppercase tracking-wider font-bold text-[10px] border-b border-stone-200/80">
               <tr>
-                <td colSpan={6} className="p-8 text-center text-slate-400">Loading therapies...</td>
+                <th className="py-3.5 px-4 sm:px-6">Order</th>
+                <th className="py-3.5 px-4">Program Name</th>
+                <th className="py-3.5 px-4">Slug / Public URL</th>
+                <th className="py-3.5 px-4">Process &amp; Skills</th>
+                <th className="py-3.5 px-4">Visibility</th>
+                <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
               </tr>
-            ) : services.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="p-8 text-center text-slate-400">No therapies found. Click "Add Therapy Program" to create one.</td>
-              </tr>
-            ) : (
-              services.map((service) => (
-                <tr key={service.id} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="p-4 font-mono font-semibold text-slate-400">#{service.display_order}</td>
-                  <td className="p-4 font-bold text-slate-900">
-                    <div className="flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-tealbrand-700 shrink-0" />
-                      <span>{service.name}</span>
-                    </div>
-                  </td>
-                  <td className="p-4 font-mono text-slate-500">
-                    <a
-                      href={`/therapies/${service.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 hover:text-tealbrand-700 hover:underline"
-                    >
-                      <span>/{service.slug}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </td>
-                  <td className="p-4 text-slate-600 font-medium">
-                    {service.process_steps ? `${service.process_steps.length} steps` : '0 steps'}
-                  </td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleToggleActive(service)}
-                      className="inline-flex items-center gap-1.5 focus:outline-none"
-                      title="Click to toggle active status"
-                    >
-                      {service.active ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full font-bold text-[11px] border border-emerald-200/60">
-                          <CheckCircle className="w-3.5 h-3.5" /> Active
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full font-bold text-[11px] border border-slate-200">
-                          <XCircle className="w-3.5 h-3.5" /> Inactive
-                        </span>
-                      )}
-                    </button>
-                  </td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => handleOpenEdit(service)}
-                        className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                        title="Edit program"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setDeletingService(service);
-                          setIsDeleteModalOpen(true);
-                        }}
-                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
-                        title="Delete program"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
+            </thead>
+            <tbody className="divide-y divide-stone-100 font-medium text-stone-800">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="p-10 text-center text-xs text-stone-600 animate-pulse">
+                    Loading therapy programs...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : services.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-8">
+                    <AdminEmptyState
+                      icon={Activity}
+                      title="No Therapy Programs"
+                      description="Create therapy programs to showcase on the Interactive Minds website and booking forms."
+                      action={{
+                        label: 'Add First Therapy Program',
+                        onClick: handleOpenCreate,
+                        icon: Plus,
+                      }}
+                    />
+                  </td>
+                </tr>
+              ) : (
+                services.map((service) => (
+                  <tr key={service.id} className="hover:bg-stone-50/70 transition-colors">
+                    <td className="py-4 px-4 sm:px-6 font-mono font-bold text-stone-600">
+                      #{service.display_order}
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-teal-50 border border-teal-200/70 text-teal-800 flex items-center justify-center shrink-0">
+                          <Activity className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="font-bold text-brand-950 text-xs block">{service.name}</span>
+                          <span className="text-[11px] text-stone-600 line-clamp-1 max-w-xs font-normal">
+                            {service.short_description}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 font-mono text-[11px]">
+                      <a
+                        href={`/therapies/${service.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-brand-850 hover:text-brand-950 hover:underline"
+                      >
+                        <span>/{service.slug}</span>
+                        <ExternalLink className="w-3 h-3 opacity-70" />
+                      </a>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2 text-[11px]">
+                        <span className="px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 font-semibold">
+                          {service.process_steps?.length || 0} Steps
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-brand-50 text-brand-850 font-semibold border border-brand-100">
+                          {service.skills_supported?.length || 0} Skills
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <button
+                        onClick={() => handleToggleActive(service)}
+                        className="inline-flex items-center gap-1.5 focus:outline-none transition-transform active:scale-95"
+                        title="Click to toggle active status"
+                      >
+                        {service.active ? (
+                          <span className="inline-flex items-center gap-1 text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full font-bold text-[11px] border border-emerald-200/80 shadow-2xs">
+                            <CheckCircle className="w-3 h-3 text-emerald-700" /> Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-stone-600 bg-stone-100 px-2.5 py-1 rounded-full font-bold text-[11px] border border-stone-200 shadow-2xs">
+                            <XCircle className="w-3 h-3 text-stone-500" /> Inactive
+                          </span>
+                        )}
+                      </button>
+                    </td>
+                    <td className="py-4 px-4 sm:px-6 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => handleOpenEdit(service)}
+                          className="p-1.5 text-stone-600 hover:text-brand-950 hover:bg-stone-100 rounded-xl transition-colors"
+                          title="Edit program"
+                          aria-label={`Edit ${service.name}`}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setDeletingService(service);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          className="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-xl transition-colors"
+                          title="Delete program"
+                          aria-label={`Delete ${service.name}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Create / Edit Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingId ? 'Edit Therapy Program' : 'Add New Therapy Program'}
-        maxWidth="2xl"
+        title={editingId ? `Edit Therapy: ${formData.name}` : 'Add New Therapy Program'}
+        description="Configure program descriptions, clinical process steps, and public visibility."
+        maxWidth="3xl"
       >
-        <form onSubmit={handleSave} className="space-y-4 text-xs">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Program Name"
-              required
-              value={formData.name}
-              onChange={handleNameChange}
-              placeholder="e.g. Applied Behavior Analysis (ABA)"
-            />
-            <Input
-              label="URL Slug"
-              required
-              value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-              placeholder="e.g. aba-therapy"
-              helperText="URL path: /therapies/[slug]"
-            />
-          </div>
-
-          <Textarea
-            label="Short Description"
-            required
-            rows={2}
-            value={formData.short_description}
-            onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-            placeholder="Brief 1-2 sentence overview for cards and listings (min 10 chars)"
-          />
-
-          <Textarea
-            label="Full Detailed Description"
-            required
-            rows={4}
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            placeholder="In-depth explanation of the clinical therapy approach (min 20 chars)"
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Textarea
-              label="Who It Helps (Optional)"
-              rows={2}
-              value={formData.who_it_helps}
-              onChange={(e) => setFormData({ ...formData, who_it_helps: e.target.value })}
-              placeholder="e.g. Children experiencing speech delays, non-verbal communication..."
-            />
-            <Textarea
-              label="Key Benefits (Optional)"
-              rows={2}
-              value={formData.benefits}
-              onChange={(e) => setFormData({ ...formData, benefits: e.target.value })}
-              placeholder="e.g. Builds expressive language, improves confidence..."
-            />
-          </div>
-
-          <Textarea
-            label="Clinical Approach (Optional)"
-            rows={2}
-            value={formData.approach}
-            onChange={(e) => setFormData({ ...formData, approach: e.target.value })}
-            placeholder="e.g. Play-based language facilitation, oral-motor exercises..."
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Textarea
-              label="Therapy Process Steps (One per line)"
-              rows={4}
-              value={formData.process_steps_text}
-              onChange={(e) => setFormData({ ...formData, process_steps_text: e.target.value })}
-              placeholder={"1. Comprehensive Assessment\n2. Individualized Plan\n3. Active Therapy Sessions\n4. Parent Coaching"}
-              helperText="Enter each step on a new line"
-            />
-            <Textarea
-              label="Skills Supported (One per line)"
-              rows={4}
-              value={formData.skills_supported_text}
-              onChange={(e) => setFormData({ ...formData, skills_supported_text: e.target.value })}
-              placeholder={"Functional Communication\nFine Motor Coordination\nSocial Play"}
-              helperText="Enter each skill on a new line"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center pt-2">
-            <div className="sm:col-span-2">
+        <form onSubmit={handleSave} className="space-y-6 text-xs text-stone-800">
+          {/* Section 1: Basic Identity */}
+          <div className="space-y-4 p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/80">
+            <h4 className="font-serif-heading text-sm font-bold text-brand-950">
+              1. Program Identity &amp; URL
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
-                label="Image URL (Optional)"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://images.unsplash.com/..."
+                label="Program Name"
+                required
+                value={formData.name}
+                onChange={handleNameChange}
+                placeholder="e.g. Applied Behavior Analysis (ABA)"
+              />
+              <Input
+                label="URL Slug"
+                required
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                placeholder="e.g. aba-therapy"
+                helperText="URL path: /therapies/[slug]"
               />
             </div>
-            <div>
-              <Input
-                label="Display Order"
-                type="number"
-                value={formData.display_order}
-                onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value, 10) || 0 })}
-                placeholder="0"
+
+            <Textarea
+              label="Short Summary"
+              required
+              rows={2}
+              value={formData.short_description}
+              onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
+              placeholder="Brief 1-2 sentence overview for cards and listings (min 10 chars)"
+            />
+
+            <Textarea
+              label="Full Clinical Description"
+              required
+              rows={4}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="In-depth explanation of the clinical therapy approach, methodology, and scope (min 20 chars)"
+            />
+          </div>
+
+          {/* Section 2: Clinical Details */}
+          <div className="space-y-4 p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/80">
+            <h4 className="font-serif-heading text-sm font-bold text-brand-950">
+              2. Clinical Context &amp; Benefits
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Textarea
+                label="Who It Helps (Optional)"
+                rows={2}
+                value={formData.who_it_helps}
+                onChange={(e) => setFormData({ ...formData, who_it_helps: e.target.value })}
+                placeholder="e.g. Children experiencing speech delays, non-verbal communication, expressive difficulties..."
+              />
+              <Textarea
+                label="Key Benefits (Optional)"
+                rows={2}
+                value={formData.benefits}
+                onChange={(e) => setFormData({ ...formData, benefits: e.target.value })}
+                placeholder="e.g. Builds expressive vocabulary, improves self-regulation, enhances social confidence..."
+              />
+            </div>
+
+            <Textarea
+              label="Clinical Approach & Methodology (Optional)"
+              rows={2}
+              value={formData.approach}
+              onChange={(e) => setFormData({ ...formData, approach: e.target.value })}
+              placeholder="e.g. Play-based language facilitation, multi-sensory stimulation, positive reinforcement protocols..."
+            />
+          </div>
+
+          {/* Section 3: Structured Clinical Lists */}
+          <div className="space-y-4 p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/80">
+            <h4 className="font-serif-heading text-sm font-bold text-brand-950">
+              3. Therapy Journey &amp; Skills Supported
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Textarea
+                label="Therapy Process Steps (One per line)"
+                rows={4}
+                value={formData.process_steps_text}
+                onChange={(e) => setFormData({ ...formData, process_steps_text: e.target.value })}
+                placeholder={"1. Comprehensive Clinical Assessment\n2. Individualized Therapy Plan\n3. Active 1-on-1 Sessions\n4. Parent Coaching & Home Support"}
+                helperText="Enter each sequential step on a new line"
+              />
+              <Textarea
+                label="Skills Supported (One per line)"
+                rows={4}
+                value={formData.skills_supported_text}
+                onChange={(e) => setFormData({ ...formData, skills_supported_text: e.target.value })}
+                placeholder={"Functional Communication\nFine Motor Coordination\nSocial Play & Interaction\nEmotional Regulation"}
+                helperText="Enter each key skill on a new line"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pt-2">
-            <input
-              type="checkbox"
-              id="active_service"
-              checked={formData.active}
-              onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-              className="w-4 h-4 rounded text-tealbrand-700 focus:ring-tealbrand-700"
-            />
-            <label htmlFor="active_service" className="font-semibold text-slate-800">
-              Active (Visible on public website)
-            </label>
+          {/* Section 4: Display & Settings */}
+          <div className="space-y-4 p-4 sm:p-5 rounded-2xl bg-white border border-stone-200/80">
+            <h4 className="font-serif-heading text-sm font-bold text-brand-950">
+              4. Media &amp; Visibility
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+              <div className="sm:col-span-2">
+                <Input
+                  label="Cover Image URL (Optional)"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  placeholder="https://images.unsplash.com/..."
+                />
+              </div>
+              <div>
+                <Input
+                  label="Display Order"
+                  type="number"
+                  value={formData.display_order}
+                  onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value, 10) || 0 })}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 pt-2">
+              <input
+                type="checkbox"
+                id="active_service"
+                checked={formData.active}
+                onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                className="w-4 h-4 rounded text-brand-850 focus:ring-brand-700 border-stone-300"
+              />
+              <label htmlFor="active_service" className="font-bold text-brand-950 cursor-pointer text-xs">
+                Active (Published and visible on public website)
+              </label>
+            </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          {/* Form Actions */}
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-200/80">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setIsModalOpen(false)}
             >
@@ -473,41 +543,18 @@ export default function AdminServicesPage() {
         </form>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
+      {/* Shared Delete Confirmation Modal */}
+      <AdminDeleteModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Confirm Program Deletion"
-        maxWidth="sm"
-      >
-        <div className="space-y-4 text-xs">
-          <p className="text-slate-600 leading-relaxed">
-            Are you sure you want to permanently delete the therapy program{' '}
-            <strong className="text-slate-900">{deletingService?.name}</strong>?
-          </p>
-          <p className="text-rose-600 font-medium">
-            This action cannot be undone. Any linked appointments will have their service reference unlinked.
-          </p>
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsDeleteModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              size="sm"
-              onClick={handleDelete}
-            >
-              Delete Permanently
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeletingService(null);
+        }}
+        onConfirm={handleDelete}
+        title="Delete Therapy Program"
+        itemName={deletingService?.name}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

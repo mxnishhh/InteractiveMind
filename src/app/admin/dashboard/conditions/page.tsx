@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Modal } from '@/components/ui/Modal';
 import { Toast } from '@/components/ui/Toast';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
+import { AdminDeleteModal } from '@/components/admin/AdminDeleteModal';
 import {
   ShieldAlert,
   Plus,
@@ -53,6 +56,7 @@ export default function AdminConditionsPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deletingCondition, setDeletingCondition] = useState<Condition | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState<ConditionFormData>(initialFormData);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -83,7 +87,7 @@ export default function AdminConditionsPage() {
     setEditingId(null);
     setFormData({
       ...initialFormData,
-      display_order: (conditions.length + 1),
+      display_order: conditions.length + 1,
     });
     setIsModalOpen(true);
   };
@@ -176,6 +180,7 @@ export default function AdminConditionsPage() {
 
   const handleDelete = async () => {
     if (!deletingCondition) return;
+    setIsDeleting(true);
     try {
       const res = await fetch(`/api/admin/conditions/${deletingCondition.id}`, {
         method: 'DELETE',
@@ -192,127 +197,157 @@ export default function AdminConditionsPage() {
       loadConditions();
     } catch (err: any) {
       setToast({ type: 'error', message: err.message || 'Failed to delete condition' });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Conditions Supported</h1>
-          <p className="text-xs text-slate-500 font-medium mt-1">Manage developmental and behavioral conditions supported</p>
-        </div>
-        <Button onClick={handleOpenCreate} variant="primary" size="sm" className="gap-1.5 self-start">
-          <Plus className="w-4 h-4" />
-          <span>Add Condition</span>
-        </Button>
-      </div>
+      <AdminPageHeader
+        eyebrow="Clinical Scope"
+        title="Conditions Supported"
+        description="Manage developmental, communication, sensory, and behavioral conditions supported at the clinic."
+        actions={
+          <Button onClick={handleOpenCreate} variant="primary" size="sm" className="gap-1.5 shadow-sm">
+            <Plus className="w-4 h-4" />
+            <span>Add Condition</span>
+          </Button>
+        }
+      />
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-100">
-            <tr>
-              <th className="p-4">Order</th>
-              <th className="p-4">Condition Name</th>
-              <th className="p-4">Slug / URL</th>
-              <th className="p-4">Short Overview</th>
-              <th className="p-4">Status</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {loading ? (
+      {/* Conditions Table */}
+      <div className="bg-white rounded-3xl border border-stone-200/80 shadow-soft overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-stone-50/80 text-stone-600 uppercase tracking-wider font-bold text-[10px] border-b border-stone-200/80">
               <tr>
-                <td colSpan={6} className="p-8 text-center text-slate-400">Loading conditions...</td>
+                <th className="py-3.5 px-4 sm:px-6">Order</th>
+                <th className="py-3.5 px-4">Condition Name</th>
+                <th className="py-3.5 px-4">Slug / Public URL</th>
+                <th className="py-3.5 px-4">Short Overview</th>
+                <th className="py-3.5 px-4">Visibility</th>
+                <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
               </tr>
-            ) : conditions.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="p-8 text-center text-slate-400">No conditions found. Click "Add Condition" to create one.</td>
-              </tr>
-            ) : (
-              conditions.map((cond) => (
-                <tr key={cond.id} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="p-4 font-mono font-semibold text-slate-400">#{cond.display_order}</td>
-                  <td className="p-4 font-bold text-slate-900">
-                    <div className="flex items-center gap-2">
-                      <ShieldAlert className="w-4 h-4 text-tealbrand-700 shrink-0" />
-                      <span>{cond.name}</span>
-                    </div>
-                  </td>
-                  <td className="p-4 font-mono text-slate-500">
-                    <a
-                      href={`/conditions/${cond.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 hover:text-tealbrand-700 hover:underline"
-                    >
-                      <span>/{cond.slug}</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </td>
-                  <td className="p-4 text-slate-600 max-w-xs truncate">{cond.short_description}</td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleToggleActive(cond)}
-                      className="inline-flex items-center gap-1.5 focus:outline-none"
-                      title="Click to toggle active status"
-                    >
-                      {cond.active ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full font-bold text-[11px] border border-emerald-200/60">
-                          <CheckCircle className="w-3.5 h-3.5" /> Active
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full font-bold text-[11px] border border-slate-200">
-                          <XCircle className="w-3.5 h-3.5" /> Inactive
-                        </span>
-                      )}
-                    </button>
-                  </td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => handleOpenEdit(cond)}
-                        className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-                        title="Edit condition"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setDeletingCondition(cond);
-                          setIsDeleteModalOpen(true);
-                        }}
-                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
-                        title="Delete condition"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
+            </thead>
+            <tbody className="divide-y divide-stone-100 font-medium text-stone-800">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="p-10 text-center text-xs text-stone-600 animate-pulse">
+                    Loading conditions...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : conditions.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-8">
+                    <AdminEmptyState
+                      icon={ShieldAlert}
+                      title="No Conditions Configured"
+                      description="Add developmental conditions to educate families on diagnoses supported at the clinic."
+                      action={{
+                        label: 'Add First Condition',
+                        onClick: handleOpenCreate,
+                        icon: Plus,
+                      }}
+                    />
+                  </td>
+                </tr>
+              ) : (
+                conditions.map((cond) => (
+                  <tr key={cond.id} className="hover:bg-stone-50/70 transition-colors">
+                    <td className="py-4 px-4 sm:px-6 font-mono font-bold text-stone-600">
+                      #{cond.display_order}
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-teal-50 border border-teal-200/70 text-teal-800 flex items-center justify-center shrink-0">
+                          <ShieldAlert className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <span className="font-bold text-brand-950 text-xs block">{cond.name}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 font-mono text-[11px]">
+                      <a
+                        href={`/conditions/${cond.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-brand-850 hover:text-brand-950 hover:underline"
+                      >
+                        <span>/{cond.slug}</span>
+                        <ExternalLink className="w-3 h-3 opacity-70" />
+                      </a>
+                    </td>
+                    <td className="py-4 px-4 text-stone-600 max-w-xs truncate text-[11px]">
+                      {cond.short_description}
+                    </td>
+                    <td className="py-4 px-4">
+                      <button
+                        onClick={() => handleToggleActive(cond)}
+                        className="inline-flex items-center gap-1.5 focus:outline-none transition-transform active:scale-95"
+                        title="Click to toggle active status"
+                      >
+                        {cond.active ? (
+                          <span className="inline-flex items-center gap-1 text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full font-bold text-[11px] border border-emerald-200/80 shadow-2xs">
+                            <CheckCircle className="w-3 h-3 text-emerald-700" /> Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-stone-600 bg-stone-100 px-2.5 py-1 rounded-full font-bold text-[11px] border border-stone-200 shadow-2xs">
+                            <XCircle className="w-3 h-3 text-stone-500" /> Inactive
+                          </span>
+                        )}
+                      </button>
+                    </td>
+                    <td className="py-4 px-4 sm:px-6 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => handleOpenEdit(cond)}
+                          className="p-1.5 text-stone-600 hover:text-brand-950 hover:bg-stone-100 rounded-xl transition-colors"
+                          title="Edit condition"
+                          aria-label={`Edit ${cond.name}`}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setDeletingCondition(cond);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          className="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-xl transition-colors"
+                          title="Delete condition"
+                          aria-label={`Delete ${cond.name}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Create / Edit Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingId ? 'Edit Condition' : 'Add New Condition'}
-        maxWidth="xl"
+        title={editingId ? `Edit Condition: ${formData.name}` : 'Add New Condition'}
+        description="Configure condition descriptions, clinical scope, and public visibility."
+        maxWidth="2xl"
       >
-        <form onSubmit={handleSave} className="space-y-4 text-xs">
+        <form onSubmit={handleSave} className="space-y-4 text-xs text-stone-800">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Condition Name"
               required
               value={formData.name}
               onChange={handleNameChange}
-              placeholder="e.g. Autism Spectrum Condition"
+              placeholder="e.g. Autism Spectrum Condition (ASC)"
             />
             <Input
               label="URL Slug"
@@ -334,12 +369,12 @@ export default function AdminConditionsPage() {
           />
 
           <Textarea
-            label="Detailed Overview"
+            label="Detailed Clinical Overview"
             required
             rows={4}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            placeholder="Detailed description of the condition and clinical considerations (min 20 chars)"
+            placeholder="Comprehensive description of the developmental profile, clinical presentation, and therapeutic pathways (min 20 chars)"
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
@@ -362,23 +397,23 @@ export default function AdminConditionsPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center gap-2.5 pt-2">
             <input
               type="checkbox"
               id="active_condition"
               checked={formData.active}
               onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-              className="w-4 h-4 rounded text-tealbrand-700 focus:ring-tealbrand-700"
+              className="w-4 h-4 rounded text-brand-850 focus:ring-brand-700 border-stone-300"
             />
-            <label htmlFor="active_condition" className="font-semibold text-slate-800">
-              Active (Visible on public website)
+            <label htmlFor="active_condition" className="font-bold text-brand-950 cursor-pointer text-xs">
+              Active (Published and visible on public website)
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-200/80">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setIsModalOpen(false)}
             >
@@ -396,41 +431,18 @@ export default function AdminConditionsPage() {
         </form>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
+      {/* Shared Delete Confirmation Modal */}
+      <AdminDeleteModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Confirm Condition Deletion"
-        maxWidth="sm"
-      >
-        <div className="space-y-4 text-xs">
-          <p className="text-slate-600 leading-relaxed">
-            Are you sure you want to permanently delete the condition{' '}
-            <strong className="text-slate-900">{deletingCondition?.name}</strong>?
-          </p>
-          <p className="text-rose-600 font-medium">
-            This action cannot be undone.
-          </p>
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsDeleteModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              size="sm"
-              onClick={handleDelete}
-            >
-              Delete Permanently
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeletingCondition(null);
+        }}
+        onConfirm={handleDelete}
+        title="Delete Condition"
+        itemName={deletingCondition?.name}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

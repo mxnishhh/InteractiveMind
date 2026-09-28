@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Modal } from '@/components/ui/Modal';
 import { Toast } from '@/components/ui/Toast';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
+import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
+import { AdminDeleteModal } from '@/components/admin/AdminDeleteModal';
 import {
   HelpCircle,
   Plus,
@@ -40,6 +43,7 @@ export default function AdminFaqsPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deletingFaq, setDeletingFaq] = useState<FAQ | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState<FaqFormData>(initialFormData);
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -150,6 +154,7 @@ export default function AdminFaqsPage() {
 
   const handleDelete = async () => {
     if (!deletingFaq) return;
+    setIsDeleting(true);
     try {
       const res = await fetch(`/api/admin/faqs/${deletingFaq.id}`, {
         method: 'DELETE',
@@ -166,77 +171,94 @@ export default function AdminFaqsPage() {
       loadFaqs();
     } catch (err: any) {
       setToast({ type: 'error', message: err.message || 'Failed to delete FAQ' });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">FAQ Management</h1>
-          <p className="text-xs text-slate-500 font-medium mt-1">Manage public frequently asked questions and clinical guidance</p>
-        </div>
-        <Button onClick={handleOpenCreate} variant="primary" size="sm" className="gap-1.5 self-start">
-          <Plus className="w-4 h-4" />
-          <span>Add FAQ</span>
-        </Button>
-      </div>
+      <AdminPageHeader
+        eyebrow="Knowledge Base"
+        title="Frequently Asked Questions"
+        description="Manage clinical answers, parent intake FAQs, payment policies, and clinic guidance."
+        actions={
+          <Button onClick={handleOpenCreate} variant="primary" size="sm" className="gap-1.5 shadow-sm">
+            <Plus className="w-4 h-4" />
+            <span>Add FAQ</span>
+          </Button>
+        }
+      />
 
-      <div className="space-y-3">
+      <div className="space-y-3.5">
         {loading ? (
-          <div className="bg-white rounded-2xl border border-slate-100 p-8 text-center text-xs text-slate-400">
+          <div className="bg-white rounded-3xl border border-stone-200/80 p-12 text-center text-xs text-stone-600 font-medium animate-pulse">
             Loading FAQs...
           </div>
         ) : faqs.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-100 p-8 text-center text-xs text-slate-400">
-            No FAQs found. Click "Add FAQ" to create one.
-          </div>
+          <AdminEmptyState
+            icon={HelpCircle}
+            title="No FAQs Configured"
+            description="Add answers to frequently asked questions to help parents understand the therapy journey."
+            action={{
+              label: 'Add First FAQ',
+              onClick: handleOpenCreate,
+              icon: Plus,
+            }}
+          />
         ) : (
           faqs.map((faq) => (
             <div
               key={faq.id}
-              className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3 hover:border-slate-200 transition-colors"
+              className="bg-white p-5 sm:p-6 rounded-3xl border border-stone-200/80 shadow-soft space-y-3.5 hover:shadow-md transition-all"
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <span className="font-mono text-xs font-semibold text-slate-400 mt-0.5">#{faq.display_order}</span>
+                  <span className="font-mono text-xs font-bold text-stone-600 px-2 py-0.5 rounded-md bg-stone-100 shrink-0 mt-0.5">
+                    #{faq.display_order}
+                  </span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <HelpCircle className="w-4 h-4 text-tealbrand-700 shrink-0" />
-                      <h3 className="font-bold text-slate-900 text-sm">{faq.question}</h3>
+                      <HelpCircle className="w-4 h-4 text-brand-700 shrink-0 mt-0.5" />
+                      <h3 className="font-serif-heading font-bold text-brand-950 text-sm sm:text-base leading-snug">
+                        {faq.question}
+                      </h3>
                     </div>
                     {faq.category && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md mt-1.5">
-                        <Tag className="w-3 h-3 text-slate-400" />
-                        {faq.category}
-                      </span>
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-850 bg-brand-50 border border-brand-100 px-2.5 py-0.5 rounded-md">
+                          <Tag className="w-3 h-3 text-brand-700" />
+                          {faq.category}
+                        </span>
+                      </div>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 self-end sm:self-start">
                   <button
                     onClick={() => handleToggleActive(faq)}
-                    className="inline-flex items-center gap-1.5 focus:outline-none"
+                    className="inline-flex items-center gap-1.5 focus:outline-none transition-transform active:scale-95"
                     title="Click to toggle active status"
                   >
                     {faq.active ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full font-bold text-[11px] border border-emerald-200/60">
-                        <CheckCircle className="w-3.5 h-3.5" /> Active
+                      <span className="inline-flex items-center gap-1 text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full font-bold text-[11px] border border-emerald-200/80 shadow-2xs">
+                        <CheckCircle className="w-3 h-3 text-emerald-700" /> Active
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full font-bold text-[11px] border border-slate-200">
-                        <XCircle className="w-3.5 h-3.5" /> Inactive
+                      <span className="inline-flex items-center gap-1 text-stone-600 bg-stone-100 px-2.5 py-1 rounded-full font-bold text-[11px] border border-stone-200 shadow-2xs">
+                        <XCircle className="w-3 h-3 text-stone-500" /> Inactive
                       </span>
                     )}
                   </button>
 
                   <button
                     onClick={() => handleOpenEdit(faq)}
-                    className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                    className="p-1.5 text-stone-600 hover:text-brand-950 hover:bg-stone-100 rounded-xl transition-colors"
                     title="Edit FAQ"
+                    aria-label={`Edit FAQ: ${faq.question}`}
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
@@ -245,15 +267,18 @@ export default function AdminFaqsPage() {
                       setDeletingFaq(faq);
                       setIsDeleteModalOpen(true);
                     }}
-                    className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
+                    className="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-xl transition-colors"
                     title="Delete FAQ"
+                    aria-label={`Delete FAQ: ${faq.question}`}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
-              <p className="text-xs text-slate-600 leading-relaxed pl-8">{faq.answer}</p>
+              <div className="p-4 rounded-2xl bg-[#faf9f7] border border-stone-200/70 text-xs text-stone-700 leading-relaxed font-medium">
+                {faq.answer}
+              </div>
             </div>
           ))
         )}
@@ -264,24 +289,25 @@ export default function AdminFaqsPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={editingId ? 'Edit FAQ' : 'Add New FAQ'}
+        description="Provide a clear, reassuring answer for parents seeking clarity."
         maxWidth="lg"
       >
-        <form onSubmit={handleSave} className="space-y-4 text-xs">
+        <form onSubmit={handleSave} className="space-y-4 text-xs text-stone-800">
           <Input
             label="Question"
             required
             value={formData.question}
             onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-            placeholder="e.g. What age groups do you serve at Interactive Minds?"
+            placeholder="e.g. What age groups do you support at Interactive Minds?"
           />
 
           <Textarea
-            label="Answer"
+            label="Comprehensive Answer"
             required
             rows={4}
             value={formData.answer}
             onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-            placeholder="Provide a clear, helpful explanation for parents and caregivers..."
+            placeholder="Provide a clear, reassuring, and clinically grounded answer for parents..."
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
@@ -289,7 +315,7 @@ export default function AdminFaqsPage() {
               label="Category"
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              placeholder="General, Assessment, Therapy, Payment..."
+              placeholder="General, Assessment, Therapy, Sessions..."
             />
             <Input
               label="Display Order"
@@ -300,23 +326,23 @@ export default function AdminFaqsPage() {
             />
           </div>
 
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center gap-2.5 pt-2">
             <input
               type="checkbox"
               id="active_faq"
               checked={formData.active}
               onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-              className="w-4 h-4 rounded text-tealbrand-700 focus:ring-tealbrand-700"
+              className="w-4 h-4 rounded text-brand-850 focus:ring-brand-700 border-stone-300"
             />
-            <label htmlFor="active_faq" className="font-semibold text-slate-800">
-              Active (Visible on public FAQ page)
+            <label htmlFor="active_faq" className="font-bold text-brand-950 cursor-pointer text-xs">
+              Active (Visible on public FAQ accordion)
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-200/80">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setIsModalOpen(false)}
             >
@@ -334,40 +360,18 @@ export default function AdminFaqsPage() {
         </form>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
+      {/* Shared Delete Confirmation Modal */}
+      <AdminDeleteModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Confirm FAQ Deletion"
-        maxWidth="sm"
-      >
-        <div className="space-y-4 text-xs">
-          <p className="text-slate-600 leading-relaxed">
-            Are you sure you want to delete this FAQ:
-          </p>
-          <p className="text-slate-900 font-semibold italic">
-            "{deletingFaq?.question}"
-          </p>
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsDeleteModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              size="sm"
-              onClick={handleDelete}
-            >
-              Delete Permanently
-            </Button>
-          </div>
-        </div>
-      </Modal>
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeletingFaq(null);
+        }}
+        onConfirm={handleDelete}
+        title="Delete FAQ"
+        itemName={deletingFaq?.question}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }
