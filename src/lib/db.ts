@@ -158,6 +158,8 @@ export function getDbPool(): mysql.Pool | null {
 
   if (host && user && database) {
     try {
+      const isSsl = process.env.DB_SSL === 'true';
+
       pool = mysql.createPool({
         host,
         port: Number(process.env.DB_PORT || 3306),
@@ -167,6 +169,7 @@ export function getDbPool(): mysql.Pool | null {
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0,
+        ...(isSsl ? { ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true } } : {}),
       });
       return pool;
     } catch (e) {
