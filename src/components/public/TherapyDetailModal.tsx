@@ -27,15 +27,15 @@ interface TherapyDetailModalProps {
 }
 
 const THERAPY_IMAGE_MAP: Record<string, string> = {
-  'aba-therapy': '/images/homepage/clinical-approach.jpg',
-  'occupational-therapy': '/images/homepage/occupational-therapy.jpg',
-  'speech-therapy': '/images/homepage/family-entrance.jpg',
-  'special-education': '/images/homepage/clinical-approach.jpg',
-  'sensory-integration': '/images/homepage/sensory-gym.jpg',
-  'clinical-psychology': '/images/homepage/clinical-approach.jpg',
-  'school-readiness': '/images/homepage/hero-parent-child.jpg',
-  'physiotherapy': '/images/homepage/clinical-approach.jpg',
-  'parent-guidance': '/images/homepage/family-entrance.jpg',
+  'aba-therapy': '/images/homepage/therapy-aba.jpg',
+  'occupational-therapy': '/images/homepage/therapy-occupational.jpg',
+  'speech-therapy': '/images/homepage/therapy-speech.jpg',
+  'special-education': '/images/homepage/therapy-special-education.jpg',
+  'sensory-integration': '/images/homepage/therapy-sensory.jpg',
+  'clinical-psychology': '/images/homepage/therapy-psychology.jpg',
+  'school-readiness': '/images/homepage/therapy-school-readiness.jpg',
+  'physiotherapy': '/images/homepage/therapy-physiotherapy.jpg',
+  'parent-guidance': '/images/homepage/therapy-parent-guidance.jpg',
 };
 
 export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
@@ -245,7 +245,7 @@ export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
                 {/* Hero Image Frame */}
                 <div className="relative rounded-2xl overflow-hidden border border-stone-200/90 shadow-md bg-stone-100 group aspect-[16/10] sm:aspect-[16/9]">
                   <img
-                    src={service.image_url || THERAPY_IMAGE_MAP[service.slug] || '/images/homepage/occupational-therapy.jpg'}
+                    src={THERAPY_IMAGE_MAP[service.slug] || service.image_url || '/images/homepage/therapy-occupational.jpg'}
                     alt={service.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />

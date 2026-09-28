@@ -69,7 +69,7 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
                 <div className="lg:col-span-5 relative">
                   <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-stone-100 shadow-md border-2 border-stone-100 group-hover:border-brand-700 transition-colors">
                     <img
-                      src={featuredService.image_url || "/images/homepage/occupational-therapy.jpg"}
+                      src={featuredService.image_url || "/images/homepage/therapy-occupational.jpg"}
                       alt={featuredService.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
