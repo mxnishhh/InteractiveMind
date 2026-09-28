@@ -61,7 +61,7 @@ export const ContactForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {successMsg && <Toast type="success" message={successMsg} onClose={() => setSuccessMsg(null)} />}
       {errorMsg && <Toast type="error" message={errorMsg} onClose={() => setErrorMsg(null)} />}
 
@@ -71,10 +71,10 @@ export const ContactForm: React.FC = () => {
         value={formData.name}
         onChange={handleChange}
         required
-        placeholder="Enter your name"
+        placeholder="e.g. Rahul Sharma"
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Input
           label="Email Address"
           type="email"
@@ -91,7 +91,7 @@ export const ContactForm: React.FC = () => {
           value={formData.phone}
           onChange={handleChange}
           required
-          placeholder="(555) 000-0000"
+          placeholder="+91 94310 XXXXX"
         />
       </div>
 
@@ -100,21 +100,33 @@ export const ContactForm: React.FC = () => {
         name="subject"
         value={formData.subject}
         onChange={handleChange}
-        placeholder="e.g. Enquiry about Speech Therapy"
+        placeholder="e.g. Enquiry about Speech Therapy assessment"
       />
 
       <Textarea
-        label="Message"
+        label="Message / Clinical Query"
         name="message"
+        rows={4}
         value={formData.message}
         onChange={handleChange}
         required
-        placeholder="How can Interactive Minds support your family?"
+        placeholder="Please describe how our clinical team can assist your family..."
       />
 
-      <Button type="submit" size="lg" isLoading={isLoading} className="w-full">
-        Send Message
-      </Button>
+      <div className="pt-2">
+        <Button
+          type="submit"
+          size="lg"
+          isLoading={isLoading}
+          className="w-full shadow-card hover:shadow-card-hover py-3.5 text-xs font-semibold uppercase tracking-wider"
+        >
+          Send Enquiry
+        </Button>
+      </div>
+
+      <p className="text-[11px] text-center text-stone-500 italic leading-relaxed">
+        All messages are treated confidentially and reviewed by our clinical intake team within 24 hours.
+      </p>
     </form>
   );
 };
