@@ -2,6 +2,27 @@ export type AppointmentStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELL
 export type MessageStatus = 'NEW' | 'READ' | 'RESPONDED' | 'ARCHIVED';
 export type MediaType = 'image' | 'video';
 
+export type BlogPostType = 'article' | 'video' | 'resource';
+export type BlogPostStatus = 'draft' | 'published';
+
+export interface BlogPost {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  content?: string | null;
+  thumbnail?: string | null;
+  type: BlogPostType;
+  category?: string;
+  author?: string | null;
+  video_url?: string | null;
+  published_at?: string | null;
+  status: BlogPostStatus;
+  display_order: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Service {
   id: number;
   name: string;
@@ -14,6 +35,7 @@ export interface Service {
   approach?: string | null;
   process_steps?: string[];
   skills_supported?: string[];
+  closing_text?: string | null;
   active: boolean;
   display_order: number;
   created_at?: string;
@@ -118,19 +140,6 @@ export interface MediaItem {
   updated_at?: string;
 }
 
-export interface SiteSettings {
-  site_name: string;
-  site_tagline: string;
-  site_email: string;
-  site_phone: string;
-  whatsapp_number: string;
-  site_address: string;
-  working_hours: string;
-  hero_heading: string;
-  hero_subheading: string;
-  footer_copyright: string;
-  [key: string]: string;
-}
 
 export interface AdminUser {
   id: number;

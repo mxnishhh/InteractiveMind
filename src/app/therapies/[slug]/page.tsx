@@ -1,14 +1,5 @@
-import React from 'react';
-import { notFound } from 'next/navigation';
-import { getServiceBySlugDB } from '@/lib/db';
-import { TherapyPageContent } from '@/components/public/TherapyPageContent';
+import { redirect } from 'next/navigation';
 
-export default async function TherapyDetailPage({ params }: { params: { slug: string } }) {
-  const service = await getServiceBySlugDB(params.slug);
-
-  if (!service) {
-    notFound();
-  }
-
-  return <TherapyPageContent service={service} />;
+export default function TherapyDetailPage() {
+  redirect('/#therapies');
 }

@@ -150,10 +150,26 @@ CREATE TABLE IF NOT EXISTS `media` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 10. Site Settings Table
-CREATE TABLE IF NOT EXISTS `site_settings` (
+-- 10. Blog Posts Table
+CREATE TABLE IF NOT EXISTS `blog_posts` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `setting_key` VARCHAR(100) NOT NULL UNIQUE,
-  `setting_value` TEXT NOT NULL,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `title` VARCHAR(255) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL UNIQUE,
+  `excerpt` TEXT NULL,
+  `content` LONGTEXT NULL,
+  `thumbnail` VARCHAR(500) NULL,
+  `type` ENUM('article', 'video', 'resource') DEFAULT 'article',
+  `category` VARCHAR(100) DEFAULT 'General',
+  `author` VARCHAR(150) NULL,
+  `video_url` VARCHAR(500) NULL,
+  `published_at` DATETIME NULL,
+  `status` ENUM('draft', 'published') DEFAULT 'draft',
+  `display_order` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX `idx_blog_slug` (`slug`),
+  INDEX `idx_blog_status` (`status`),
+  INDEX `idx_blog_type` (`type`),
+  INDEX `idx_blog_published` (`published_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

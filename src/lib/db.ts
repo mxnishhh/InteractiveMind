@@ -3,12 +3,12 @@ import {
   INITIAL_SERVICES,
   INITIAL_CONDITIONS,
   INITIAL_FAQS,
-  INITIAL_SITE_SETTINGS,
   INITIAL_TEAM_MEMBERS,
   INITIAL_TESTIMONIALS,
-  INITIAL_MEDIA
+  INITIAL_MEDIA,
+  INITIAL_BLOG_POSTS
 } from './site-data';
-import { Appointment, ContactMessage, Service, Condition, FAQ, TeamMember, Testimonial, MediaItem, SiteSettings } from '@/types';
+import { Appointment, ContactMessage, Service, Condition, FAQ, TeamMember, Testimonial, MediaItem, BlogPost } from '@/types';
 
 // Helper to safely parse JSON arrays from MySQL TEXT/LONGTEXT columns
 function parseJsonArray(val: unknown): string[] {
@@ -43,6 +43,7 @@ export function normalizeService(row: any): Service {
     approach: row.approach ? String(row.approach) : undefined,
     process_steps: parseJsonArray(row.process_steps),
     skills_supported: parseJsonArray(row.skills_supported),
+    closing_text: row.closing_text ? String(row.closing_text) : undefined,
     active: Boolean(row.active),
     display_order: Number(row.display_order ?? 0),
     created_at: row.created_at ? String(row.created_at) : undefined,
@@ -125,15 +126,39 @@ export function normalizeMediaItem(row: any): MediaItem {
   };
 }
 
+export function normalizeBlogPost(row: any): BlogPost {
+  return {
+    id: Number(row.id),
+    title: String(row.title || ''),
+    slug: String(row.slug || ''),
+    excerpt: row.excerpt ? String(row.excerpt) : undefined,
+    content: row.content ? String(row.content) : undefined,
+    thumbnail: row.thumbnail ? String(row.thumbnail) : undefined,
+    type: (row.type === 'video' || row.type === 'resource') ? row.type : 'article',
+    category: String(row.category || 'General'),
+    author: row.author ? String(row.author) : undefined,
+    video_url: row.video_url ? String(row.video_url) : undefined,
+    published_at: row.published_at
+      ? typeof row.published_at === 'object' && row.published_at instanceof Date
+        ? row.published_at.toISOString().slice(0, 10)
+        : String(row.published_at).slice(0, 10)
+      : undefined,
+    status: row.status === 'published' ? 'published' : 'draft',
+    display_order: Number(row.display_order ?? 0),
+    created_at: row.created_at ? String(row.created_at) : undefined,
+    updated_at: row.updated_at ? String(row.updated_at) : undefined,
+  };
+}
+
 // In-memory fallback database state (development only)
 const memoryState = {
   services: [...INITIAL_SERVICES],
   conditions: [...INITIAL_CONDITIONS],
   faqs: [...INITIAL_FAQS],
-  settings: { ...INITIAL_SITE_SETTINGS },
   team: [...INITIAL_TEAM_MEMBERS],
   testimonials: [...INITIAL_TESTIMONIALS],
   media: [...INITIAL_MEDIA],
+  blogPosts: [...INITIAL_BLOG_POSTS],
   appointments: [] as Appointment[],
   messages: [] as ContactMessage[],
   nextAppointmentId: 10,
@@ -144,6 +169,7 @@ const memoryState = {
   nextTeamId: 10,
   nextTestimonialId: 10,
   nextMediaId: 10,
+  nextBlogPostId: 1,
 };
 
 let pool: mysql.Pool | null = null;
@@ -831,45 +857,187 @@ export async function deleteMediaDB(id: number): Promise<boolean> {
 }
 
 // ====================================================
-// 7. SITE SETTINGS REPOSITORY
+// 7. BLOG POSTS & INSIGHTS REPOSITORY
 // ====================================================
 
-export async function getSiteSettingsDB(): Promise<SiteSettings> {
+export async function getBlogPostsDB(): Promise<BlogPost[]> {
   try {
-    const rows = await queryDb('SELECT setting_key, setting_value FROM site_settings');
-    if (rows && rows.length > 0) {
-      const settingsMap = { ...INITIAL_SITE_SETTINGS };
-      rows.forEach((r: { setting_key: string; setting_value: string }) => {
-        settingsMap[r.setting_key] = r.setting_value;
-      });
-      return settingsMap;
-    }
+    const rows = await queryDb('SELECT * FROM blog_posts ORDER BY display_order ASC, published_at DESC, id DESC');
+    if (rows) return rows.map(normalizeBlogPost);
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('Falling back to memory for site settings (dev mode)');
-      return memoryState.settings;
+      console.warn('Falling back to memory for blog posts (dev mode)');
+      return [...memoryState.blogPosts]
+        .sort((a, b) => a.display_order - b.display_order || b.id - a.id)
+        .map(normalizeBlogPost);
     }
     throw error;
   }
-  return { ...INITIAL_SITE_SETTINGS };
+  return [];
 }
 
-export async function updateSiteSettingsDB(key: string, value: string): Promise<void> {
+export async function getPublishedBlogPostsDB(): Promise<BlogPost[]> {
   try {
-    await queryDb(
-      'INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
-      [key, value]
-    );
-    return;
+    const rows = await queryDb("SELECT * FROM blog_posts WHERE status = 'published' ORDER BY display_order ASC, published_at DESC, id DESC");
+    if (rows) return rows.map(normalizeBlogPost);
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
-      console.warn('Cannot update site settings in memory (dev mode)');
-      memoryState.settings[key] = value;
-      return;
+      console.warn('Falling back to memory for published blog posts (dev mode)');
+      return memoryState.blogPosts
+        .filter(p => p.status === 'published')
+        .sort((a, b) => a.display_order - b.display_order || b.id - a.id)
+        .map(normalizeBlogPost);
+    }
+    throw error;
+  }
+  return [];
+}
+
+export async function getBlogPostByIdDB(id: number): Promise<BlogPost | null> {
+  try {
+    const rows = await queryDb('SELECT * FROM blog_posts WHERE id = ? LIMIT 1', [id]);
+    if (rows && rows.length > 0) return normalizeBlogPost(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const found = memoryState.blogPosts.find(p => p.id === id);
+      return found ? normalizeBlogPost(found) : null;
+    }
+    throw error;
+  }
+  return null;
+}
+
+export async function getBlogPostBySlugDB(slug: string): Promise<BlogPost | null> {
+  try {
+    const rows = await queryDb('SELECT * FROM blog_posts WHERE slug = ? LIMIT 1', [slug]);
+    if (rows && rows.length > 0) return normalizeBlogPost(rows[0]);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const found = memoryState.blogPosts.find(p => p.slug === slug);
+      return found ? normalizeBlogPost(found) : null;
+    }
+    throw error;
+  }
+  return null;
+}
+
+export async function createBlogPostDB(data: Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>): Promise<BlogPost> {
+  const publishedAt = data.status === 'published' ? (data.published_at || new Date().toISOString().slice(0, 19).replace('T', ' ')) : (data.published_at || null);
+
+  try {
+    const res = await queryDb(
+      `INSERT INTO blog_posts (title, slug, excerpt, content, thumbnail, type, category, author, video_url, published_at, status, display_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        data.title,
+        data.slug,
+        data.excerpt || null,
+        data.content || null,
+        data.thumbnail || null,
+        data.type || 'article',
+        data.category || 'General',
+        data.author || null,
+        data.video_url || null,
+        publishedAt,
+        data.status || 'draft',
+        data.display_order ?? 0,
+      ]
+    );
+
+    const insertId = (res as any).insertId;
+    const created = await getBlogPostByIdDB(insertId);
+    return created || { id: insertId, ...data, published_at: publishedAt ? String(publishedAt) : undefined };
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const newPost: BlogPost = {
+        id: memoryState.nextBlogPostId++,
+        title: data.title,
+        slug: data.slug,
+        excerpt: data.excerpt || undefined,
+        content: data.content || undefined,
+        thumbnail: data.thumbnail || undefined,
+        type: data.type || 'article',
+        category: data.category || 'General',
+        author: data.author || undefined,
+        video_url: data.video_url || undefined,
+        published_at: publishedAt ? String(publishedAt) : undefined,
+        status: data.status || 'draft',
+        display_order: data.display_order ?? 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      memoryState.blogPosts.push(newPost);
+      return normalizeBlogPost(newPost);
     }
     throw error;
   }
 }
+
+export async function updateBlogPostDB(id: number, data: Partial<Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> {
+  const existing = await getBlogPostByIdDB(id);
+  if (!existing) return false;
+
+  const merged = { ...existing, ...data };
+  let publishedAt = merged.published_at || null;
+  if (data.status === 'published' && !existing.published_at) {
+    publishedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  }
+
+  try {
+    await queryDb(
+      `UPDATE blog_posts SET
+       title = ?, slug = ?, excerpt = ?, content = ?, thumbnail = ?, type = ?, category = ?, author = ?, video_url = ?, published_at = ?, status = ?, display_order = ?
+       WHERE id = ?`,
+      [
+        merged.title,
+        merged.slug,
+        merged.excerpt || null,
+        merged.content || null,
+        merged.thumbnail || null,
+        merged.type || 'article',
+        merged.category || 'General',
+        merged.author || null,
+        merged.video_url || null,
+        publishedAt,
+        merged.status || 'draft',
+        merged.display_order ?? 0,
+        id,
+      ]
+    );
+
+    return true;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const idx = memoryState.blogPosts.findIndex(p => p.id === id);
+      if (idx !== -1) {
+        memoryState.blogPosts[idx] = {
+          ...memoryState.blogPosts[idx],
+          ...data,
+          published_at: publishedAt ? String(publishedAt) : undefined,
+          updated_at: new Date().toISOString(),
+        };
+        return true;
+      }
+      return false;
+    }
+    throw error;
+  }
+}
+
+export async function deleteBlogPostDB(id: number): Promise<boolean> {
+  try {
+    const res = await queryDb('DELETE FROM blog_posts WHERE id = ?', [id]);
+    return (res as any).affectedRows > 0;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const initLen = memoryState.blogPosts.length;
+      memoryState.blogPosts = memoryState.blogPosts.filter(p => p.id !== id);
+      return memoryState.blogPosts.length < initLen;
+    }
+    throw error;
+  }
+}
+
 
 // ====================================================
 // 8. APPOINTMENTS & MESSAGES REPOSITORY

@@ -48,12 +48,14 @@ export const Footer: React.FC = () => {
               <ul className="space-y-2.5 text-xs text-stone-400">
                 <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
                 <li><Link href="/#about" className="hover:text-white transition-colors">About Our Centre</Link></li>
-                <li><Link href="/therapies" className="hover:text-white transition-colors">All 9 Therapies</Link></li>
-                <li><Link href="/conditions" className="hover:text-white transition-colors">Conditions Supported</Link></li>
+                <li><Link href="/#therapies" className="hover:text-white transition-colors">All 9 Therapies</Link></li>
+                <li><Link href="/#conditions" className="hover:text-white transition-colors">Conditions Supported</Link></li>
                 <li><Link href="/#approach" className="hover:text-white transition-colors">Clinical Principles</Link></li>
                 <li><Link href="/#journey" className="hover:text-white transition-colors">4-Step Journey</Link></li>
                 <li><Link href="/#team" className="hover:text-white transition-colors">Specialist Team</Link></li>
+                <li><Link href="/#blog" className="hover:text-white transition-colors">Journal &amp; Insights</Link></li>
                 <li><Link href="/#faq" className="hover:text-white transition-colors">Parent FAQ</Link></li>
+                <li><Link href="/#appointment" className="hover:text-white transition-colors">Book Assessment</Link></li>
               </ul>
             </div>
 
@@ -65,7 +67,7 @@ export const Footer: React.FC = () => {
               <ul className="space-y-2 text-xs text-stone-400">
                 {CONSTANT_SERVICES.map((service) => (
                   <li key={service.slug}>
-                    <Link href={`/therapies/${service.slug}`} className="hover:text-white transition-colors">
+                    <Link href="/#therapies" className="hover:text-white transition-colors">
                       {service.name}
                     </Link>
                   </li>

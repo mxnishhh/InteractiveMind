@@ -103,7 +103,7 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
                     {featuredService.name}
                   </h3>
                   <p className="text-base text-stone-700 leading-relaxed">
-                    {featuredService.description}
+                    {featuredService.short_description || featuredService.description}
                   </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">

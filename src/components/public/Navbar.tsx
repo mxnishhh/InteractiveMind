@@ -25,11 +25,12 @@ export const Navbar: React.FC = () => {
   const navLinks: NavLinkItem[] = [
     { id: 'hero', label: 'Home', href: isHome ? '#hero' : '/' },
     { id: 'about', label: 'About', href: isHome ? '#about' : '/#about' },
-    { id: 'therapies', label: 'Therapies', href: isHome ? '#therapies' : '/therapies' },
-    { id: 'conditions', label: 'Conditions', href: isHome ? '#conditions' : '/conditions' },
+    { id: 'therapies', label: 'Therapies', href: isHome ? '#therapies' : '/#therapies' },
+    { id: 'conditions', label: 'Conditions', href: isHome ? '#conditions' : '/#conditions' },
     { id: 'approach', label: 'Approach', href: isHome ? '#approach' : '/#approach' },
     { id: 'journey', label: 'Journey', href: isHome ? '#journey' : '/#journey' },
     { id: 'team', label: 'Team', href: isHome ? '#team' : '/#team' },
+    { id: 'blog', label: 'Blog', href: isHome ? '#blog' : '/#blog' },
     { id: 'faq', label: 'FAQ', href: isHome ? '#faq' : '/#faq' },
   ];
 
@@ -37,7 +38,7 @@ export const Navbar: React.FC = () => {
   useEffect(() => {
     if (!isHome) return;
 
-    const sectionIds = ['hero', 'about', 'therapies', 'conditions', 'approach', 'journey', 'team', 'faq'];
+    const sectionIds = ['hero', 'about', 'therapies', 'conditions', 'approach', 'journey', 'team', 'blog', 'faq'];
     const elements = sectionIds
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
@@ -177,7 +178,7 @@ export const Navbar: React.FC = () => {
 
             {/* Primary Public CTA: Book an Assessment */}
             <Link
-              href={isHome ? '#appointment' : '/appointment'}
+              href={isHome ? '#appointment' : '/#appointment'}
               className="inline-flex items-center justify-center px-4.5 py-2.5 text-xs font-semibold tracking-wide text-white bg-brand-850 hover:bg-brand-900 rounded-full shadow-sm hover:shadow-card transition-all duration-200"
             >
               {HERO.primaryCta.label}
@@ -202,7 +203,7 @@ export const Navbar: React.FC = () => {
           {/* Mobile Drawer Toggle Button */}
           <div className="flex lg:hidden items-center gap-2">
             <Link
-              href={isHome ? '#appointment' : '/appointment'}
+              href={isHome ? '#appointment' : '/#appointment'}
               className="sm:hidden px-3.5 py-1.5 text-xs font-semibold text-white bg-brand-850 rounded-full shadow-sm"
             >
               Book
@@ -285,7 +286,7 @@ export const Navbar: React.FC = () => {
             {/* Section 4: Primary Public CTA */}
             <div className="pt-2">
               <Link
-                href={isHome ? '#appointment' : '/appointment'}
+                href={isHome ? '#appointment' : '/#appointment'}
                 onClick={() => setIsOpen(false)}
                 className="w-full py-2.5 text-center text-xs font-semibold text-white bg-brand-850 hover:bg-brand-900 rounded-xl shadow-sm transition-colors block"
               >

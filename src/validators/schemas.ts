@@ -118,3 +118,22 @@ export const MediaItemSchema = z.object({
 });
 
 export const MediaItemUpdateSchema = MediaItemSchema.partial();
+
+// Blog Post CRUD Schemas
+export const BlogPostSchema = z.object({
+  title: z.string().min(2, 'Title must be at least 2 characters'),
+  slug: z.string().min(2, 'Slug must be at least 2 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
+  excerpt: z.string().optional().nullable(),
+  content: z.string().optional().nullable(),
+  thumbnail: z.string().optional().nullable(),
+  type: z.enum(['article', 'video', 'resource']).default('article'),
+  category: z.string().min(1, 'Category is required').default('General'),
+  author: z.string().optional().nullable(),
+  video_url: z.string().optional().nullable(),
+  published_at: z.string().optional().nullable(),
+  status: z.enum(['draft', 'published']).default('draft'),
+  display_order: z.number().default(0),
+});
+
+export const BlogPostUpdateSchema = BlogPostSchema.partial();
+

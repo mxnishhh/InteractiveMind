@@ -149,7 +149,9 @@ export const ConditionsSection: React.FC<ConditionsSectionProps> = ({
       <ConditionDetailModal
         isOpen={selectedCondition !== null}
         condition={selectedCondition}
+        allConditions={allConditions}
         onClose={() => setSelectedCondition(null)}
+        onSelectCondition={setSelectedCondition}
         onBookAssessment={handleBookingScroll}
       />
     </>

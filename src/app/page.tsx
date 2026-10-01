@@ -4,9 +4,10 @@ import Image from 'next/image';
 import { Hero } from '@/components/public/Hero';
 import { TherapiesSection } from '@/components/public/TherapiesSection';
 import { ConditionsSection } from '@/components/public/ConditionsSection';
+import { BlogSection } from '@/components/public/BlogSection';
 import { Accordion } from '@/components/ui/Accordion';
 import { AppointmentForm } from '@/components/public/AppointmentForm';
-import { getServicesDB, getConditionsDB, getFaqsDB, getTeamMembersDB } from '@/lib/db';
+import { getServicesDB, getConditionsDB, getFaqsDB, getTeamMembersDB, getPublishedBlogPostsDB } from '@/lib/db';
 import {
   ArrowRight,
   Check,
@@ -38,11 +39,12 @@ import {
 } from '@/components/ui/motion';
 
 export default async function HomePage() {
-  const [services, conditions, faqs, teamMembers] = await Promise.all([
+  const [services, conditions, faqs, teamMembers, blogPosts] = await Promise.all([
     getServicesDB(),
     getConditionsDB(),
     getFaqsDB(),
     getTeamMembersDB(),
+    getPublishedBlogPostsDB(),
   ]);
 
   // Featured service is Occupational Therapy or the first service
@@ -632,6 +634,9 @@ export default async function HomePage() {
 
         </div>
       </section>
+
+      {/* 8. Blog Corner: Insights & Resources */}
+      <BlogSection posts={blogPosts} />
 
       {/* 9. Frequently Asked Questions (Accordion) */}
       <section id="faq" className="py-20 lg:py-28 bg-[#faf9f7] scroll-mt-20">
