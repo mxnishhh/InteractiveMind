@@ -1,12 +1,32 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Hero } from '@/components/public/Hero';
 import { TherapiesSection } from '@/components/public/TherapiesSection';
 import { ConditionsSection } from '@/components/public/ConditionsSection';
 import { Accordion } from '@/components/ui/Accordion';
 import { AppointmentForm } from '@/components/public/AppointmentForm';
 import { getServicesDB, getConditionsDB, getFaqsDB, getTeamMembersDB } from '@/lib/db';
-import { ArrowRight, Check, MapPin, Phone, Clock, Sparkles, Heart, Users, Calendar } from 'lucide-react';
+import {
+  ArrowRight,
+  Check,
+  MapPin,
+  Phone,
+  Clock,
+  Sparkles,
+  Heart,
+  Users,
+  Calendar,
+  Eye,
+  Target,
+  MessageSquare,
+  Shirt,
+  Utensils,
+  Bath,
+  ShieldCheck,
+  Activity,
+  Shield,
+} from 'lucide-react';
 import { SITE, ABOUT_PAGE } from '@/constants';
 import {
   FadeUp,
@@ -33,187 +53,260 @@ export default async function HomePage() {
   const featuredCondition = conditions.find((c) => c.slug === 'autism-spectrum-disorder' || c.slug === 'autism') || conditions[0];
   const otherConditions = conditions.filter((c) => c.id !== featuredCondition?.id);
 
+  const adlItems = [
+    { id: '01', name: 'Communication', icon: MessageSquare },
+    { id: '02', name: 'Self-care', icon: Sparkles },
+    { id: '03', name: 'Dressing', icon: Shirt },
+    { id: '04', name: 'Feeding', icon: Utensils },
+    { id: '05', name: 'Toileting', icon: Bath },
+    { id: '06', name: 'Personal hygiene', icon: ShieldCheck },
+    { id: '07', name: 'Mobility', icon: Activity },
+    { id: '08', name: 'Safety', icon: Shield },
+    { id: '09', name: 'Participation in home, school, and community activities', icon: Users },
+  ];
+
   return (
     <div className="space-y-0 text-stone-800">
 
       {/* 1 & 2. Hero Section */}
       <Hero />
 
-      {/* 3. About & Philosophy: Luminous Sensory Gym Photography */}
-      <section id="about" className="py-20 lg:py-28 bg-white border-y border-stone-200/70 scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 3. About & Philosophy: Hand-Drawn Sketch Layout Implementation */}
+      <section id="about" className="py-20 lg:py-28 bg-[#faf9f7] border-y border-stone-200/70 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 lg:space-y-24">
 
-          {/* Section Header */}
-          <FadeUp className="max-w-3xl mb-14">
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">
-              Who We Are
-            </span>
-            <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight leading-tight">
-              A dedicated centre where clinical excellence meets genuine compassion.
-            </h2>
+          {/* =======================================================================
+              1. SECTION INTRO: Eyebrow > Primary Statement (No Secondary Heading)
+              ======================================================================= */}
+          <FadeUp className="mb-14 sm:mb-20 space-y-4">
+            {/* Eyebrow */}
+            <div className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-brand-600 shrink-0" aria-hidden="true" />
+              <span className="text-xs font-bold uppercase tracking-widest text-brand-700 block">
+                {ABOUT_PAGE.eyebrow}
+              </span>
+            </div>
+
+            {/* Primary Display Statement: Four-Word Hero Typographic Signature (One Single Line on Desktop) */}
+            <h2 className="sr-only">Accept. Understand. Include. Empower.</h2>
+            <StaggerContainer
+              staggerDelay={0.14}
+              className="flex flex-wrap lg:flex-nowrap items-baseline gap-x-2.5 sm:gap-x-4 lg:gap-x-3.5 xl:gap-x-5 gap-y-2 max-w-full pt-1"
+              aria-hidden="true"
+            >
+              {[
+                'Accept.',
+                'Understand.',
+                'Include.',
+                'Empower.',
+              ].map((word) => (
+                <StaggerItem key={word} distance={14} duration={0.6} className="shrink-0 lg:shrink">
+                  <span
+                    className="font-serif-heading italic font-semibold text-3xl sm:text-4xl md:text-5xl lg:text-[46px] xl:text-[56px] 2xl:text-[64px] tracking-tight leading-[1.1] text-brand-850 inline-block whitespace-nowrap"
+                  >
+                    {word}
+                  </span>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
           </FadeUp>
 
-          {/* Photographic Architectural Feature + Narrative Asymmetry */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center mb-14">
+          {/* =======================================================================
+              2. IMAGE + NARRATIVE: Two-Column Layout (Balanced Visual Height)
+              ======================================================================= */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
 
-            {/* Left 6 Cols: Architectural Sensory Environment Photo with Floating Badge */}
+            {/* Left 6 Cols: Authentic Centre Environment Photo */}
             <div className="lg:col-span-6 relative">
-              <ImageReveal scaleFrom={0.98} className="relative rounded-3xl overflow-hidden shadow-elevated border-4 border-[#faf9f7] bg-stone-100 aspect-[16/10] sm:aspect-[16/9] lg:aspect-[4/3] group">
-                <img
+              <ImageReveal scaleFrom={0.98} className="relative rounded-3xl overflow-hidden shadow-elevated border-4 border-white bg-stone-100 aspect-[4/3] group">
+                <Image
                   src="/images/homepage/sensory-gym.jpg"
-                  alt="Luminous pediatric sensory gym with natural wood beams, calming acoustic panels, and gentle sensory swings"
+                  alt="Interactive Minds child development and sensory exploration environment in Patna City"
+                  width={800}
+                  height={600}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/60 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/60 via-transparent to-transparent pointer-events-none" />
 
-                {/* Floating Editorial Caption Badge */}
-                <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-stone-200/80 shadow-card flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-brand-100 flex items-center justify-center text-brand-850 shrink-0">
+                {/* Floating Centre Environment Badge */}
+                <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-stone-200/80 shadow-card flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center shrink-0">
                     <Sparkles className="w-5 h-5 text-brand-700" />
                   </div>
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-800 block">Sensory Integration Architecture</span>
-                    <span className="text-xs font-semibold text-stone-800">Designed for Sensory Comfort &amp; Exploration</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-800 block">
+                      Interactive Minds Centre
+                    </span>
+                    <span className="text-xs font-semibold text-stone-800">
+                      Patna City, Bihar
+                    </span>
                   </div>
                 </div>
               </ImageReveal>
             </div>
 
-            {/* Right 6 Cols: Core Narrative & Mission */}
-            <FadeUp delay={0.1} className="lg:col-span-6 space-y-6">
-              <p className="text-lg text-stone-700 leading-relaxed font-normal">
-                <strong className="font-semibold text-stone-900">Interactive Minds</strong> is an Autism Care &amp; Child Development Centre established to guide children through their developmental milestones. Every child is born with individual strengths, unique sensory profiles, and boundless potential.
+            {/* Right 6 Cols: Client-Approved Narrative Paragraphs (Balanced Visual Weight & Height) */}
+            <FadeUp delay={0.1} className="lg:col-span-6 flex flex-col justify-center space-y-7 sm:space-y-8 lg:space-y-9 lg:py-4">
+              <p className="text-lg sm:text-xl md:text-[22px] lg:text-[23px] xl:text-[25px] font-medium text-brand-950/90 leading-relaxed sm:leading-[1.7] lg:leading-[1.65]">
+                {ABOUT_PAGE.introParagraph1}
               </p>
-              <p className="text-base text-stone-600 leading-relaxed">
-                Rather than forcing conformity, our team creates an evidence-informed, positive learning environment where children feel secure to explore, express themselves, and build the life skills necessary for classroom and social success.
+              <p className="text-base sm:text-lg md:text-[20px] lg:text-[20px] xl:text-[21px] font-normal text-brand-900/85 leading-relaxed sm:leading-[1.75] lg:leading-[1.7]">
+                {ABOUT_PAGE.introParagraph2}
               </p>
-              <div className="p-4 rounded-2xl bg-brand-50/70 border border-brand-100 flex items-center gap-3.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-brand-600 animate-pulse shrink-0"></div>
-                <p className="text-xs text-brand-900 font-medium leading-relaxed">
-                  Every room in our Sadikpur centre is acoustically buffered and lit to minimize sensory overload while fostering active developmental engagement.
-                </p>
-              </div>
-              <div>
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand-850 hover:text-brand-700 transition-colors"
-                >
-                  <span>Learn more about our philosophy</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
             </FadeUp>
 
           </div>
 
-          {/* Lower Grid: 4 Clinical Highlights + 3 Guiding Pillars */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-
-            {/* Left: 4 Clinical Highlights (7 cols) */}
-            <div className="lg:col-span-7 space-y-4">
-              <FadeUp distance={16}>
-                <h3 className="font-serif-heading text-xl font-bold text-brand-950 mb-2">Our Clinical Highlights</h3>
-              </FadeUp>
-              <StaggerContainer staggerDelay={0.07} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <StaggerItem>
-                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70 hover:border-brand-200 hover:shadow-soft transition-all duration-200">
-                    <div className="mt-0.5 text-brand-700">
-                      <Check className="w-5 h-5" strokeWidth={2.5} />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-stone-900">Child-Centred Care</h4>
-                      <p className="text-xs text-stone-600 mt-1">Interventions tailored specifically to each child&apos;s sensory, communication, and motor profile.</p>
-                    </div>
-                  </div>
-                </StaggerItem>
-
-                <StaggerItem>
-                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70 hover:border-brand-200 hover:shadow-soft transition-all duration-200">
-                    <div className="mt-0.5 text-brand-700">
-                      <Check className="w-5 h-5" strokeWidth={2.5} />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-stone-900">Individualized Programs</h4>
-                      <p className="text-xs text-stone-600 mt-1">Customized plans (IEP) set with actionable, realistic milestones for home and school.</p>
-                    </div>
-                  </div>
-                </StaggerItem>
-
-                <StaggerItem>
-                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70 hover:border-brand-200 hover:shadow-soft transition-all duration-200">
-                    <div className="mt-0.5 text-brand-700">
-                      <Check className="w-5 h-5" strokeWidth={2.5} />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-stone-900">Experienced Professionals</h4>
-                      <p className="text-xs text-stone-600 mt-1">Pediatric specialists across developmental assessments, therapies, and special education.</p>
-                    </div>
-                  </div>
-                </StaggerItem>
-
-                <StaggerItem>
-                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-alabaster-100 border border-stone-200/70 hover:border-brand-200 hover:shadow-soft transition-all duration-200">
-                    <div className="mt-0.5 text-brand-700">
-                      <Check className="w-5 h-5" strokeWidth={2.5} />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-stone-900">Parent Partnership</h4>
-                      <p className="text-xs text-stone-600 mt-1">Active parent coaching to ensure therapeutic strategies naturally translate into the home routine.</p>
-                    </div>
-                  </div>
-                </StaggerItem>
-              </StaggerContainer>
-            </div>
-
-            {/* Right: 3 Guiding Pillars (5 cols) */}
-            <FadeUp delay={0.15} className="lg:col-span-5 bg-stone-100/70 p-6 sm:p-7 rounded-3xl border border-stone-200 space-y-4">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-brand-850 block mb-1">Our Guiding Pillars</span>
-                <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-stone-900">How We Care</h3>
+          {/* =======================================================================
+              3. OUR VISION & OUR MISSION: 2-Column Balanced Editorial Layout
+              ======================================================================= */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 pt-4">
+            {/* Our Vision */}
+            <FadeUp className="h-full space-y-5 p-8 sm:p-10 rounded-3xl bg-white border border-stone-200/90 shadow-soft flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-brand-900 bg-brand-50 border border-brand-200/70">
+                  <Eye className="w-3.5 h-3.5 text-brand-750" />
+                  <span>{ABOUT_PAGE.visionLabel}</span>
+                </div>
+                <p className="font-serif-heading text-xl sm:text-2xl text-brand-950 font-semibold leading-relaxed">
+                  &ldquo;{ABOUT_PAGE.visionText}&rdquo;
+                </p>
               </div>
-
-              <div className="space-y-3">
-                <div className="p-3.5 rounded-2xl bg-white border border-stone-200/80 shadow-soft">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-brand-100 text-brand-850 font-bold text-xs">01</span>
-                    <h4 className="font-bold text-stone-900 text-sm">Understand</h4>
-                  </div>
-                  <p className="text-xs text-stone-600 leading-relaxed pl-9">
-                    Comprehensive evaluation of sensory profiles, communication style, motor coordination, and emotional regulation triggers.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-white border border-stone-200/80 shadow-soft">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-brand-100 text-brand-850 font-bold text-xs">02</span>
-                    <h4 className="font-bold text-stone-900 text-sm">Develop</h4>
-                  </div>
-                  <p className="text-xs text-stone-600 leading-relaxed pl-9">
-                    Engaging, structured, play-based therapy sessions targeting daily autonomy, articulation, executive focus, and peer play.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-white border border-stone-200/80 shadow-soft">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-brand-100 text-brand-850 font-bold text-xs">03</span>
-                    <h4 className="font-bold text-stone-900 text-sm">Empower</h4>
-                  </div>
-                  <p className="text-xs text-stone-600 leading-relaxed pl-9">
-                    Co-designing home strategies with parents and teachers so progress extends into every room of the child&apos;s life.
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-1">
-                <Link
-                  href="#appointment"
-                  className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-brand-850 hover:bg-brand-900 text-white text-xs font-semibold tracking-wide transition-colors shadow-sm"
-                >
-                  Schedule an Initial Consultation
-                </Link>
+              <div className="pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-500">
+                <span>Inclusive Society &amp; Equal Opportunity</span>
+                <span className="w-2 h-2 rounded-full bg-brand-600" />
               </div>
             </FadeUp>
 
+            {/* Our Mission */}
+            <FadeUp delay={0.08} className="h-full space-y-5 p-8 sm:p-10 rounded-3xl bg-white border border-stone-200/90 shadow-soft flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-brand-900 bg-brand-50 border border-brand-200/70">
+                  <Target className="w-3.5 h-3.5 text-brand-750" />
+                  <span>{ABOUT_PAGE.missionLabel}</span>
+                </div>
+                <p className="font-serif-heading text-xl sm:text-2xl text-brand-950 font-semibold leading-relaxed">
+                  &ldquo;{ABOUT_PAGE.missionText}&rdquo;
+                </p>
+              </div>
+              <div className="pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-500">
+                <span>Empowerment &amp; Daily Autonomy</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              </div>
+            </FadeUp>
+          </div>
+
+          {/* =======================================================================
+              4. ACTIVITIES OF DAILY LIVING (ADLS): Visual Taxonomy Matrix
+              ======================================================================= */}
+          <div className="space-y-10 pt-4">
+            {/* Introductory paragraph */}
+            <FadeUp className="max-w-4xl space-y-4">
+              <div className="flex items-center gap-2.5">
+                <span className="w-2 h-2 rounded-full bg-brand-600 shrink-0" aria-hidden="true" />
+                <span className="text-xs font-bold uppercase tracking-widest text-brand-700 block">
+                  {ABOUT_PAGE.adlLabel}
+                </span>
+              </div>
+              <p className="text-base sm:text-lg lg:text-[19px] text-stone-700 leading-relaxed font-normal">
+                {ABOUT_PAGE.adlIntro}
+              </p>
+            </FadeUp>
+
+            {/* Visual taxonomy grid */}
+            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border border-stone-200/90 rounded-3xl overflow-hidden bg-white shadow-soft">
+              {adlItems.map((item, index) => {
+                const IconComponent = item.icon;
+                const isLastAndOdd = index === adlItems.length - 1 && adlItems.length % 3 !== 0;
+                return (
+                  <StaggerItem key={item.id}>
+                    <div
+                      className={[
+                        'p-6 flex items-center gap-4 transition-colors duration-150 group h-full hover:bg-brand-50/40',
+                        // lg: right border except column 3
+                        index % 3 !== 2 && index !== adlItems.length - 1 ? 'lg:border-r border-stone-200/80' : '',
+                        // lg: bottom border except row 3
+                        index < 6 ? 'lg:border-b border-stone-200/80' : '',
+                        // sm: right border on left column of 2-col layout
+                        index % 2 === 0 && index !== adlItems.length - 1 ? 'sm:border-r border-stone-200/80' : '',
+                        // sm: bottom border all except last row
+                        index < adlItems.length - (adlItems.length % 2 === 0 ? 2 : 1) ? 'sm:border-b border-stone-200/80' : '',
+                        // mobile: bottom border all except last item
+                        index < adlItems.length - 1 ? 'border-b sm:border-b-0 border-stone-200/80' : '',
+                        isLastAndOdd ? 'sm:col-span-2 lg:col-span-1' : '',
+                      ].filter(Boolean).join(' ')}
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100/80 flex items-center justify-center shrink-0 group-hover:bg-brand-100 transition-colors duration-150">
+                        <IconComponent className="w-5 h-5 text-brand-700" />
+                      </div>
+                      <div className="flex items-baseline gap-3 min-w-0 flex-1">
+                        <span className="text-[11px] font-mono font-semibold text-brand-700/60 shrink-0">
+                          {item.id}
+                        </span>
+                        <span className="font-serif-heading text-[15px] sm:text-base font-semibold text-brand-950 leading-snug group-hover:text-brand-900 transition-colors duration-150">
+                          {item.name}
+                        </span>
+                      </div>
+                    </div>
+                  </StaggerItem>
+                );
+              })}
+            </StaggerContainer>
+          </div>
+
+          {/* =======================================================================
+              5. OUR PURPOSE: Emotional Focal Point / Independence
+              ======================================================================= */}
+          <div className="rounded-3xl bg-gradient-to-br from-brand-950 via-[#051c1a] to-brand-900 text-white p-8 sm:p-12 lg:p-16 relative overflow-hidden shadow-elevated">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
+              <FadeUp className="space-y-6">
+                <div className="inline-flex items-center justify-center gap-3">
+                  <span className="h-px w-8 bg-white/20 shrink-0" aria-hidden="true" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-brand-300">
+                    {ABOUT_PAGE.purposeLabel}
+                  </span>
+                  <span className="h-px w-8 bg-white/20 shrink-0" aria-hidden="true" />
+                </div>
+
+                <h3 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-tight text-white max-w-3xl mx-auto">
+                  Our ultimate goal is not just therapy—it is{' '}
+                  <span className="italic text-brand-400 font-medium">independence.</span>
+                </h3>
+
+                <p className="text-base sm:text-lg text-stone-300 leading-relaxed max-w-2xl mx-auto font-normal">
+                  We work towards helping every child become as{' '}
+                  <strong className="font-semibold text-white">independent</strong>,{' '}
+                  <strong className="font-semibold text-white">confident</strong>, and{' '}
+                  <strong className="font-semibold text-white">self-reliant</strong> as possible, according to their individual abilities and potential.
+                </p>
+              </FadeUp>
+            </div>
+          </div>
+
+          {/* =======================================================================
+              6. PHILOSOPHY: Closing Progression Statement
+              ======================================================================= */}
+          <div className="max-w-4xl mx-auto text-center">
+            <FadeUp className="space-y-6">
+              <div className="inline-flex items-center justify-center gap-3">
+                <span className="h-px w-8 bg-brand-200 shrink-0" aria-hidden="true" />
+                <span className="text-xs font-bold uppercase tracking-widest text-brand-700">
+                  Interactive Minds Philosophy
+                </span>
+                <span className="h-px w-8 bg-brand-200 shrink-0" aria-hidden="true" />
+              </div>
+
+              <p className="font-serif-heading text-2xl sm:text-3xl lg:text-4xl font-medium text-brand-950 leading-relaxed sm:leading-[1.4] max-w-3xl mx-auto">
+                Because inclusion begins with{' '}
+                <span className="italic text-brand-700 font-semibold">acceptance</span>,{' '}
+                progress begins with{' '}
+                <span className="italic text-brand-700 font-semibold">understanding</span>,{' '}
+                and independence begins with{' '}
+                <span className="italic text-brand-700 font-semibold">opportunity</span>.
+              </p>
+            </FadeUp>
           </div>
 
         </div>
@@ -587,7 +680,7 @@ export default async function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent"></div>
                 <div className="absolute bottom-3 left-3 right-3 bg-brand-950/80 backdrop-blur-sm px-3.5 py-2 rounded-xl border border-brand-800/60">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-brand-200">A Safe, Warm Welcome</span>
-                  <p className="text-[11px] text-stone-300">Interactive Minds Pediatric Centre, Sadikpur</p>
+                  <p className="text-[11px] text-stone-300">Interactive Minds Pediatric Centre, Patna City</p>
                 </div>
               </ImageReveal>
 
@@ -611,7 +704,12 @@ export default async function HomePage() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-white uppercase tracking-wider">Phone Inquiries</p>
-                    <p className="text-xs text-stone-300 mt-0.5">{SITE.phone} &nbsp;|&nbsp; {SITE.phoneRaw}</p>
+                    <p className="text-xs text-stone-300 mt-0.5">
+                      <a href={`tel:${SITE.phoneRaw}`} className="hover:text-white transition-colors">{SITE.phone} (Primary)</a>
+                      {SITE.phoneSecondary && (
+                        <span> &nbsp;|&nbsp; <a href={`tel:${SITE.phoneRawSecondary}`} className="hover:text-white transition-colors">{SITE.phoneSecondary} (Secondary)</a></span>
+                      )}
+                    </p>
                   </div>
                 </div>
 

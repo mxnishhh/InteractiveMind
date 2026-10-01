@@ -91,7 +91,7 @@ export const ContactForm: React.FC = () => {
           value={formData.phone}
           onChange={handleChange}
           required
-          placeholder="+91 94310 XXXXX"
+          placeholder="+91 XXXXX XXXXX"
         />
       </div>
 

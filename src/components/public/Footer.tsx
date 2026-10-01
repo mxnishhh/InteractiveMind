@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, Phone, MapPin, Clock, ArrowUp, Lock } from 'lucide-react';
 import { SITE, CONSTANT_SERVICES } from '@/constants';
 import { FadeUp, FadeIn } from '@/components/ui/motion';
@@ -13,22 +14,22 @@ export const Footer: React.FC = () => {
 
             {/* Col 1: Brand & Identity (4 cols) */}
             <div className="lg:col-span-4 space-y-5">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-brand-700 text-white font-bold text-sm flex items-center justify-center shadow">
-                  IM
+              <Link href="/" className="inline-block focus:outline-none group" aria-label="Interactive Minds Home">
+                <div className="bg-white rounded-2xl inline-flex items-center justify-center shadow-md border border-white/10 transition-transform duration-200 group-hover:scale-[1.02] overflow-hidden w-[260px] sm:w-[290px] lg:w-[310px] h-[80px] sm:h-[88px] lg:h-[94px]">
+                  <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/images/interactive-minds-logo.png"
+                      alt="Interactive Minds - Autism Care & Child Development Centre"
+                      width={310}
+                      height={310}
+                      className="w-full h-auto max-w-none object-cover"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <span className="font-serif-heading text-lg font-bold text-white tracking-tight block">
-                    Interactive Minds
-                  </span>
-                  <span className="text-[11px] text-brand-200 block">
-                    Autism Care &amp; Child Development Centre
-                  </span>
-                </div>
-              </div>
+              </Link>
 
               <p className="text-xs sm:text-sm text-stone-400 leading-relaxed max-w-sm">
-                An evidence-informed, neurodiversity-affirming pediatric developmental institute in Sadikpur, Patna. Dedicated to nurturing communication, autonomy, sensory regulation, and self-confidence.
+                An evidence-informed, neurodiversity-affirming pediatric developmental institute in Patna City, Bihar. Dedicated to nurturing communication, autonomy, sensory regulation, and self-confidence.
               </p>
 
               <div className="pt-2">
@@ -84,7 +85,12 @@ export const Footer: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-3">
                   <Phone className="w-4 h-4 text-brand-500 shrink-0" />
-                  <a href={`tel:${SITE.phoneRaw}`} className="hover:text-white transition-colors">{SITE.phone}</a>
+                  <div className="flex flex-col gap-0.5">
+                    <a href={`tel:${SITE.phoneRaw}`} className="hover:text-white transition-colors">{SITE.phone} (Primary)</a>
+                    {SITE.phoneSecondary && (
+                      <a href={`tel:${SITE.phoneRawSecondary}`} className="hover:text-white transition-colors">{SITE.phoneSecondary} (Secondary)</a>
+                    )}
+                  </div>
                 </li>
                 <li className="flex items-center gap-3">
                   <Mail className="w-4 h-4 text-brand-500 shrink-0" />

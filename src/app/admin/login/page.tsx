@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Toast } from '@/components/ui/Toast';
@@ -62,8 +63,15 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-stone-200/90 space-y-6 z-10 relative">
         {/* Header / Brand */}
         <div className="text-center space-y-3">
-          <div className="w-14 h-14 rounded-2xl bg-brand-850 text-white flex items-center justify-center mx-auto shadow-md border border-brand-700/60 font-serif-heading font-bold text-xl">
-            IM
+          <div className="flex justify-center">
+            <Image
+              src="/images/interactive-minds-logo.png"
+              alt="Interactive Minds"
+              width={180}
+              height={44}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </div>
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-brand-750 block mb-1">

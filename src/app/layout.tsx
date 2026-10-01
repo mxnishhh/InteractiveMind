@@ -16,9 +16,6 @@ export const metadata: Metadata = {
     siteName: 'Interactive Minds',
     type: 'website',
   },
-  icons: {
-    icon: '/logo.svg',
-  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

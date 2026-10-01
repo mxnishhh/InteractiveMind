@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { AdminUser } from '@/types';
@@ -39,8 +40,14 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     return (
       <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4 p-8 rounded-3xl bg-white border border-stone-200/80 shadow-soft">
-          <div className="w-12 h-12 rounded-2xl bg-brand-850 flex items-center justify-center text-white font-serif-heading font-bold text-lg shadow-sm">
-            IM
+          <div className="w-12 h-12 rounded-2xl bg-white border border-stone-200/90 flex items-center justify-center p-1.5 shadow-sm">
+            <Image
+              src="/images/interactive-minds-mark.png"
+              alt="Interactive Minds"
+              width={40}
+              height={40}
+              className="w-full h-full object-contain"
+            />
           </div>
           <div className="flex items-center gap-2.5 text-stone-700">
             <svg

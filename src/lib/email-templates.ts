@@ -22,9 +22,9 @@ function escapeHtml(unsafe: string): string {
 
 const BRAND_NAME = SITE.name || 'INTERACTIVE MINDS';
 const BRAND_TAGLINE = SITE.tagline || 'Autism Care & Child Development Centre';
-const BRAND_PHONE = SITE.phone || '(555) 234-5678';
-const BRAND_EMAIL = SITE.email || 'interactiveminds@gmail.com';
-const BRAND_ADDRESS = SITE.address || 'Patna, Bihar';
+const BRAND_PHONE = SITE.phone || '9031041990';
+const BRAND_EMAIL = SITE.email || 'interactivemindsindia@gmail.com';
+const BRAND_ADDRESS = SITE.address || '1st Floor, Hira Shiv Palace, Gudari Bazar, Ashokraj Path, Patna City – 800008, Bihar';
 
 /**
  * Base email layout wrapper for consistent visual branding

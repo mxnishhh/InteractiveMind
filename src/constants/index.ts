@@ -4,11 +4,13 @@ export const SITE = {
   name: "INTERACTIVE MINDS",
   shortName: "IM",
   tagline: "Autism Care & Child Development Centre",
-  email: "interactiveminds@gmail.com",
-  phone: "(555) 234-5678",
-  phoneRaw: "+919876543210",
-  whatsappNumber: "+919876543210",
-  address: "1st Floor, Hira Shiv Palace, Ashok Rajpath Rd, Gudari Bazar, Khamji Begum Colony, Sadikpur, Patna, Bihar 800008",
+  email: "interactivemindsindia@gmail.com",
+  phone: "9031041990",
+  phoneSecondary: "9031041991",
+  phoneRaw: "+919031041990",
+  phoneRawSecondary: "+919031041991",
+  whatsappNumber: "+919031041990",
+  address: "1st Floor, Hira Shiv Palace, Gudari Bazar, Ashokraj Path, Patna City – 800008, Bihar",
   workingHours: "Mon-Fri: 8:00 AM - 5:00 PM",
   copyright: "© 2026 Interactive Minds - Neurodiversity-affirming therapy for children and youth.",
 };
@@ -35,21 +37,35 @@ export const HERO = {
 };
 
 export const ABOUT_PAGE = {
-  eyebrow: "About Interactive Minds",
-  heading: "Understanding Every Child, Supporting Every Journey",
-  subheading: "Interactive Minds is a child development and therapy centre dedicated to supporting children with different developmental needs and their families.",
-  philosophyTitle: "Our Child-Centred Philosophy",
-  philosophyText1: "We believe that every child has unique strengths, abilities, and potential. We understand that every child develops at their own pace. That’s why our programs are designed around the individual child rather than rigid formulas.",
-  philosophyText2: "Our multidisciplinary team works closely with children and their families to create a supportive environment where children feel understood, valued, and encouraged to learn.",
-  highlights: [
-    "Individualized Goal Setting",
-    "Evidence-Based Approaches",
-    "Family-Centered Care",
-    "Continuous Skill Tracking"
+  eyebrow: "ABOUT INTERACTIVE MINDS",
+  heading: "Accept. Understand. Include. Empower.",
+  brandName: "Interactive Minds",
+  introParagraph1: "At Interactive Minds, we believe that every child deserves to be accepted for who they are, understood for their unique needs, and included in every part of life.",
+  introParagraph2: "We envision a world where differently abled children are not defined by their limitations, but are recognized for their strengths, abilities, and potential. Our aim is to create an environment where every child feels valued, supported, respected, and encouraged to participate.",
+  visionLabel: "OUR VISION",
+  visionText: "To build an inclusive society that accepts, understands, and includes every differently abled child, creating equal opportunities for them to learn, participate, and thrive.",
+  missionLabel: "OUR MISSION",
+  missionText: "To empower every differently abled child with the skills, confidence, and independence needed to manage their own daily life.",
+  adlLabel: "ACTIVITIES OF DAILY LIVING (ADLS)",
+  adlIntro: "At Interactive Minds, we focus on developing functional life skills and Activities of Daily Living (ADLs) such as:",
+  adlItems: [
+    "Communication",
+    "Self-care",
+    "Dressing",
+    "Feeding",
+    "Toileting",
+    "Personal hygiene",
+    "Mobility",
+    "Safety",
+    "Participation in home, school, and community activities",
   ],
-  missionTitle: "Our Mission Pillars",
+  purposeLabel: "OUR PURPOSE",
+  purposeHeading: "Our ultimate goal is not just therapy—it is independence.",
+  purposeText: "We work towards helping every child become as independent, confident, and self-reliant as possible, according to their individual abilities and potential.",
+  closingStatement: "Because inclusion begins with acceptance, progress begins with understanding, and independence begins with opportunity.",
   teamEyebrow: "Multidisciplinary Team",
   teamHeading: "Specialist Team Roles",
+  teamSubheading: "Our clinicians and educators work as a unified multidisciplinary team to support each child's developmental milestones.",
 };
 
 export const APPROACH_PILLARS = [
@@ -451,7 +467,7 @@ export const CTA_SECTION = {
   heading: "Every Child Has Their Own Way to Shine",
   description: "Take the first step towards understanding your child’s developmental needs. Contact our team to schedule a supportive assessment.",
   bookButtonLabel: "Book an Assessment",
-  callButtonLabel: "Call (555) 234-5678",
+  callButtonLabel: "Call 9031041990",
   whatsappButtonLabel: "WhatsApp Us",
 };
 

@@ -163,7 +163,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({ services = [] 
           value={formData.phone}
           onChange={handleChange}
           required
-          placeholder="(555) 000-0000"
+          placeholder="+91 XXXXX XXXXX"
         />
       </div>
 

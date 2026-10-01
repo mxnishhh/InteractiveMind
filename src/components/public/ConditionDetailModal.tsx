@@ -214,7 +214,7 @@ export const ConditionDetailModal: React.FC<ConditionDetailModalProps> = ({
                 Schedule a Consultation for {condition.name}
               </h4>
               <p className="text-xs text-stone-600 leading-relaxed">
-                Connect with our pediatric clinical team in Sadikpur, Patna to schedule a personalized developmental assessment.
+                Connect with our pediatric clinical team in Patna City to schedule a personalized developmental assessment.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2">
                 <button

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -81,8 +82,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
           {/* Header / Brand */}
           <div className="px-6 py-5 border-b border-brand-900/80 flex items-center justify-between">
             <Link href="/admin/dashboard" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-2xl bg-brand-800 border border-brand-600/50 flex items-center justify-center text-white font-serif-heading font-bold text-base shadow-sm group-hover:bg-brand-750 transition-colors">
-                IM
+              <div className="w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center shadow-sm">
+                <Image
+                  src="/images/interactive-minds-mark.png"
+                  alt="Interactive Minds"
+                  width={36}
+                  height={36}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <span className="block font-serif-heading font-bold text-white text-sm tracking-tight">

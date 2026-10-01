@@ -254,7 +254,7 @@ export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
                   <div className="absolute bottom-3 left-3 right-3 bg-brand-950/90 backdrop-blur-md px-3.5 py-2 rounded-xl text-white text-xs flex items-center justify-between border border-white/10 shadow-sm">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="font-semibold tracking-wide">Interactive Minds • Sadikpur Centre</span>
+                      <span className="font-semibold tracking-wide">Interactive Minds • Patna City Centre</span>
                     </div>
                     <span className="text-[10px] text-brand-200 uppercase tracking-wider font-semibold">1-on-1 Sessions</span>
                   </div>

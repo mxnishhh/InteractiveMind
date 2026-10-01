@@ -184,7 +184,7 @@ export default function AdminSettingsPage() {
                 name="site_email"
                 value={settings.site_email}
                 onChange={handleChange}
-                placeholder="care@interactiveminds.in"
+                placeholder="interactivemindsindia@gmail.com"
                 required
               />
             </div>
@@ -194,7 +194,7 @@ export default function AdminSettingsPage() {
                 name="site_phone"
                 value={settings.site_phone}
                 onChange={handleChange}
-                placeholder="+91 94310 XXXXX"
+                placeholder="9031041990"
                 required
               />
             </div>
@@ -204,8 +204,8 @@ export default function AdminSettingsPage() {
                 name="whatsapp_number"
                 value={settings.whatsapp_number}
                 onChange={handleChange}
-                placeholder="9194310XXXXX"
-                helperText="Formatted with country code without + (e.g. 919431000000)"
+                placeholder="919031041990"
+                helperText="Formatted with country code without + (e.g. 919031041990)"
                 required
               />
             </div>
@@ -230,7 +230,7 @@ export default function AdminSettingsPage() {
             rows={3}
             value={settings.site_address}
             onChange={handleChange}
-            placeholder="Plot No. XX, Boring Canal Road, Patna, Bihar - 800001"
+            placeholder="1st Floor, Hira Shiv Palace, Gudari Bazar, Ashokraj Path, Patna City – 800008, Bihar"
             required
           />
 

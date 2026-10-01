@@ -65,6 +65,14 @@ export default async function AppointmentPage() {
             <a href={`tel:${SITE.phoneRaw}`} className="font-bold text-brand-850 hover:underline">
               {SITE.phone}
             </a>
+            {SITE.phoneSecondary && (
+              <>
+                {' '}or{' '}
+                <a href={`tel:${SITE.phoneRawSecondary}`} className="font-bold text-brand-850 hover:underline">
+                  {SITE.phoneSecondary}
+                </a>
+              </>
+            )}
           </p>
         </FadeIn>
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Menu, X, Phone, LayoutDashboard } from 'lucide-react';
@@ -24,8 +25,8 @@ export const Navbar: React.FC = () => {
   const navLinks: NavLinkItem[] = [
     { id: 'hero', label: 'Home', href: isHome ? '#hero' : '/' },
     { id: 'about', label: 'About', href: isHome ? '#about' : '/#about' },
-    { id: 'therapies', label: 'Therapies', href: isHome ? '#therapies' : '/#therapies' },
-    { id: 'conditions', label: 'Conditions', href: isHome ? '#conditions' : '/#conditions' },
+    { id: 'therapies', label: 'Therapies', href: isHome ? '#therapies' : '/therapies' },
+    { id: 'conditions', label: 'Conditions', href: isHome ? '#conditions' : '/conditions' },
     { id: 'approach', label: 'Approach', href: isHome ? '#approach' : '/#approach' },
     { id: 'journey', label: 'Journey', href: isHome ? '#journey' : '/#journey' },
     { id: 'team', label: 'Team', href: isHome ? '#team' : '/#team' },
@@ -107,29 +108,31 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 gap-3">
 
-          {/* Logo Brand */}
-          <Link href="/" className="flex items-center gap-3 group focus:outline-none shrink-0">
-            <div className="h-10 flex items-center">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-brand-850 text-white flex items-center justify-center font-bold text-sm shadow-sm group-hover:bg-brand-900 transition-colors">
-                  IM
-                </div>
-                <div>
-                  <span className="font-serif-heading font-semibold text-lg sm:text-xl text-brand-950 tracking-tight block leading-tight">
-                    Interactive Minds
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] font-medium text-stone-500 tracking-wide block">
-                    Autism Care &amp; Child Development
-                  </span>
-                </div>
-              </div>
-            </div>
+          {/* Logo Brand: Circular Mark Only */}
+          <Link href="/" className="flex items-center group focus:outline-none shrink-0 py-1" aria-label="Interactive Minds Home">
+            <Image
+              src="/images/interactive-minds-mark.png"
+              alt="Interactive Minds"
+              width={56}
+              height={56}
+              className="h-11 sm:h-12 md:h-[52px] lg:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+              priority
+            />
           </Link>
 
           {/* Desktop Nav Links with Animated Active Indicator */}
           <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1" aria-label="Main Navigation">
             {navLinks.map((link) => {
-              const isActive = isHome && activeSection === link.id;
+              let isActive = false;
+              if (isHome) {
+                isActive = activeSection === link.id;
+              } else {
+                if (link.id === 'hero') isActive = pathname === '/';
+                else if (link.id === 'about') isActive = pathname.startsWith('/about');
+                else if (link.id === 'therapies') isActive = pathname.startsWith('/therapies');
+                else if (link.id === 'conditions') isActive = pathname.startsWith('/conditions');
+                // The hash links (approach, journey, team, faq) aren't active on dedicated pages
+              }
 
               return (
                 <Link
@@ -224,7 +227,15 @@ export const Navbar: React.FC = () => {
             {/* Section 1: Public Section Nav Links */}
             <div className="space-y-1">
               {navLinks.map((link) => {
-                const isActive = isHome && activeSection === link.id;
+                let isActive = false;
+                if (isHome) {
+                  isActive = activeSection === link.id;
+                } else {
+                  if (link.id === 'hero') isActive = pathname === '/';
+                  else if (link.id === 'about') isActive = pathname.startsWith('/about');
+                  else if (link.id === 'therapies') isActive = pathname.startsWith('/therapies');
+                  else if (link.id === 'conditions') isActive = pathname.startsWith('/conditions');
+                }
 
                 return (
                   <Link

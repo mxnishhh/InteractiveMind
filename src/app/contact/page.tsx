@@ -69,12 +69,22 @@ export default async function ContactPage() {
                   </div>
                   <div>
                     <span className="block text-[10px] font-bold uppercase tracking-wider text-stone-500">{CONTACT_PAGE.phoneLabel}</span>
-                    <a
-                      href={`tel:${SITE.phoneRaw}`}
-                      className="block font-semibold text-brand-950 hover:text-brand-700 transition-colors mt-0.5 text-xs sm:text-sm"
-                    >
-                      {settings.site_phone || SITE.phone}
-                    </a>
+                    <div className="flex flex-col gap-1 mt-0.5">
+                      <a
+                        href={`tel:${SITE.phoneRaw}`}
+                        className="block font-semibold text-brand-950 hover:text-brand-700 transition-colors text-xs sm:text-sm"
+                      >
+                        {SITE.phone} <span className="text-[11px] text-stone-500 font-normal">(Primary)</span>
+                      </a>
+                      {SITE.phoneSecondary && (
+                        <a
+                          href={`tel:${SITE.phoneRawSecondary}`}
+                          className="block font-semibold text-brand-950 hover:text-brand-700 transition-colors text-xs sm:text-sm"
+                        >
+                          {SITE.phoneSecondary} <span className="text-[11px] text-stone-500 font-normal">(Secondary)</span>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -107,8 +117,18 @@ export default async function ContactPage() {
                   className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full bg-brand-50 hover:bg-brand-100 text-brand-900 border border-brand-200/80 font-semibold text-xs transition-colors"
                 >
                   <Phone className="w-4 h-4 text-brand-700" />
-                  <span>Call Centre: {SITE.phone}</span>
+                  <span>Call Primary: {SITE.phone}</span>
                 </a>
+
+                {SITE.phoneSecondary && (
+                  <a
+                    href={`tel:${SITE.phoneRawSecondary}`}
+                    className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full bg-brand-50 hover:bg-brand-100 text-brand-900 border border-brand-200/80 font-semibold text-xs transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-brand-700" />
+                    <span>Call Secondary: {SITE.phoneSecondary}</span>
+                  </a>
+                )}
               </div>
             </div>
           </FadeUp>
