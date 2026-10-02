@@ -115,7 +115,7 @@ export const ConditionsSection: React.FC<ConditionsSectionProps> = ({
                       Sensory Integration
                     </span>
                     <span className="text-xs bg-white text-brand-900 px-3 py-1 rounded-md border border-brand-100 font-medium">
-                      Parent Guidance
+                      Parent Counselling & Training Programme (PCTP)
                     </span>
                   </div>
                 </div>

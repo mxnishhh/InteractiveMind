@@ -115,10 +115,10 @@ ON DUPLICATE KEY UPDATE `name` = VALUES(`name`), `short_description` = VALUES(`s
 
 -- 4. FAQs
 INSERT INTO `faqs` (`id`, `question`, `answer`, `category`, `display_order`, `active`) VALUES
-(1, 'What is Interactive Minds?', 'Interactive Minds is an Autism Care & Child Development Centre providing individualized therapy services including ABA Therapy, Occupational Therapy, Speech Therapy, Special Education, Sensory Integration, Physiotherapy, and Parent Guidance.', 'General', 1, 1),
+(1, 'What is Interactive Minds?', 'Interactive Minds is an Autism Care & Child Development Centre providing individualized therapy services including ABA Therapy, Occupational Therapy, Speech Therapy, Special Education, Sensory Integration, Physiotherapy, and Parent Counselling & Training Programme (PCTP).', 'General', 1, 1),
 (2, 'How do I get started with an assessment?', 'You can book an assessment by filling out our online Appointment Request form or contacting our center directly. Our intake coordinator will contact you to schedule an initial consultation.', 'Assessment', 2, 1),
 (3, 'What age groups do you support?', 'We provide developmental support and therapy programs for toddlers (0-3 years), preschool children (3-5 years), and school-aged children & youth (5+ years).', 'General', 3, 1),
-(4, 'Do you involve parents in the therapy process?', 'Yes, parent partnership is central to our philosophy. We offer Parent Guidance sessions, home strategies, and regular progress updates so therapy goals align seamlessly between our center and home.', 'Therapy', 4, 1),
+(4, 'Do you involve parents in the therapy process?', 'Yes, parent partnership is central to our philosophy. We offer Parent Counselling & Training Programme (PCTP) sessions, home strategies, and regular progress updates so therapy goals align seamlessly between our center and home.', 'Therapy', 4, 1),
 (5, 'Are your therapy plans customized for each child?', 'Absolutely. Every child receives a comprehensive evaluation followed by an individualized intervention plan tailored specifically to their strengths, challenges, and family goals.', 'Therapy', 5, 1)
 ON DUPLICATE KEY UPDATE `question` = VALUES(`question`);
 

@@ -378,7 +378,7 @@ export const CONSTANT_FAQS: FAQ[] = [
   {
     id: 4,
     question: 'Do you involve parents in therapy sessions?',
-    answer: 'Yes! Family co-design and parent involvement are central to our philosophy. We offer dedicated Parent Guidance & Coaching sessions to empower parents with practical strategies at home.',
+    answer: 'Yes! Family co-design and parent involvement are central to our philosophy. We offer dedicated Parent Counselling & Training Programme (PCTP) sessions to empower parents with practical strategies at home.',
     category: 'Therapy',
     active: true,
     display_order: 4
