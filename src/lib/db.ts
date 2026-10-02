@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import mysql from 'mysql2/promise';
 import {
   INITIAL_SERVICES,
@@ -1043,39 +1044,67 @@ export async function deleteBlogPostDB(id: number): Promise<boolean> {
 // 8. APPOINTMENTS & MESSAGES REPOSITORY
 // ====================================================
 
+function generateAppointmentReference(): string {
+  // Generate 6 uppercase alphanumeric characters using cryptographically secure random bytes
+  // Base32 charset avoids easily confused characters (0/O, 1/I)
+  const charset = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const bytes = crypto.randomBytes(6);
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += charset[bytes[i] % charset.length];
+  }
+  return `IM-${code}`;
+}
+
 export async function createAppointmentDB(data: Omit<Appointment, 'id' | 'appointment_reference' | 'status' | 'created_at'>): Promise<Appointment> {
-  const ref = 'IM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-  const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+  const maxRetries = 3;
+  let lastError: any = null;
 
-  const res = await queryDb(
-    `INSERT INTO appointments
-     (appointment_reference, parent_name, child_name, email, phone, child_age, service_id, preferred_date, preferred_time, message, preferred_contact_method, status, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)`,
-    [
-      ref,
-      data.parent_name,
-      data.child_name,
-      data.email,
-      data.phone,
-      data.child_age,
-      data.service_id || null,
-      data.preferred_date,
-      data.preferred_time,
-      data.message || null,
-      data.preferred_contact_method || 'phone',
-      now
-    ]
-  );
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const ref = generateAppointmentReference();
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
-  const insertId = (res as any).insertId;
+    try {
+      const res = await queryDb(
+        `INSERT INTO appointments
+         (appointment_reference, parent_name, child_name, email, phone, child_age, service_id, preferred_date, preferred_time, message, preferred_contact_method, status, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING', ?)`,
+        [
+          ref,
+          data.parent_name,
+          data.child_name,
+          data.email,
+          data.phone,
+          data.child_age,
+          data.service_id || null,
+          data.preferred_date,
+          data.preferred_time,
+          data.message || null,
+          data.preferred_contact_method || 'phone',
+          now
+        ]
+      );
 
-  return {
-    id: insertId,
-    appointment_reference: ref,
-    ...data,
-    status: 'PENDING',
-    created_at: now
-  };
+      const insertId = (res as any).insertId;
+
+      return {
+        id: insertId,
+        appointment_reference: ref,
+        ...data,
+        status: 'PENDING',
+        created_at: now
+      };
+    } catch (error: any) {
+      lastError = error;
+      // If collision on unique appointment_reference, retry with a fresh random code
+      if (error.message?.includes('Duplicate entry') || error.message?.includes('ER_DUP_ENTRY')) {
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw lastError || new Error('Failed to generate a unique appointment reference.');
 }
 
 export async function getAppointmentsDB(): Promise<Appointment[]> {

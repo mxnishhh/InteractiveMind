@@ -30,16 +30,13 @@ A full-stack, production-grade web application built for **Interactive Minds** (
 
 ### Admin Routes
 - `/admin/login` - Secure Admin Gateway
-- `/admin/dashboard` - Metrics Overview (Appointments, Messages, Active Services)
+- `/admin/dashboard` - Operations Overview (Metrics, Schedules, Enquiries)
 - `/admin/dashboard/appointments` - Appointments Table (Search, Filter, Detail View, Status Updates, Notes)
 - `/admin/dashboard/messages` - Contact Enquiries Inbox (Search, Filter, Detail View, Status Updates)
-- `/admin/dashboard/services` - Therapies & Services List
-- `/admin/dashboard/conditions` - Conditions List
-- `/admin/dashboard/team` - Multidisciplinary Team Roles
-- `/admin/dashboard/faqs` - FAQs List
-- `/admin/dashboard/testimonials` - Testimonials Manager
-- `/admin/dashboard/media` - Media Gallery Manager
-- `/admin/dashboard/settings` - Global Site Settings (Address, Phone, Email, WhatsApp, Tagline)
+- `/admin/dashboard/faqs` - FAQs Manager (Create, Edit, Delete, Categorize)
+- `/admin/dashboard/testimonials` - Testimonials Manager (Create, Edit, Delete, Status)
+- `/admin/dashboard/blog` - Blog & Insights CMS (Create, Edit, Delete, Draft/Publish, Video/Article)
+- `/admin/dashboard/media` - Media Gallery Manager (Upload, Search, Filter, Delete)
 
 ---
 

@@ -47,14 +47,6 @@ export default async function HomePage() {
     getPublishedBlogPostsDB(),
   ]);
 
-  // Featured service is Occupational Therapy or the first service
-  const featuredService = services.find((s) => s.slug === 'occupational-therapy') || services[0];
-  const otherServices = services.filter((s) => s.id !== featuredService?.id);
-
-  // Featured condition is Autism Spectrum Disorder or the first condition
-  const featuredCondition = conditions.find((c) => c.slug === 'autism-spectrum-disorder' || c.slug === 'autism') || conditions[0];
-  const otherConditions = conditions.filter((c) => c.id !== featuredCondition?.id);
-
   const adlItems = [
     { id: '01', name: 'Communication', icon: MessageSquare },
     { id: '02', name: 'Self-care', icon: Sparkles },
@@ -316,15 +308,11 @@ export default async function HomePage() {
 
       {/* 4. Therapies & Developmental Programs - Interactive Modal Section */}
       <TherapiesSection
-        featuredService={featuredService}
-        otherServices={otherServices}
         allServices={services}
       />
 
       {/* 5. Conditions We Support - Interactive Modal Section */}
       <ConditionsSection
-        featuredCondition={featuredCondition}
-        otherConditions={otherConditions}
         allConditions={conditions}
       />
 

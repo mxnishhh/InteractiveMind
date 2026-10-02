@@ -212,7 +212,7 @@ export const CONSTANT_SERVICES: Service[] = [
       'Calming & Self-Regulation',
       'Focus in Busy Environments'
     ],
-    active: true,
+    active: false,
     display_order: 5
   },
   {
@@ -237,7 +237,7 @@ export const CONSTANT_SERVICES: Service[] = [
       'Cognitive & Developmental Profile',
       'Parent-Child Bonding'
     ],
-    active: true,
+    active: false,
     display_order: 6
   },
   {
@@ -262,7 +262,7 @@ export const CONSTANT_SERVICES: Service[] = [
       'Independent Desk Work Readiness',
       'Basic Pre-Reading & Counting'
     ],
-    active: true,
+    active: false,
     display_order: 7
   },
   {
@@ -300,8 +300,8 @@ export const CONSTANT_SERVICES: Service[] = [
 export const CONSTANT_CONDITIONS: Condition[] = [
   {
     id: 1,
-    name: 'Autism Spectrum Disorder',
-    slug: 'autism-spectrum-disorder',
+    name: 'Autism',
+    slug: 'autism',
     short_description: 'Autism is a neurodevelopmental condition that affects a person\'s ability to communicate and interact with others, often involving challenges with starting and maintaining conversations, intense focus on special interests, and repetitive language or behaviors.',
     description: 'Autism is a neurodevelopmental condition that affects a person\'s ability to communicate and interact with others, often involving challenges with starting and maintaining conversations, intense focus on special interests, and repetitive language or behaviors. It\'s called a spectrum because individuals with autism can present with a range of strengths and challenges: some may benefit from support in building social awareness, while others may require continual and comprehensive care.',
     image_url: 'https://images.unsplash.com/photo-1508847154043-be5407fcaa5a?auto=format&fit=crop&q=80&w=1200',
@@ -325,7 +325,7 @@ export const CONSTANT_CONDITIONS: Condition[] = [
     short_description: 'A learning difference affecting reading, spelling, phonological processing, and written expression skills.',
     description: 'Dyslexia is a specific learning difference that makes reading, decoding, and writing challenging despite average or high intelligence. Our Special Education and Speech Therapy teams use multi-sensory reading approaches and structured phonics to build reading confidence.',
     image_url: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=1200',
-    active: true,
+    active: false,
     display_order: 3
   },
   {
@@ -388,7 +388,7 @@ export const CONSTANT_FAQS: FAQ[] = [
     question: 'Are your therapy plans customized for each child?',
     answer: 'Absolutely. Every child receives an individualized assessment and a tailored plan built around their unique strengths, interests, sensory preferences, and developmental goals.',
     category: 'Therapy',
-    active: true,
+    active: false,
     display_order: 5
   }
 ];

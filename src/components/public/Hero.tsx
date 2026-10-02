@@ -79,7 +79,7 @@ export const Hero: React.FC = () => {
                 href="#therapies"
                 className="inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-brand-850 bg-white hover:bg-stone-50 border border-stone-300/80 rounded-full shadow-sm hover:border-brand-700 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200"
               >
-                Explore Our 9 Therapies
+                Explore Our 6 Therapies
               </Link>
             </motion.div>
 

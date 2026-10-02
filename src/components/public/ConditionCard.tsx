@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Condition } from '@/types';
@@ -16,12 +17,36 @@ interface ConditionCardProps {
 export const ConditionCard: React.FC<ConditionCardProps> = ({ condition, onSelect }) => {
   const shouldReduceMotion = useReducedMotion();
 
+  const imageMap: Record<string, string> = {
+    'autism': '/images/conditions/autism.jpg',
+    'adhd': '/images/conditions/adhd.jpg',
+    'down-syndrome': '/images/conditions/down-syndrome.jpg',
+    'cerebral-palsy': '/images/conditions/cerebral-palsy.jpg',
+  };
+
+  const altMap: Record<string, string> = {
+    'autism': 'Child engaged in a structured developmental activity with a caregiver',
+    'adhd': 'Child participating in an activity with a caregiver in a developmental setting',
+    'down-syndrome': 'Child participating in a developmental activity with a caregiver',
+    'cerebral-palsy': 'Child participating in a developmental activity with a caregiver using adaptive seating',
+  };
+
   const cardContent = (
     <div className="bg-alabaster-100 rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 transition-all duration-300 flex flex-col justify-between group h-full text-left">
       <div>
         <span className="text-[11px] font-bold uppercase tracking-wider text-brand-850 bg-brand-100/70 border border-brand-200/70 px-3 py-1 rounded-full inline-block mb-3.5">
           Support Program
         </span>
+
+        <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-stone-100 border border-stone-200/80 mb-3.5 group-hover:border-brand-200 transition-colors">
+          <Image
+            src={imageMap[condition.slug] || imageMap['autism']}
+            alt={altMap[condition.slug] || 'Developmental support activity'}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
 
         <h3 className="font-serif-heading text-xl font-bold text-brand-950 mb-2.5 group-hover:text-brand-850 transition-colors">
           {condition.name}

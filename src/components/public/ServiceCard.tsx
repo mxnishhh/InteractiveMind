@@ -17,7 +17,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect }) =
   const shouldReduceMotion = useReducedMotion();
 
   const cardContent = (
-    <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 transition-all duration-300 flex flex-col justify-between group h-full text-left">
+    <div className="bg-white rounded-3xl p-6 sm:p-7 border border-stone-200/90 shadow-soft hover:shadow-card-hover hover:border-brand-300/80 transition-all duration-500 flex flex-col justify-between group h-full text-left relative overflow-hidden">
       <div className="space-y-3.5">
         <div className="flex items-center justify-between">
           <div className="w-10 h-10 rounded-2xl bg-brand-50 text-brand-850 flex items-center justify-center group-hover:bg-brand-100 group-hover:text-brand-900 transition-colors">

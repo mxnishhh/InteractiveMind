@@ -1,10 +1,12 @@
 -- Interactive Minds - Initial Database Seed Data
 USE `interactive_minds`;
 
--- 1. Initial Admin User (Default Password: AdminSecurePass123! - Bcrypt hash generated)
-INSERT INTO `admins` (`name`, `email`, `password_hash`, `role`) VALUES
-('Administrator', 'admin@interactivemind.in', '$2a$12$H5oPi/pEpNhHC58/P6h00eEjjL96IH6kbOjO.Sx8ifXDyfLGDF5yu', 'superadmin')
-ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
+-- 1. Initial Admin User Provisioning Note:
+-- For production security, administrative credentials are intentionally NOT seeded with hardcoded defaults.
+-- The primary administrator account (admins.id = 1) must be provisioned separately through a secure
+-- password setup process with cryptographically hashed passwords (bcrypt salt rounds = 12).
+-- Plaintext passwords and password hashes must never be committed to source control.
+
 
 -- 2. Services (Therapies)
 INSERT INTO `services` (`id`, `name`, `slug`, `short_description`, `description`, `who_it_helps`, `benefits`, `approach`, `process_steps`, `skills_supported`, `display_order`, `active`) VALUES
@@ -51,7 +53,7 @@ INSERT INTO `services` (`id`, `name`, `slug`, `short_description`, `description`
 'Promotes emotional self-soothing, reduces sensory overload, enhances body awareness, improves emotional balance.',
 'Specialized sensory gym environment equipped with swings, tactile tools, weighted equipment, and soothing lighting.',
 '["Sensory Profile Evaluation", "Customized Sensory Diet", "Guided Therapy Sessions", "Environment Modification Advice"]',
-'["Sensory Processing & Tolerance", "Vestibular & Proprioceptive Balance", "Calming & Self-Regulation", "Focus in Busy Environments"]', 5, 1),
+'["Sensory Processing & Tolerance", "Vestibular & Proprioceptive Balance", "Calming & Self-Regulation", "Focus in Busy Environments"]', 5, 0),
 
 (6, 'Clinical Psychology', 'clinical-psychology',
 'Comprehensive psychological assessments, emotional support, and developmental evaluations conducted by specialized clinicians.',
@@ -60,7 +62,7 @@ INSERT INTO `services` (`id`, `name`, `slug`, `short_description`, `description`
 'Provides diagnostic clarity, fosters emotional coping skills, supports parent mental health, guides long-term developmental planning.',
 'Evidence-based cognitive and behavioral strategies, play therapy techniques, and empathetic family consultations.',
 '["Comprehensive Clinical Evaluation", "Diagnostic & Skill Assessment", "Therapeutic Support Sessions", "Family Guidance & Follow-up"]',
-'["Emotional Coping & Regulation", "Behavioral Self-Control", "Cognitive Assessment", "Parent-Child Bonding"]', 6, 1),
+'["Emotional Coping & Regulation", "Behavioral Self-Control", "Cognitive Assessment", "Parent-Child Bonding"]', 6, 0),
 
 (7, 'School Readiness Program', 'school-readiness',
 'Structured early intervention program helping young children build the social, cognitive, and self-care foundation needed for classroom success.',
@@ -69,7 +71,7 @@ INSERT INTO `services` (`id`, `name`, `slug`, `short_description`, `description`
 'Eases school transitions, builds group interaction confidence, develops independent self-care, fosters listening and task-following abilities.',
 'Small group interaction, simulated classroom routines, circle time, structured play, and guided peer interaction.',
 '["Readiness Screening", "Group Simulation Placement", "Interactive School Readiness Training", "Transition Report & Recommendations"]',
-'["Following Group Instructions", "Peer Sharing & Social Turn-Taking", "Independent Desk Work Readiness", "Basic Pre-Reading & Counting"]', 7, 1),
+'["Following Group Instructions", "Peer Sharing & Social Turn-Taking", "Independent Desk Work Readiness", "Basic Pre-Reading & Counting"]', 7, 0),
 
 (8, 'Physiotherapy', 'physiotherapy',
 'A detailed pre-therapy assessment forms the foundation of the physiotherapy process at Interactive Minds. Goals are established in consultation with parents, followed by appropriate therapy interventions and regular reviews.',
@@ -92,7 +94,7 @@ ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 
 -- 3. Conditions
 INSERT INTO `conditions` (`id`, `name`, `slug`, `short_description`, `description`, `display_order`, `active`) VALUES
-(1, 'Autism Spectrum Disorder', 'autism-spectrum-disorder',
+(1, 'Autism', 'autism',
 'Autism is a neurodevelopmental condition that affects a person\'s ability to communicate and interact with others, often involving challenges with starting and maintaining conversations, intense focus on special interests, and repetitive language or behaviors.',
 'Autism is a neurodevelopmental condition that affects a person\'s ability to communicate and interact with others, often involving challenges with starting and maintaining conversations, intense focus on special interests, and repetitive language or behaviors. It\'s called a spectrum because individuals with autism can present with a range of strengths and challenges: some may benefit from support in building social awareness, while others may require continual and comprehensive care.', 1, 1),
 
@@ -102,7 +104,7 @@ INSERT INTO `conditions` (`id`, `name`, `slug`, `short_description`, `descriptio
 
 (3, 'Dyslexia', 'dyslexia',
 'A learning difference affecting reading, spelling, phonological processing, and written expression skills.',
-'Dyslexia is a specific learning difference that makes reading, decoding, and writing challenging despite average or high intelligence. Our Special Education and Speech Therapy teams use multi-sensory reading approaches and structured phonics to build reading confidence.', 3, 1),
+'Dyslexia is a specific learning difference that makes reading, decoding, and writing challenging despite average or high intelligence. Our Special Education and Speech Therapy teams use multi-sensory reading approaches and structured phonics to build reading confidence.', 3, 0),
 
 (4, 'Down Syndrome', 'down-syndrome',
 'Down syndrome is a condition in which a person has an extra copy of chromosome 21, which changes how their body and brain develop.',

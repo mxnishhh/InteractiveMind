@@ -1,32 +1,143 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
-import { Service } from '@/types';
-import { ServiceCard } from './ServiceCard';
-import { TherapyDetailModal } from './TherapyDetailModal';
 import {
-  FadeUp,
-  ImageReveal,
-  StaggerContainer,
-  StaggerItem,
-} from '@/components/ui/motion';
-import { motion, useReducedMotion } from 'framer-motion';
-import { EDITORIAL_EASE } from '@/components/ui/motion';
+  ArrowRight,
+  Sparkles,
+  Target,
+  Activity,
+  MessageSquare,
+  GraduationCap,
+  Users,
+  Heart,
+} from 'lucide-react';
+import { Service } from '@/types';
+import { TherapyDetailModal } from './TherapyDetailModal';
+import { FadeUp } from '@/components/ui/motion';
 
 interface TherapiesSectionProps {
-  featuredService: Service | null;
-  otherServices: Service[];
   allServices: Service[];
 }
 
+const THERAPY_ICON_MAP: Record<string, React.ElementType> = {
+  'aba-therapy': Target,
+  'occupational-therapy': Activity,
+  'speech-therapy': MessageSquare,
+  'special-education': GraduationCap,
+  'physiotherapy': Heart,
+  'parent-guidance': Users,
+};
+
+// Approved content-derived tags/chips for each of the 6 active therapies
+const THERAPY_TAGS: Record<string, string[]> = {
+  'aba-therapy': [
+    'Social Interaction',
+    'Everyday Activities',
+    'Self-worth',
+    'Self-reliance',
+  ],
+  'occupational-therapy': [
+    'Play',
+    'Self-care',
+    'Fine Motor Skills',
+    'Social Participation',
+  ],
+  'speech-therapy': [
+    'Verbal Communication',
+    'Nonverbal Communication',
+    'Speech',
+    'Communication',
+  ],
+  'special-education': [
+    'Individualized Educational Programme',
+    'Parent Involvement',
+    'Multisensory Learning',
+    'Inclusive Activities',
+  ],
+  'physiotherapy': [
+    'Pre-therapy Assessment',
+    'Goal Setting',
+    'Parent Counselling',
+    'Home-based Management',
+  ],
+  'parent-guidance': [
+    'Parent Empowerment',
+    'Communication Guidance',
+    'Social Participation',
+    'Independent Living Skills',
+  ],
+};
+
+const ORDERED_SLUGS = [
+  'aba-therapy',
+  'occupational-therapy',
+  'speech-therapy',
+  'special-education',
+  'physiotherapy',
+  'parent-guidance',
+];
+
+interface TherapyCardItemProps {
+  service: Service;
+  onSelect: (service: Service) => void;
+}
+
+const TherapyCardItem: React.FC<TherapyCardItemProps> = ({
+  service,
+  onSelect,
+}) => {
+  const Icon = THERAPY_ICON_MAP[service.slug] || Sparkles;
+  const tags = THERAPY_TAGS[service.slug] || [];
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(service)}
+      className="w-full h-full min-h-[260px] sm:min-h-[275px] text-left rounded-3xl p-6 sm:p-7 border border-[rgba(13,110,99,0.10)] bg-[#FFFEFB] hover:bg-[#F0F8F5] hover:border-[rgba(13,110,99,0.22)] shadow-[0_2px_10px_rgba(12,74,69,0.03)] hover:shadow-[0_6px_20px_-4px_rgba(12,74,69,0.08)] transition-all duration-300 flex flex-col justify-between group relative overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 cursor-pointer min-w-0"
+      aria-label={`View clinical details for ${service.name}`}
+    >
+      <div className="w-full min-w-0 flex flex-col flex-1">
+        {/* Icon Container: Pale mint surface (#EFFAF7) -> Soft mint (#DDF5EF) on hover */}
+        <div className="w-10 h-10 rounded-2xl bg-[#EFFAF7] text-brand-850 group-hover:bg-[#DDF5EF] group-hover:text-brand-950 flex items-center justify-center transition-colors duration-300 shrink-0 mb-3.5">
+          <Icon className="w-5 h-5 text-brand-850 group-hover:text-brand-950 transition-colors" />
+        </div>
+
+        {/* Title: Deep forest typography */}
+        <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-brand-950 group-hover:text-brand-900 transition-colors leading-snug w-full min-w-0 line-clamp-2 min-h-[3.25rem] flex items-start">
+          {service.name}
+        </h3>
+
+        {/* Content-Derived Tags/Chips */}
+        <div className="flex flex-wrap gap-2 pt-3">
+          {tags.map((tag, idx) => (
+            <span
+              key={idx}
+              className="inline-flex items-center text-xs font-semibold text-brand-850 bg-[#EFFAF7] border border-[rgba(13,110,99,0.14)] px-3 py-1.5 rounded-full leading-none transition-colors group-hover:bg-[#e4f5ef]"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Flexible spacer */}
+      <div className="flex-1 min-h-4" />
+
+      {/* Footer CTA */}
+      <div className="pt-4 mt-auto border-t border-[rgba(13,110,99,0.08)] group-hover:border-[rgba(13,110,99,0.15)] transition-colors duration-300 flex items-center justify-between w-full min-w-0 shrink-0">
+        <span className="text-xs font-bold text-brand-850 group-hover:text-brand-700 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-all">
+          <span>Explore Clinical Profile</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </span>
+      </div>
+    </button>
+  );
+};
+
 export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
-  featuredService,
-  otherServices,
   allServices,
 }) => {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const shouldReduceMotion = useReducedMotion();
 
   const handleBookingScroll = () => {
     const element = document.getElementById('appointment');
@@ -35,124 +146,50 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
     }
   };
 
+  // Get active services in the exact 6 prescribed order:
+  // Row 1: [ABA Therapy, Occupational Therapy]
+  // Row 2: [Speech & Language Therapy, Special Education]
+  // Row 3: [Physiotherapy, Parent Counselling & Training Programme (PCTP)]
+  const activeServicesList = ORDERED_SLUGS.map((slug) =>
+    allServices.find((s) => s.slug === slug && s.active)
+  ).filter(Boolean) as Service[];
+
+  const activeServices =
+    activeServicesList.length === 6
+      ? activeServicesList
+      : allServices.filter((s) => s.active).slice(0, 6);
+
   return (
     <>
-      <section id="therapies" className="py-20 lg:py-28 bg-[#faf9f7] scroll-mt-20">
+      <section id="therapies" className="py-20 lg:py-28 bg-[#F7F6F2] scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
           {/* Section Title Header */}
           <FadeUp className="max-w-3xl mb-14">
             <span className="text-xs font-bold uppercase tracking-wider text-brand-700 block mb-2">
               Specialized Programs
             </span>
             <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
-              Our 9 Developmental Therapies
+              Our 6 Developmental Therapies
             </h2>
             <p className="text-stone-600 text-base mt-3">
               Every discipline is led by qualified pediatric clinicians, structured to nurture communication, motor coordination, cognitive progress, and self-confidence.
             </p>
           </FadeUp>
 
-          {/* FEATURED SPOTLIGHT CARD: Occupational Therapy / Selected */}
-          {featuredService && (
-            <motion.div
-              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.65, ease: EDITORIAL_EASE }}
-              whileHover={shouldReduceMotion ? undefined : { y: -3, transition: { duration: 0.25 } }}
-              whileTap={shouldReduceMotion ? undefined : { scale: 0.99, transition: { duration: 0.1 } }}
-              onClick={() => setSelectedService(featuredService)}
-              className="mb-12 bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-brand-200/80 shadow-card hover:shadow-card-hover transition-shadow duration-300 relative overflow-hidden cursor-pointer group text-left"
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setSelectedService(featuredService);
-                }
-              }}
-              aria-label={`View clinical details for ${featuredService.name}`}
-            >
-              <div className="absolute top-0 right-0 bg-brand-100 text-brand-850 px-4 py-1.5 rounded-bl-2xl text-xs font-bold uppercase tracking-wider z-10">
-                Featured Program
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-
-                {/* Image Column (5 cols) */}
-                <div className="lg:col-span-5 relative">
-                  <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-stone-100 shadow-md border-2 border-stone-100 group-hover:border-brand-700 transition-colors">
-                    <img
-                      src={featuredService.image_url || "/images/homepage/therapy-occupational.jpg"}
-                      alt={featuredService.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="absolute -bottom-3 -right-3 bg-brand-850 text-white text-[11px] font-semibold px-3 py-1.5 rounded-xl shadow">
-                    Sensory &amp; Motor Mastery
-                  </div>
-                </div>
-
-                {/* Content Column (7 cols) */}
-                <div className="lg:col-span-7 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-brand-700">Early Motor &amp; Daily Living</span>
-                  </div>
-                  <h3 className="font-serif-heading text-2xl sm:text-3xl font-bold text-brand-950 group-hover:text-brand-850 transition-colors">
-                    {featuredService.name}
-                  </h3>
-                  <p className="text-base text-stone-700 leading-relaxed">
-                    {featuredService.short_description || featuredService.description}
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                    <div className="flex items-center gap-2 text-xs text-stone-600 font-medium">
-                      <span className="text-brand-700">✓</span>
-                      <span>Fine &amp; Gross Motor Coordination</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-stone-600 font-medium">
-                      <span className="text-brand-700">✓</span>
-                      <span>Sensory Modulation &amp; Calming</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-stone-600 font-medium">
-                      <span className="text-brand-700">✓</span>
-                      <span>Handwriting &amp; Grasp Readiness</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-stone-600 font-medium">
-                      <span className="text-brand-700">✓</span>
-                      <span>Self-Care &amp; Daily Autonomy</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 flex items-center gap-4">
-                    <span className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full bg-brand-850 hover:bg-brand-900 text-white font-semibold text-xs transition-colors shadow-sm">
-                      <span>Explore Therapy Details</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-
-              </div>
-            </motion.div>
-          )}
-
-          {/* Remaining Services Grid - Sequential Stagger */}
-          <StaggerContainer staggerDelay={0.07} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {otherServices.map((service) => (
-              <StaggerItem key={service.id} distance={20}>
-                <ServiceCard
-                  service={service}
-                  onSelect={setSelectedService}
-                />
-              </StaggerItem>
+          {/* Equal-width 2-column x 3-row static clinical grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {activeServices.map((service) => (
+              <TherapyCardItem
+                key={service.slug}
+                service={service}
+                onSelect={setSelectedService}
+              />
             ))}
-          </StaggerContainer>
-
+          </div>
         </div>
       </section>
 
-      {/* Therapy Detail Modal - Managed at Section Level */}
+      {/* Therapy Detail Modal - Managed at Section Level (Receives full service data) */}
       <TherapyDetailModal
         isOpen={selectedService !== null}
         service={selectedService}

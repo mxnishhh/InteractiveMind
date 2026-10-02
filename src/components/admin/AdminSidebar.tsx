@@ -8,9 +8,6 @@ import {
   LayoutDashboard,
   Calendar,
   MessageSquare,
-  Activity,
-  ShieldAlert,
-  Users,
   HelpCircle,
   HeartHandshake,
   BookOpen,
@@ -29,19 +26,11 @@ const NAVIGATION_GROUPS = [
     ],
   },
   {
-    title: 'Clinical & Content',
+    title: 'Content',
     links: [
-      { href: '/admin/dashboard/services', label: 'Therapies & Services', icon: Activity },
-      { href: '/admin/dashboard/conditions', label: 'Conditions', icon: ShieldAlert },
-      { href: '/admin/dashboard/team', label: 'Team Members', icon: Users },
       { href: '/admin/dashboard/faqs', label: 'FAQs', icon: HelpCircle },
       { href: '/admin/dashboard/testimonials', label: 'Testimonials', icon: HeartHandshake },
       { href: '/admin/dashboard/blog', label: 'Blog & Insights', icon: BookOpen },
-    ],
-  },
-  {
-    title: 'Assets & Config',
-    links: [
       { href: '/admin/dashboard/media', label: 'Media Gallery', icon: ImageIcon },
     ],
   },

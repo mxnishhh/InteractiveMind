@@ -107,7 +107,7 @@ export const Navbar: React.FC = () => {
   return (
     <header id="site-header" className="sticky top-0 z-50 transition-all duration-300 bg-[#faf9f7]/95 backdrop-blur-md border-b border-stone-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 gap-3">
+        <div className="flex items-center justify-between h-20 gap-4 lg:gap-6">
 
           {/* Logo Brand: Circular Mark Only */}
           <Link href="/" className="flex items-center group focus:outline-none shrink-0 py-1" aria-label="Interactive Minds Home">
@@ -166,20 +166,20 @@ export const Navbar: React.FC = () => {
           </nav>
 
           {/* Right Side Utility Area: Phone -> Primary CTA -> Divider -> Admin Portal */}
-          <div className="hidden sm:flex items-center gap-2.5 md:gap-3 shrink-0">
+          <div className="hidden sm:flex items-center gap-3 lg:gap-4 shrink-0">
             {/* Direct Phone Line */}
             <a
               href={`tel:${SITE.phoneRaw}`}
-              className="hidden 2xl:flex items-center gap-2 text-xs font-semibold tracking-wide text-brand-850 hover:text-brand-700 transition-colors px-3 py-1.5 rounded-full bg-brand-50 border border-brand-100"
+              className="hidden 2xl:flex items-center gap-2 text-xs font-semibold tracking-wide text-brand-850 hover:text-brand-700 transition-colors px-4 py-2.5 rounded-full bg-brand-50 border border-brand-100 whitespace-nowrap h-10"
             >
-              <Phone className="w-3.5 h-3.5 text-brand-700" />
+              <Phone className="w-3.5 h-3.5 text-brand-700 shrink-0" />
               <span>{SITE.phone}</span>
             </a>
 
             {/* Primary Public CTA: Book an Assessment */}
             <Link
               href={isHome ? '#appointment' : '/#appointment'}
-              className="inline-flex items-center justify-center px-4.5 py-2.5 text-xs font-semibold tracking-wide text-white bg-brand-850 hover:bg-brand-900 rounded-full shadow-sm hover:shadow-card transition-all duration-200"
+              className="inline-flex items-center justify-center px-5 py-2.5 text-xs font-semibold tracking-wide text-white bg-brand-850 hover:bg-brand-900 rounded-full shadow-sm hover:shadow-card transition-all duration-200 whitespace-nowrap h-10"
             >
               {HERO.primaryCta.label}
             </Link>
@@ -190,7 +190,7 @@ export const Navbar: React.FC = () => {
             {/* Dedicated Admin Portal Utility on the Far Right */}
             <Link
               href="/admin/login"
-              className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider text-brand-950 bg-white hover:bg-brand-50/90 border border-brand-850/20 hover:border-brand-850/40 shadow-2xs hover:shadow-sm transition-all duration-200"
+              className="group inline-flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wider text-brand-950 bg-white hover:bg-brand-50/90 border border-brand-850/20 hover:border-brand-850/40 shadow-2xs hover:shadow-sm transition-all duration-200 whitespace-nowrap h-10"
               title="Admin Portal (Clinical Staff & Operations)"
               aria-label="Admin Portal"
             >

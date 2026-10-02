@@ -6,7 +6,15 @@ import { StatsCard } from '@/components/admin/StatsCard';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { Badge } from '@/components/ui/Badge';
-import { Calendar, MessageSquare, Activity, ArrowRight, Clock, UserCheck, ShieldAlert, Image as ImageIcon } from 'lucide-react';
+import {
+  Calendar,
+  MessageSquare,
+  BookOpen,
+  ArrowRight,
+  Clock,
+  UserCheck,
+  Image as ImageIcon,
+} from 'lucide-react';
 import { Appointment, ContactMessage } from '@/types';
 
 export default function AdminDashboardOverview() {
@@ -120,20 +128,20 @@ export default function AdminDashboardOverview() {
           </div>
           <div className="min-w-0">
             <span className="block text-xs font-bold text-brand-950 truncate">Contact Inbox</span>
-            <span className="block text-[11px] text-stone-600 truncate">Respond to parent queries</span>
+            <span className="block text-[11px] text-stone-600 truncate">Respond to queries</span>
           </div>
         </Link>
 
         <Link
-          href="/admin/dashboard/services"
+          href="/admin/dashboard/blog"
           className="p-4 rounded-2xl bg-white border border-stone-200/80 shadow-soft hover:shadow-md hover:border-brand-300 transition-all flex items-center gap-3 group"
         >
           <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700 group-hover:bg-amber-700 group-hover:text-white transition-colors shrink-0">
-            <Activity className="w-4 h-4" />
+            <BookOpen className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <span className="block text-xs font-bold text-brand-950 truncate">Therapies</span>
-            <span className="block text-[11px] text-stone-600 truncate">Clinical programs</span>
+            <span className="block text-xs font-bold text-brand-950 truncate">Blog & Insights</span>
+            <span className="block text-[11px] text-stone-600 truncate">Articles & videos</span>
           </div>
         </Link>
 
@@ -146,7 +154,7 @@ export default function AdminDashboardOverview() {
           </div>
           <div className="min-w-0">
             <span className="block text-xs font-bold text-brand-950 truncate">Media Gallery</span>
-            <span className="block text-[11px] text-stone-600 truncate">Photos & videos</span>
+            <span className="block text-[11px] text-stone-600 truncate">Photos & assets</span>
           </div>
         </Link>
       </div>

@@ -10,9 +10,23 @@ interface EmailTemplateResult {
 /**
  * Simple HTML entity escaping for user-provided content.
  * Prevents XSS in HTML email templates by escaping HTML special characters.
+ * Safely handles strings, Dates, null/undefined, and primitive types.
  */
-function escapeHtml(unsafe: string): string {
-  return unsafe
+function escapeHtml(unsafe: unknown): string {
+  if (unsafe === null || unsafe === undefined) {
+    return '';
+  }
+
+  let str: string;
+  if (unsafe instanceof Date) {
+    str = isNaN(unsafe.getTime()) ? '' : unsafe.toISOString().slice(0, 10);
+  } else if (typeof unsafe !== 'string') {
+    str = String(unsafe);
+  } else {
+    str = unsafe;
+  }
+
+  return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
