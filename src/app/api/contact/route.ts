@@ -23,9 +23,11 @@ export async function POST(req: NextRequest) {
     const message = await createContactMessageDB(validatedData);
 
     // Trigger secondary email notification (isolated from DB outcome)
-    sendContactAdminNotification(message).catch((emailErr) => {
+    try {
+      await sendContactAdminNotification(message);
+    } catch (emailErr) {
       console.error('[EMAIL] Background contact notification error:', emailErr);
-    });
+    }
 
     return NextResponse.json({
       success: true,

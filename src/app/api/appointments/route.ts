@@ -34,12 +34,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Trigger secondary email notification (isolated from DB outcome)
-    sendAppointmentAdminNotification({
-      ...appointment,
-      service_name: serviceName,
-    }).catch((emailErr) => {
+    try {
+      await sendAppointmentAdminNotification({
+        ...appointment,
+        service_name: serviceName,
+      });
+    } catch (emailErr) {
       console.error('[EMAIL] Background notification dispatch error:', emailErr);
-    });
+    }
 
     return NextResponse.json({
       success: true,

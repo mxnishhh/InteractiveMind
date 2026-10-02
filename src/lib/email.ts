@@ -15,8 +15,6 @@ interface SendEmailOptions {
   replyTo?: string;
 }
 
-let transporter: Transporter | null = null;
-
 /**
  * Validates whether essential SMTP environment variables are set.
  */
@@ -46,11 +44,10 @@ export function getFromEmail(): string {
 }
 
 /**
- * Initializes or reuses the Nodemailer SMTP transporter.
+ * Creates a dedicated Nodemailer SMTP transporter for serverless execution.
+ * Avoids reusing stale socket connections across frozen/thawed Lambda instances.
  */
-function getTransporter(): Transporter | null {
-  if (transporter) return transporter;
-
+function createTransporter(): Transporter | null {
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || '587', 10);
   const user = process.env.SMTP_USER;
@@ -61,21 +58,24 @@ function getTransporter(): Transporter | null {
     return null;
   }
 
-  transporter = nodemailer.createTransport({
+  return nodemailer.createTransport({
     host,
     port,
     secure,
     auth: user && pass ? { user, pass } : undefined,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     tls: {
       rejectUnauthorized: process.env.NODE_ENV === 'production',
+      minVersion: 'TLSv1.2',
     },
+    pool: false,
   });
-
-  return transporter;
 }
 
 /**
- * Core email dispatcher with strict error isolation and structured logging.
+ * Core email dispatcher with strict error isolation, timeout protection, and structured logging.
  */
 export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
   const { to, subject, html, text, replyTo } = options;
@@ -90,7 +90,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
     return false;
   }
 
-  const mailer = getTransporter();
+  const mailer = createTransporter();
   if (!mailer) {
     console.warn(`[EMAIL] Failed to initialize SMTP transporter. Skipping email to "${to}".`);
     return false;
@@ -111,6 +111,12 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
   } catch (error: any) {
     console.error(`[EMAIL] Failed to send email to ${to}:`, error.message || error);
     return false;
+  } finally {
+    try {
+      mailer.close();
+    } catch {
+      // Ignore cleanup error on closed socket
+    }
   }
 }
 

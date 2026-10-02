@@ -30,17 +30,19 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     // If status changed meaningfully, trigger patient notification email
     if (status !== oldStatus) {
-      sendAppointmentStatusNotification(
-        {
-          ...existing,
+      try {
+        await sendAppointmentStatusNotification(
+          {
+            ...existing,
+            status,
+            admin_notes: admin_notes ?? existing.admin_notes,
+          },
           status,
-          admin_notes: admin_notes ?? existing.admin_notes,
-        },
-        status,
-        oldStatus
-      ).catch((emailErr) => {
+          oldStatus
+        );
+      } catch (emailErr) {
         console.error('[EMAIL] Status notification dispatch error:', emailErr);
-      });
+      }
     }
 
     return NextResponse.json({ success: true, message: 'Appointment status updated successfully' });
