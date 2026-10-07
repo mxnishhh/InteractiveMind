@@ -343,7 +343,7 @@ export const CONSTANT_CONDITIONS: Condition[] = [
     slug: 'down-syndrome',
     short_description: 'Down syndrome is a condition in which a person has an extra copy of chromosome 21, which changes how their body and brain develop.',
     description: 'Down syndrome is a condition in which a person has an extra copy of chromosome 21. Chromosomes are small "packages" of genes in the body\'s cells, which determine how the body forms and functions.\n\nWhen babies are growing, the extra chromosome changes how their body and brain develop. This can cause both physical and mental challenges.\n\nPeople with Down syndrome often have developmental challenges, such as being slower to learn to speak than other children.',
-    image_url: '/images/conditions/down',
+    image_url: '/images/conditions/down.png',
     active: true,
     display_order: 4
   },

@@ -20,7 +20,7 @@ export const ConditionCard: React.FC<ConditionCardProps> = ({ condition, onSelec
   const imageMap: Record<string, string> = {
     'autism': '/images/conditions/autism.png',
     'adhd': '/images/conditions/adhd.png',
-    'down-syndrome': '/images/conditions/down',
+    'down-syndrome': '/images/conditions/down.png',
     'cerebral-palsy': '/images/conditions/celebral.png',
   };
 
