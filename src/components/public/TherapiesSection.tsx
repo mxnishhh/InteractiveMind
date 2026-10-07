@@ -12,6 +12,7 @@ import {
   Heart,
 } from 'lucide-react';
 import { Service } from '@/types';
+import { ORDERED_THERAPY_SLUGS } from '@/constants';
 import { TherapyDetailModal } from './TherapyDetailModal';
 import { FadeUp } from '@/components/ui/motion';
 
@@ -67,15 +68,6 @@ const THERAPY_TAGS: Record<string, string[]> = {
     'Independent Living Skills',
   ],
 };
-
-const ORDERED_SLUGS = [
-  'aba-therapy',
-  'occupational-therapy',
-  'speech-therapy',
-  'special-education',
-  'physiotherapy',
-  'parent-guidance',
-];
 
 interface TherapyCardItemProps {
   service: Service;
@@ -147,10 +139,13 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
   };
 
   // Get active services in the exact 6 prescribed order:
-  // Row 1: [ABA Therapy, Occupational Therapy]
-  // Row 2: [Speech & Language Therapy, Special Education]
-  // Row 3: [Physiotherapy, Parent Counselling & Training Programme (PCTP)]
-  const activeServicesList = ORDERED_SLUGS.map((slug) =>
+  // 1. Occupational Therapy
+  // 2. Speech & Language Therapy
+  // 3. Special Education
+  // 4. ABA Therapy
+  // 5. Physiotherapy
+  // 6. Parent Counselling & Training Programme (PCTP)
+  const activeServicesList = ORDERED_THERAPY_SLUGS.map((slug) =>
     allServices.find((s) => s.slug === slug && s.active)
   ).filter(Boolean) as Service[];
 
@@ -169,7 +164,7 @@ export const TherapiesSection: React.FC<TherapiesSectionProps> = ({
               Specialized Programs
             </span>
             <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-brand-950 tracking-tight">
-              Our 6 Developmental Therapies
+              Our Developmental Therapies
             </h2>
             <p className="text-stone-600 text-base mt-3">
               Every discipline is led by qualified pediatric clinicians, structured to nurture communication, motor coordination, cognitive progress, and self-confidence.

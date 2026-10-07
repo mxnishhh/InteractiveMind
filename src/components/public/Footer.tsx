@@ -48,7 +48,7 @@ export const Footer: React.FC = () => {
               <ul className="space-y-2.5 text-xs text-stone-400">
                 <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
                 <li><Link href="/#about" className="hover:text-white transition-colors">About Our Centre</Link></li>
-                <li><Link href="/#therapies" className="hover:text-white transition-colors">All 6 Therapies</Link></li>
+                <li><Link href="/#therapies" className="hover:text-white transition-colors">All Therapies</Link></li>
                 <li><Link href="/#conditions" className="hover:text-white transition-colors">Conditions Supported</Link></li>
                 <li><Link href="/#approach" className="hover:text-white transition-colors">Clinical Principles</Link></li>
                 <li><Link href="/#journey" className="hover:text-white transition-colors">4-Step Journey</Link></li>
@@ -65,10 +65,10 @@ export const Footer: React.FC = () => {
                 Programs
               </h4>
               <ul className="space-y-2 text-xs text-stone-400">
-                <li><Link href="/#therapies" className="hover:text-white transition-colors">Applied Behaviour Analysis (ABA)</Link></li>
                 <li><Link href="/#therapies" className="hover:text-white transition-colors">Occupational Therapy</Link></li>
                 <li><Link href="/#therapies" className="hover:text-white transition-colors">Speech &amp; Language Therapy</Link></li>
                 <li><Link href="/#therapies" className="hover:text-white transition-colors">Special Education</Link></li>
+                <li><Link href="/#therapies" className="hover:text-white transition-colors">Applied Behaviour Analysis (ABA)</Link></li>
                 <li><Link href="/#therapies" className="hover:text-white transition-colors">Physiotherapy</Link></li>
                 <li><Link href="/#therapies" className="hover:text-white transition-colors">Parent Counselling &amp; Training Programme (PCTP)</Link></li>
               </ul>

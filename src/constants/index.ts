@@ -5,11 +5,11 @@ export const SITE = {
   shortName: "IM",
   tagline: "Autism Care & Child Development Centre",
   email: "interactivemindsindia@gmail.com",
-  phone: "9031041990",
-  phoneSecondary: "9031041991",
-  phoneRaw: "+919031041990",
-  phoneRawSecondary: "+919031041991",
-  whatsappNumber: "+919031041990",
+  phone: "9031041991",
+  phoneSecondary: "9031041992",
+  phoneRaw: "+919031041991",
+  phoneRawSecondary: "+919031041992",
+  whatsappNumber: "+919031041991",
   address: "1st Floor, Hira Shiv Palace, Gudari Bazar, Ashokraj Path, Patna City – 800008, Bihar",
   workingHours: "Mon-Fri: 8:00 AM - 5:00 PM",
   copyright: "© 2026 Interactive Minds - Neurodiversity-affirming therapy for children and youth.",
@@ -112,29 +112,23 @@ export const THERAPY_JOURNEY = [
   { step: "Step 4", title: "Progress Monitoring", description: "Continuous review and parent coaching for routine home integration." }
 ];
 
+export const ORDERED_THERAPY_SLUGS = [
+  'occupational-therapy',
+  'speech-therapy',
+  'special-education',
+  'aba-therapy',
+  'physiotherapy',
+  'parent-guidance',
+] as const;
+
 export const CONSTANT_SERVICES: Service[] = [
-  {
-    id: 1,
-    name: 'Applied Behaviour Analysis (ABA)',
-    slug: 'aba-therapy',
-    short_description: 'ABA therapy at Interactive Minds in Patna supports autistic children who may experience difficulties with social interaction and everyday activities. The therapy focuses on breaking down individual goals into smaller, achievable steps, making the learning process more structured and manageable for each child.',
-    description: 'ABA therapy at Interactive Minds in Patna supports autistic children who may experience difficulties with social interaction and everyday activities. The therapy focuses on breaking down individual goals into smaller, achievable steps, making the learning process more structured and manageable for each child.\n\nEvery child shines in their own way. ABA therapy focuses on nurturing a child\'s self-worth and self-reliance while respecting and preserving their individual uniqueness and creativity.',
-    image_url: '/images/homepage/therapy-aba.jpg',
-    who_it_helps: 'Every child shines in their own way. ABA therapy focuses on nurturing a child\'s self-worth and self-reliance while respecting and preserving their individual uniqueness and creativity.',
-    benefits: 'Individualized goal breakdown, structured learning steps, nurturing self-worth, and fostering self-reliance and creativity.',
-    approach: 'Breaking down individual goals into smaller, achievable steps in a supportive, neurodiversity-affirming setting.',
-    process_steps: [],
-    skills_supported: [],
-    active: true,
-    display_order: 1
-  },
   {
     id: 2,
     name: 'Occupational Therapy',
     slug: 'occupational-therapy',
     short_description: "Occupational therapy for children aims to enhance their active participation in meaningful and essential activities in their lives, promoting development, health, and overall well-being across school tasks, play, and self-care.",
     description: "Occupational therapy for children aims to enhance their active participation in meaningful and essential activities in their lives. This therapy promotes children's development, health, and overall well-being, encompassing activities such as school tasks, play, and self-care. Interventions are customized based on the child's unique needs, considering both disability-related challenges and typical developmental milestones. At Rainbow Children's Hospital, our team of specialists is dedicated to optimizing children's engagement in everyday activities.\n\nOccupational therapy empowers children to acquire the skills necessary for participating in activities like play, self-care, and social interactions. This includes improving their coordination, fine motor skills, visual and cognitive-perceptual abilities, peer interactions, and handwriting, among others.",
-    image_url: '/images/homepage/therapy-occupational.jpg',
+    image_url: '/images/therapies/Occupational.png',
     who_it_helps: "This holistic approach aids in addressing conditions such as:\n\n• Attention-Deficit Hyperactivity Disorder (ADHD)\n• Autism Spectrum Disorders\n• Cerebral Palsy\n• Developmental coordination disorder\n• Developmental delay\n• Sensory integration dysfunction",
     benefits: 'Empowers children to acquire the skills necessary for participating in activities like play, self-care, and social interactions. This includes improving their coordination, fine motor skills, visual and cognitive-perceptual abilities, peer interactions, and handwriting, among others.',
     approach: "Interventions are customized based on the child's unique needs, considering both disability-related challenges and typical developmental milestones.",
@@ -158,7 +152,7 @@ export const CONSTANT_SERVICES: Service[] = [
     ],
     closing_text: 'Through our occupational therapy services, we assist children in overcoming barriers and acquiring the necessary skills to actively engage in the activities that are meaningful to them.',
     active: true,
-    display_order: 2
+    display_order: 1
   },
   {
     id: 3,
@@ -166,14 +160,14 @@ export const CONSTANT_SERVICES: Service[] = [
     slug: 'speech-therapy',
     short_description: 'Pediatric speech and language therapy focuses on enhancing children\'s communication skills, including both verbal and nonverbal communication. It is important to recognize that speech and language difficulties can sometimes occur alongside mental or behavioral conditions, such as anxiety or attention-deficit/hyperactivity disorder (ADHD). Children facing developmental challenges, such as autism spectrum disorder, may also experience difficulties in expressing themselves verbally.',
     description: 'Pediatric speech and language therapy focuses on enhancing children\'s communication skills, including both verbal and nonverbal communication. It is important to recognize that speech and language difficulties can sometimes occur alongside mental or behavioral conditions, such as anxiety or attention-deficit/hyperactivity disorder (ADHD). Children facing developmental challenges, such as autism spectrum disorder, may also experience difficulties in expressing themselves verbally.\n\nAt Interactive Minds, we specialize in providing specifically designed care and therapeutic interventions for children experiencing speech and communication difficulties. Our personalized treatment plans are designed to help unlock each child\'s potential, supporting them in communicating effectively and engaging with the world around them.',
-    image_url: '/images/homepage/therapy-speech.jpg',
+    image_url: '/images/therapies/Speech.png',
     who_it_helps: 'At Interactive Minds, we specialize in providing specifically designed care and therapeutic interventions for children experiencing speech and communication difficulties. Our personalized treatment plans are designed to help unlock each child\'s potential, supporting them in communicating effectively and engaging with the world around them.',
     benefits: 'Personalized treatment plans focused on verbal and nonverbal communication skills, unlocking potential, and engaging effectively with the world.',
     approach: 'Specifically designed care and personalized therapeutic interventions in a warm, child-centered clinical environment.',
     process_steps: [],
     skills_supported: [],
     active: true,
-    display_order: 3
+    display_order: 2
   },
   {
     id: 4,
@@ -181,10 +175,25 @@ export const CONSTANT_SERVICES: Service[] = [
     slug: 'special-education',
     short_description: 'Children with special needs are assessed using a functional approach, with an emphasis on understanding their individual abilities, needs, and areas of development.',
     description: 'Children with special needs are assessed using a functional approach, with an emphasis on understanding their individual abilities, needs, and areas of development. An individualized educational programme is designed for children receiving special education services, with periodic evaluation to monitor their progress and ensure that the educational approach continues to meet their needs.',
-    image_url: '/images/homepage/therapy-special-education.jpg',
+    image_url: '/images/therapies/Special.png',
     who_it_helps: 'The role of parents is emphasized throughout the training programme, recognizing their involvement as an important part of the child\'s learning and development. Parents are supported in participating in the educational process and reinforcing learning beyond the structured sessions.',
     benefits: 'Curricular and co-curricular activities are also taught with a special emphasis on inclusion. The programme focuses on enabling children to participate in educational and related activities in an inclusive manner.',
     approach: 'Multisensory and low-cost teaching-learning materials are designed to increase the effectiveness of the teaching and learning process. These materials are used to make learning more accessible and engaging for children with different learning needs.',
+    process_steps: [],
+    skills_supported: [],
+    active: true,
+    display_order: 3
+  },
+  {
+    id: 1,
+    name: 'Applied Behaviour Analysis (ABA)',
+    slug: 'aba-therapy',
+    short_description: 'ABA therapy at Interactive Minds in Patna supports autistic children who may experience difficulties with social interaction and everyday activities. The therapy focuses on breaking down individual goals into smaller, achievable steps, making the learning process more structured and manageable for each child.',
+    description: 'ABA therapy at Interactive Minds in Patna supports autistic children who may experience difficulties with social interaction and everyday activities. The therapy focuses on breaking down individual goals into smaller, achievable steps, making the learning process more structured and manageable for each child.\n\nEvery child shines in their own way. ABA therapy focuses on nurturing a child\'s self-worth and self-reliance while respecting and preserving their individual uniqueness and creativity.',
+    image_url: '/images/therapies/ABA.png',
+    who_it_helps: 'Every child shines in their own way. ABA therapy focuses on nurturing a child\'s self-worth and self-reliance while respecting and preserving their individual uniqueness and creativity.',
+    benefits: 'Individualized goal breakdown, structured learning steps, nurturing self-worth, and fostering self-reliance and creativity.',
+    approach: 'Breaking down individual goals into smaller, achievable steps in a supportive, neurodiversity-affirming setting.',
     process_steps: [],
     skills_supported: [],
     active: true,
@@ -271,7 +280,7 @@ export const CONSTANT_SERVICES: Service[] = [
     slug: 'physiotherapy',
     short_description: 'A detailed pre-therapy assessment forms the foundation of the physiotherapy process at Interactive Minds. Goals are established in consultation with parents, followed by appropriate therapy interventions and regular reviews.',
     description: 'A detailed pre-therapy assessment forms the foundation of the physiotherapy process at Interactive Minds. Goals are established in consultation with parents, followed by appropriate therapy interventions and regular reviews. After three months, goals are reassessed and reset as needed to keep the programme aligned with the child\'s needs.',
-    image_url: '/images/homepage/therapy-physiotherapy.jpg',
+    image_url: '/images/therapies/Physio.png',
     who_it_helps: 'Parental counselling is an important part of the process, supporting parents throughout the therapy journey.',
     benefits: 'Physiotherapists also provide home-based management programmes, extending the support beyond the therapy setting and helping children and families continue their management programme at home.',
     approach: 'Individualized movement interventions, parental counselling, and home-based management programmes.',
@@ -286,7 +295,7 @@ export const CONSTANT_SERVICES: Service[] = [
     slug: 'parent-guidance',
     short_description: 'Interactive Minds provides a Parent Counselling and Training Programme (PCTP) designed to empower parents with a better understanding of their child and practical ways to support their development and communication.',
     description: 'Interactive Minds: Autism Care and Child Development Center provides a Parent Counselling and Training Programme (PCTP) designed to empower parents with a better understanding of their child and practical ways to support their development and communication.\n\nDuring the PCTP, parents are provided with information on appropriate ways of communicating with their child and methods that can help the child communicate more effectively and appropriately.',
-    image_url: '/images/homepage/therapy-parent-guidance.jpg',
+    image_url: '/images/therapies/Parent.png',
     who_it_helps: 'The PCTP is available for parents, family members, and others who may be the child\'s primary caregivers or who interact with the child on a regular basis.',
     benefits: 'Empowers parents to understand their child\'s autism and unique learning styles, manage challenging situations, develop predictability, and build connections with other parents.',
     approach: 'Parent counselling and training focusing on communication guidance, group work, predictability, functional cognitive and independent living skills, and daily feedback sessions.',
@@ -304,7 +313,7 @@ export const CONSTANT_CONDITIONS: Condition[] = [
     slug: 'autism',
     short_description: 'Autism is a neurodevelopmental condition that affects a person\'s ability to communicate and interact with others, often involving challenges with starting and maintaining conversations, intense focus on special interests, and repetitive language or behaviors.',
     description: 'Autism is a neurodevelopmental condition that affects a person\'s ability to communicate and interact with others, often involving challenges with starting and maintaining conversations, intense focus on special interests, and repetitive language or behaviors. It\'s called a spectrum because individuals with autism can present with a range of strengths and challenges: some may benefit from support in building social awareness, while others may require continual and comprehensive care.',
-    image_url: 'https://images.unsplash.com/photo-1508847154043-be5407fcaa5a?auto=format&fit=crop&q=80&w=1200',
+    image_url: '/images/conditions/autism.png',
     active: true,
     display_order: 1
   },
@@ -314,7 +323,7 @@ export const CONSTANT_CONDITIONS: Condition[] = [
     slug: 'adhd',
     short_description: 'Attention-deficit/hyperactivity disorder (ADHD) is a neurodevelopmental condition characterized by difficulty paying attention, staying on task, hyperactivity, restlessness, and impulsivity.',
     description: 'Attention-deficit/hyperactivity disorder (ADHD) is a neurodevelopmental condition characterized by symptoms including difficulty paying attention and staying on task, hyperactivity and restlessness, trouble keeping organized, impulsivity, and impatience. Nearly everyone experiences these symptoms from time to time, but with ADHD, they tend to occur persistently, and often to a degree that interferes with daily life.',
-    image_url: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=1200',
+    image_url: '/images/conditions/adhd.png',
     active: true,
     display_order: 2
   },
@@ -334,7 +343,7 @@ export const CONSTANT_CONDITIONS: Condition[] = [
     slug: 'down-syndrome',
     short_description: 'Down syndrome is a condition in which a person has an extra copy of chromosome 21, which changes how their body and brain develop.',
     description: 'Down syndrome is a condition in which a person has an extra copy of chromosome 21. Chromosomes are small "packages" of genes in the body\'s cells, which determine how the body forms and functions.\n\nWhen babies are growing, the extra chromosome changes how their body and brain develop. This can cause both physical and mental challenges.\n\nPeople with Down syndrome often have developmental challenges, such as being slower to learn to speak than other children.',
-    image_url: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&q=80&w=1200',
+    image_url: '/images/conditions/down',
     active: true,
     display_order: 4
   },
@@ -344,7 +353,7 @@ export const CONSTANT_CONDITIONS: Condition[] = [
     slug: 'cerebral-palsy',
     short_description: 'Cerebral palsy is a group of conditions that affect movement, balance and posture, caused by damage that occurs to a baby\'s brain, most often before birth.',
     description: 'Cerebral palsy is a group of conditions that affect movement, balance and posture. It\'s caused by damage that occurs to a baby\'s brain, most often before birth.\n\nSymptoms appear during infancy or preschool years. Children may have exaggerated reflexes, or their arms, legs and trunk may appear floppy. Cerebral palsy can cause stiff muscles, known as spasticity. Symptoms also can include changes in posture and movements, such as not having a steady walk. Cerebral palsy can make it hard to swallow or focus the eyes. Some children have a combination of these symptoms.\n\nThe effects on function can vary. Some people with cerebral palsy can walk, while others need assistance. Some have intellectual disabilities, but others do not. Some may have epilepsy, blindness or deafness. There is no cure, but treatments can help improve function. The condition generally stays the same over time.',
-    image_url: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=1200',
+    image_url: '/images/conditions/celebral.png',
     active: true,
     display_order: 5
   }
@@ -427,7 +436,7 @@ export const CTA_SECTION = {
   heading: "Every Child Has Their Own Way to Shine",
   description: "Take the first step towards understanding your child’s developmental needs. Contact our team to schedule a supportive assessment.",
   bookButtonLabel: "Book an Assessment",
-  callButtonLabel: "Call 9031041990",
+  callButtonLabel: "Call 9031041991",
   whatsappButtonLabel: "WhatsApp Us",
 };
 

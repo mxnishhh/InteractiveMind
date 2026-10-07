@@ -48,7 +48,7 @@ export const Hero: React.FC = () => {
               transition={transitionConfig(0.08)}
               className="font-serif-heading text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-brand-950 leading-[1.12]"
             >
-              Nurturing every child’s voice, confidence, and potential.
+              Nurturing child’s voice, confidence, and potential.
             </motion.h1>
 
             {/* 3. Description Narrative */}
@@ -79,7 +79,7 @@ export const Hero: React.FC = () => {
                 href="#therapies"
                 className="inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold text-brand-850 bg-white hover:bg-stone-50 border border-stone-300/80 rounded-full shadow-sm hover:border-brand-700 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200"
               >
-                Explore Our 6 Therapies
+                Explore Our Therapies
               </Link>
             </motion.div>
 

@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { SITE } from '@/constants';
 
 export const WhatsAppButton: React.FC = () => {
-  const whatsappNumber = SITE.whatsappNumber || '+919031041990';
+  const whatsappNumber = SITE.whatsappNumber || '+919031041991';
   const defaultMessage = encodeURIComponent('Hello Interactive Minds team, I would like to inquire about child development therapies and assessments.');
   const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${defaultMessage}`;
   const shouldReduceMotion = useReducedMotion();

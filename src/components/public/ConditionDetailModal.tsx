@@ -11,8 +11,17 @@ import {
   Clock,
   Calendar,
 } from 'lucide-react';
+import Image from 'next/image';
 import { Condition } from '@/types';
 import { SITE } from '@/constants';
+
+const CONDITION_IMAGE_MAP: Record<string, string> = {
+  'autism': '/images/conditions/autism.png',
+  'autism-spectrum-disorder': '/images/conditions/autism.png',
+  'adhd': '/images/conditions/adhd.png',
+  'down-syndrome': '/images/conditions/down.png',
+  'cerebral-palsy': '/images/conditions/celebral.png',
+};
 
 interface ConditionDetailModalProps {
   isOpen: boolean;
@@ -230,6 +239,20 @@ export const ConditionDetailModal: React.FC<ConditionDetailModalProps> = ({
                       : condition.name}
                   </h2>
                 </div>
+
+                {/* Condition Image */}
+                {CONDITION_IMAGE_MAP[condition.slug] && (
+                  <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-stone-200/80 bg-stone-50">
+                    <Image
+                      src={CONDITION_IMAGE_MAP[condition.slug]}
+                      alt={`${condition.name} — clinical support`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 58vw, 700px"
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                )}
 
                 {/* CONDITION 1: AUTISM SPECTRUM DISORDER */}
                 {(condition.slug === 'autism-spectrum-disorder' || condition.slug === 'autism') && (

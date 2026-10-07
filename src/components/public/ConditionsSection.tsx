@@ -13,10 +13,10 @@ interface ConditionsSectionProps {
 }
 
 const CONDITION_IMAGE_MAP: Record<string, string> = {
-  'autism': '/images/conditions/autism.jpg',
-  'adhd': '/images/conditions/adhd.jpg',
-  'down-syndrome': '/images/conditions/down-syndrome.jpg',
-  'cerebral-palsy': '/images/conditions/cerebral-palsy.jpg',
+  'autism': '/images/conditions/autism.png',
+  'adhd': '/images/conditions/adhd.png',
+  'down-syndrome': '/images/conditions/down',
+  'cerebral-palsy': '/images/conditions/celebral.png',
 };
 
 const CONDITION_ALT_MAP: Record<string, string> = {

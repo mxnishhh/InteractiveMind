@@ -14,7 +14,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { Service } from '@/types';
-import { SITE } from '@/constants';
+import { SITE, ORDERED_THERAPY_SLUGS } from '@/constants';
 
 interface TherapyDetailModalProps {
   isOpen: boolean;
@@ -26,15 +26,15 @@ interface TherapyDetailModalProps {
 }
 
 const THERAPY_IMAGE_MAP: Record<string, string> = {
-  'aba-therapy': '/images/homepage/therapy-aba.jpg',
-  'occupational-therapy': '/images/homepage/therapy-occupational.jpg',
-  'speech-therapy': '/images/homepage/therapy-speech.jpg',
-  'special-education': '/images/homepage/therapy-special-education.jpg',
+  'aba-therapy': '/images/therapies/ABA.png',
+  'occupational-therapy': '/images/therapies/Occupational.png',
+  'speech-therapy': '/images/therapies/Speech.png',
+  'special-education': '/images/therapies/Special.png',
   'sensory-integration': '/images/homepage/therapy-sensory.jpg',
   'clinical-psychology': '/images/homepage/therapy-psychology.jpg',
   'school-readiness': '/images/homepage/therapy-school-readiness.jpg',
-  'physiotherapy': '/images/homepage/therapy-physiotherapy.jpg',
-  'parent-guidance': '/images/homepage/therapy-parent-guidance.jpg',
+  'physiotherapy': '/images/therapies/Physio.png',
+  'parent-guidance': '/images/therapies/Parent.png',
 };
 
 export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
@@ -87,9 +87,15 @@ export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
 
   if (!isOpen || !service) return null;
 
-  const currentIndex = allServices.findIndex((s) => s.id === service.id);
-  const displayIndex = currentIndex !== -1 ? currentIndex + 1 : 1;
-  const totalServices = allServices.length;
+  // Single source of truth: 6 active therapies in required sequence
+  const orderedServices = ORDERED_THERAPY_SLUGS.map((slug) =>
+    allServices.find((s) => s.slug === slug && s.active)
+  ).filter(Boolean) as Service[];
+
+  const navServices =
+    orderedServices.length > 0
+      ? orderedServices
+      : allServices.filter((s) => s.active);
 
   // Other complementary services (excluding current)
   const complementaryServices = allServices
@@ -153,7 +159,7 @@ export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
               <div className="flex items-center gap-2">
                 <span className="inline-block w-2.5 h-2.5 rounded-full bg-brand-600 animate-pulse" />
                 <span className="font-bold uppercase tracking-wider text-stone-700 text-[11px] sm:text-xs">
-                  Specialized Pediatric Care • Discipline Preview ({displayIndex} of {totalServices})
+                  Specialized Pediatric Care • Discipline Preview
                 </span>
               </div>
 
@@ -169,13 +175,13 @@ export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
               </button>
             </div>
 
-            {/* Horizontal Scrollable Pill Switcher for all 6 therapies */}
+            {/* Horizontal Scrollable Pill Switcher for all therapies in exact client-requested order */}
             <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar max-w-full">
-              {allServices.map((s) => {
-                const isActive = s.id === service.id;
+              {navServices.map((s) => {
+                const isActive = s.id === service.id || s.slug === service.slug;
                 return (
                   <button
-                    key={s.id}
+                    key={s.id || s.slug}
                     ref={isActive ? activeTabRef : null}
                     type="button"
                     onClick={() => onSelectService(s)}
@@ -251,7 +257,7 @@ export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
                 {/* Hero Image Frame */}
                 <div className="relative rounded-2xl overflow-hidden border border-stone-200/90 shadow-md bg-stone-100 group aspect-[16/10] sm:aspect-[16/9]">
                   <img
-                    src={THERAPY_IMAGE_MAP[service.slug] || service.image_url || '/images/homepage/therapy-occupational.jpg'}
+                    src={THERAPY_IMAGE_MAP[service.slug] || service.image_url || '/images/therapies/Occupational.png'}
                     alt={service.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
