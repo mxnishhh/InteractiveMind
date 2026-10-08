@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Sparkles } from 'lucide-react';
 
@@ -15,8 +15,10 @@ const DISPLAY_DURATION = 1500; // 1.5 seconds visible
 const FADE_DURATION = 750; // 750ms smooth crossfade (600–800ms)
 
 export function AboutImageSlideshow() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [{ current, prev }, setSlide] = useState({ current: 0, prev: 0 });
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     // Check reduced motion preference
@@ -37,8 +39,33 @@ export function AboutImageSlideshow() {
       const img = new window.Image();
       img.src = src;
     });
+  }, []);
 
-    if (prefersReducedMotion) return;
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion || !isVisible) return;
 
     const interval = setInterval(() => {
       setSlide((state) => ({
@@ -48,10 +75,10 @@ export function AboutImageSlideshow() {
     }, DISPLAY_DURATION + FADE_DURATION);
 
     return () => clearInterval(interval);
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, isVisible]);
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-stone-100">
+    <div ref={containerRef} className="relative w-full h-full overflow-hidden bg-stone-100">
       {/* Layered images for a true overlapping crossfade */}
       {IMAGES.map((src, index) => {
         const isCurrent = index === current;
