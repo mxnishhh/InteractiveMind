@@ -62,16 +62,18 @@ export default function AdminLoginPage() {
 
       <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 shadow-2xl border border-stone-200/90 space-y-6 z-10 relative">
         {/* Header / Brand */}
-        <div className="text-center space-y-3">
-          <div className="flex justify-center">
-            <Image
-              src="/images/interactive-minds-logo.webp"
-              alt="Interactive Minds"
-              width={180}
-              height={44}
-              className="h-10 w-auto object-contain"
-              priority
-            />
+        <div className="text-center space-y-4">
+          <div className="flex justify-center items-center">
+            <div className="relative w-[160px] sm:w-[180px] h-[52px] sm:h-[58px] overflow-hidden flex items-center justify-center">
+              <Image
+                src="/images/interactive-minds-logo.webp"
+                alt="Interactive Minds"
+                width={180}
+                height={180}
+                className="w-full h-auto object-cover"
+                priority
+              />
+            </div>
           </div>
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-brand-750 block mb-1">
@@ -88,25 +90,27 @@ export default function AdminLoginPage() {
 
         {errorMsg && <Toast type="error" message={errorMsg} onClose={() => setErrorMsg(null)} />}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4" autoComplete="off">
           <Input
             label="Authorized Email"
             type="email"
+            name="email"
+            id="admin-email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            placeholder="admin@interactivemind.in"
-            autoComplete="email"
+            autoComplete="off"
           />
 
           <Input
             label="Password"
             type="password"
+            name="password"
+            id="admin-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            placeholder="••••••••••••"
-            autoComplete="current-password"
+            autoComplete="new-password"
           />
 
           <div className="pt-2">
