@@ -26,6 +26,8 @@ import {
   RefreshCw,
   HardDrive,
   Link as LinkIcon,
+  X,
+  Loader2,
 } from 'lucide-react';
 
 interface MediaFormData {
@@ -53,8 +55,123 @@ const initialFormData: MediaFormData = {
 };
 
 const ALLOWED_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.mp4', '.webm'];
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
-const MAX_VIDEO_SIZE = 25 * 1024 * 1024; // 25 MB
+const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500 MB
+
+interface FileWithPreview {
+  file: File;
+  preview: string;
+  id: string;
+  status: 'pending' | 'uploading' | 'success' | 'error';
+  progress: number;
+  error?: string;
+  uploadedUrl?: string;
+  generatedThumbnail?: string; // For video thumbnails
+}
+
+/**
+ * Generate a thumbnail from a video file using Canvas API
+ * This is client-side and works on any deployment architecture
+ */
+async function generateVideoThumbnail(videoFile: File): Promise<string | null> {
+  return new Promise((resolve) => {
+    try {
+      const video = document.createElement('video');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        resolve(null);
+        return;
+      }
+
+      video.preload = 'metadata';
+      video.muted = true;
+      video.playsInline = true;
+
+      const objectUrl = URL.createObjectURL(videoFile);
+      video.src = objectUrl;
+
+      video.addEventListener('loadedmetadata', () => {
+        // Seek to 1 second (or 10% of duration, whichever is smaller) to avoid black frames
+        const seekTime = Math.min(1, video.duration * 0.1);
+        video.currentTime = seekTime;
+      });
+
+      video.addEventListener('seeked', () => {
+        try {
+          // Set canvas dimensions to video dimensions
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+
+          // Draw the current video frame to canvas
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          // Convert canvas to data URL (JPEG for smaller file size)
+          const thumbnailDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+          // Clean up
+          URL.revokeObjectURL(objectUrl);
+          video.remove();
+          canvas.remove();
+
+          resolve(thumbnailDataUrl);
+        } catch (err) {
+          console.error('Error generating thumbnail:', err);
+          URL.revokeObjectURL(objectUrl);
+          resolve(null);
+        }
+      });
+
+      video.addEventListener('error', () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(null);
+      });
+
+      video.load();
+    } catch (err) {
+      console.error('Error in generateVideoThumbnail:', err);
+      resolve(null);
+    }
+  });
+}
+
+/**
+ * Upload a data URL thumbnail as a file
+ */
+async function uploadThumbnailDataUrl(dataUrl: string, originalFilename: string): Promise<string | null> {
+  try {
+    // Convert data URL to Blob
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+
+    // Create a File from the Blob
+    const thumbnailFile = new File(
+      [blob],
+      `thumb_${originalFilename.replace(/\.[^/.]+$/, '')}.jpg`,
+      { type: 'image/jpeg' }
+    );
+
+    // Upload the thumbnail file
+    const formData = new FormData();
+    formData.append('file', thumbnailFile);
+
+    const res = await fetch('/api/admin/media/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      return data.url;
+    }
+
+    return null;
+  } catch (err) {
+    console.error('Error uploading thumbnail:', err);
+    return null;
+  }
+}
 
 export default function AdminMediaPage() {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
@@ -68,12 +185,11 @@ export default function AdminMediaPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  // Upload state
+  // Multi-file upload state
   const [sourceMode, setSourceMode] = useState<'upload' | 'url'>('upload');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([]);
+  const [isDragActive, setIsDragActive] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploadSuccess, setUploadSuccess] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function loadMedia() {
@@ -99,10 +215,12 @@ export default function AdminMediaPage() {
   }, []);
 
   const resetUploadState = () => {
-    setSelectedFile(null);
+    // Clean up object URLs
+    selectedFiles.forEach((f) => {
+      if (f.preview) URL.revokeObjectURL(f.preview);
+    });
+    setSelectedFiles([]);
     setIsUploading(false);
-    setUploadError(null);
-    setUploadSuccess(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -138,40 +256,106 @@ export default function AdminMediaPage() {
     setIsModalOpen(true);
   };
 
-  // Client-side file validation & upload
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadError(null);
-    setUploadSuccess(false);
-
+  // Validate a single file
+  const validateFile = (file: File): { valid: boolean; error?: string } => {
     const ext = '.' + file.name.split('.').pop()?.toLowerCase();
     if (!ALLOWED_EXTS.includes(ext)) {
-      setUploadError(`Invalid file format (${ext}). Allowed: JPG, PNG, WebP, SVG, MP4, WebM`);
-      return;
+      return { valid: false, error: `Invalid format (${ext}). Allowed: JPG, PNG, WebP, SVG, MP4, WebM` };
     }
 
-    const isVideo = ext === '.mp4' || ext === '.webm' || file.type.startsWith('video/');
-    const isImage = !isVideo;
-
-    if (isImage && file.size > MAX_IMAGE_SIZE) {
-      setUploadError(`Image exceeds maximum allowed size of 5 MB (${(file.size / (1024 * 1024)).toFixed(1)} MB)`);
-      return;
+    if (file.size > MAX_FILE_SIZE) {
+      return { valid: false, error: `File exceeds 500 MB limit (${(file.size / (1024 * 1024)).toFixed(1)} MB)` };
     }
 
-    if (isVideo && file.size > MAX_VIDEO_SIZE) {
-      setUploadError(`Video exceeds maximum allowed size of 25 MB (${(file.size / (1024 * 1024)).toFixed(1)} MB)`);
-      return;
-    }
-
-    setSelectedFile(file);
-    await executeUpload(file, isVideo ? 'video' : 'image');
+    return { valid: true };
   };
 
-  const executeUpload = async (file: File, detectedType: 'image' | 'video') => {
-    setIsUploading(true);
-    setUploadError(null);
+  // Handle file selection (single or multiple)
+  const handleFileSelect = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    const newFiles: FileWithPreview[] = [];
+
+    for (const file of Array.from(files)) {
+      const validation = validateFile(file);
+
+      if (!validation.valid) {
+        setToast({ type: 'error', message: `${file.name}: ${validation.error}` });
+        continue;
+      }
+
+      const isVideo = file.type.startsWith('video/');
+      const preview = isVideo ? '' : URL.createObjectURL(file);
+
+      const fileWithPreview: FileWithPreview = {
+        file,
+        preview,
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        status: 'pending',
+        progress: 0,
+      };
+
+      // Generate thumbnail for video files
+      if (isVideo) {
+        const thumbnail = await generateVideoThumbnail(file);
+        if (thumbnail) {
+          fileWithPreview.generatedThumbnail = thumbnail;
+          fileWithPreview.preview = thumbnail; // Use thumbnail as preview
+        }
+      }
+
+      newFiles.push(fileWithPreview);
+    }
+
+    setSelectedFiles((prev) => [...prev, ...newFiles]);
+  };
+
+  // Remove a file from selection
+  const removeFile = (id: string) => {
+    setSelectedFiles((prev) => {
+      const file = prev.find((f) => f.id === id);
+      if (file?.preview) {
+        URL.revokeObjectURL(file.preview);
+      }
+      return prev.filter((f) => f.id !== id);
+    });
+  };
+
+  // Drag and drop handlers
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+
+    const files = e.dataTransfer.files;
+    handleFileSelect(files);
+  };
+
+  // Upload a single file
+  const uploadSingleFile = async (fileWithPreview: FileWithPreview): Promise<void> => {
+    const { file, id, generatedThumbnail } = fileWithPreview;
+
+    // Update status to uploading
+    setSelectedFiles((prev) =>
+      prev.map((f) => (f.id === id ? { ...f, status: 'uploading', progress: 0 } : f))
+    );
 
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
@@ -183,22 +367,105 @@ export default function AdminMediaPage() {
       });
 
       const data = await res.json();
+
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Upload failed');
       }
 
-      setUploadSuccess(true);
-      setFormData((prev) => ({
-        ...prev,
-        url: data.url,
-        type: detectedType,
-        title: prev.title || file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '),
-      }));
+      let thumbnailUrl = '';
+
+      // If this is a video with a generated thumbnail, upload the thumbnail
+      if (generatedThumbnail && file.type.startsWith('video/')) {
+        const uploadedThumbnail = await uploadThumbnailDataUrl(generatedThumbnail, file.name);
+        if (uploadedThumbnail) {
+          thumbnailUrl = uploadedThumbnail;
+        }
+      }
+
+      // Update status to success
+      setSelectedFiles((prev) =>
+        prev.map((f) =>
+          f.id === id
+            ? {
+                ...f,
+                status: 'success',
+                progress: 100,
+                uploadedUrl: data.url,
+                generatedThumbnail: thumbnailUrl || f.generatedThumbnail,
+              }
+            : f
+        )
+      );
+
+      return Promise.resolve();
     } catch (err: any) {
-      setUploadError(err.message || 'File upload failed');
-      setUploadSuccess(false);
-    } finally {
-      setIsUploading(false);
+      // Update status to error
+      setSelectedFiles((prev) =>
+        prev.map((f) =>
+          f.id === id
+            ? { ...f, status: 'error', error: err.message || 'Upload failed' }
+            : f
+        )
+      );
+      return Promise.reject(err);
+    }
+  };
+
+  // Upload all pending files
+  const handleBulkUpload = async () => {
+    const pendingFiles = selectedFiles.filter((f) => f.status === 'pending');
+
+    if (pendingFiles.length === 0) {
+      setToast({ type: 'error', message: 'No files to upload' });
+      return;
+    }
+
+    setIsUploading(true);
+
+    // Upload files sequentially to avoid overwhelming the server
+    const results = [];
+    for (const fileWithPreview of pendingFiles) {
+      try {
+        await uploadSingleFile(fileWithPreview);
+        results.push({ id: fileWithPreview.id, success: true });
+      } catch (err) {
+        results.push({ id: fileWithPreview.id, success: false });
+      }
+    }
+
+    setIsUploading(false);
+
+    const successCount = results.filter(r => r.success).length;
+    const failedCount = results.filter(r => !r.success).length;
+
+    if (successCount > 0) {
+      setToast({ type: 'success', message: `Successfully uploaded ${successCount} file(s)` });
+
+      // Auto-populate form if this is a single file upload
+      if (pendingFiles.length === 1) {
+        // Wait for state to settle, then get the uploaded URL
+        setTimeout(() => {
+          setSelectedFiles((currentFiles) => {
+            const uploadedFile = currentFiles.find(f => f.id === pendingFiles[0].id);
+            if (uploadedFile && uploadedFile.uploadedUrl) {
+              const isVideo = uploadedFile.file.type.startsWith('video/');
+              setFormData((prev) => ({
+                ...prev,
+                url: uploadedFile.uploadedUrl!,
+                type: isVideo ? 'video' : 'image',
+                // Auto-populate thumbnail for videos if generated
+                thumbnail_url: isVideo && uploadedFile.generatedThumbnail ? uploadedFile.generatedThumbnail : prev.thumbnail_url,
+                title: prev.title || uploadedFile.file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '),
+              }));
+            }
+            return currentFiles;
+          });
+        }, 100);
+      }
+    }
+
+    if (failedCount > 0) {
+      setToast({ type: 'error', message: `${failedCount} file(s) failed to upload` });
     }
   };
 
@@ -206,19 +473,24 @@ export default function AdminMediaPage() {
     e.preventDefault();
 
     if (!formData.url.trim()) {
-      setToast({ type: 'error', message: 'Please select a file to upload or provide a media URL' });
+      setToast({ type: 'error', message: 'Please upload a file or provide a media URL' });
+      return;
+    }
+
+    if (!formData.title.trim()) {
+      setToast({ type: 'error', message: 'Please provide a media title' });
       return;
     }
 
     setIsSaving(true);
 
     const payload = {
-      title: formData.title,
-      description: formData.description.trim() || undefined,
+      title: formData.title.trim(),
+      description: formData.description.trim() || null,
       type: formData.type,
       url: formData.url.trim(),
-      thumbnail_url: formData.thumbnail_url.trim() || undefined,
-      category: formData.category.trim() || undefined,
+      thumbnail_url: formData.thumbnail_url.trim() || null,
+      category: formData.category.trim() || null,
       featured: formData.featured,
       active: formData.active,
       display_order: Number(formData.display_order),
@@ -242,6 +514,7 @@ export default function AdminMediaPage() {
 
       setToast({ type: 'success', message: data.message || 'Media item saved successfully' });
       setIsModalOpen(false);
+      resetUploadState();
       loadMedia();
     } catch (err: any) {
       setToast({ type: 'error', message: err.message || 'An unexpected error occurred' });
@@ -321,7 +594,7 @@ export default function AdminMediaPage() {
         <AdminEmptyState
           icon={UploadCloud}
           title="Media Library Empty"
-          description="Upload local photos of the clinic (up to 5 MB) or clinical videos (up to 25 MB) to showcase the facility."
+          description="Upload local photos or clinical videos (up to 500 MB each) to showcase the facility."
           action={{
             label: 'Upload First Media File',
             onClick: handleOpenCreate,
@@ -454,12 +727,15 @@ export default function AdminMediaPage() {
         </div>
       )}
 
-      {/* Create / Edit Modal with Real File Upload */}
+      {/* Create / Edit Modal with Multi-File Upload */}
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={editingId ? 'Edit Media Asset' : 'Upload New Media Asset'}
-        description="Upload photos or videos directly to local clinic storage, or specify an external URL."
+        onClose={() => {
+          setIsModalOpen(false);
+          resetUploadState();
+        }}
+        title={editingId ? 'Edit Media Asset' : 'Upload New Media'}
+        description="Upload multiple photos or videos directly, or specify an external URL."
         maxWidth="lg"
       >
         <form onSubmit={handleSave} className="space-y-4 text-xs text-stone-800">
@@ -493,54 +769,151 @@ export default function AdminMediaPage() {
 
           {sourceMode === 'upload' ? (
             <div className="space-y-3">
-              <div className="border-2 border-dashed border-stone-300 hover:border-brand-700 rounded-2xl p-6 text-center transition-colors bg-[#faf9f7]">
+              {/* Drag & Drop Zone */}
+              <div
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all ${
+                  isDragActive
+                    ? 'border-brand-700 bg-brand-50'
+                    : 'border-stone-300 hover:border-brand-700 bg-[#faf9f7]'
+                }`}
+              >
                 <input
                   ref={fileInputRef}
                   type="file"
                   id="media_file_input"
                   accept=".jpg,.jpeg,.png,.webp,.svg,.mp4,.webm"
-                  onChange={handleFileSelect}
+                  onChange={(e) => handleFileSelect(e.target.files)}
                   className="hidden"
+                  multiple
                 />
 
                 <label htmlFor="media_file_input" className="cursor-pointer block space-y-2">
                   <div className="w-12 h-12 rounded-2xl bg-brand-50 border border-brand-100 text-brand-850 flex items-center justify-center mx-auto shadow-2xs">
-                    {isUploading ? (
-                      <RefreshCw className="w-5 h-5 animate-spin text-brand-700" />
-                    ) : (
-                      <UploadCloud className="w-6 h-6 text-brand-700" />
-                    )}
+                    <UploadCloud className="w-6 h-6 text-brand-700" />
                   </div>
                   <div>
                     <span className="font-bold text-brand-950 text-xs hover:text-brand-700 block">
-                      {isUploading ? 'Uploading file securely...' : editingId ? 'Click to replace stored file' : 'Click to choose file or drag & drop'}
+                      {isDragActive ? 'Drop files here' : 'Click to choose files or drag & drop'}
                     </span>
                     <p className="text-[11px] text-stone-600 mt-1 font-medium">
-                      Images (JPG, PNG, WebP) up to 5 MB • Videos (MP4, WebM) up to 25 MB
+                      Images & Videos (JPG, PNG, WebP, MP4, WebM) up to 500 MB each
+                    </p>
+                    <p className="text-[11px] text-brand-700 font-bold mt-1">
+                      Multiple files supported • Video thumbnails auto-generated
                     </p>
                   </div>
                 </label>
-
-                {selectedFile && (
-                  <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-stone-200 text-stone-800 text-[11px] font-medium shadow-2xs">
-                    <FileCheck className="w-3.5 h-3.5 text-brand-700" />
-                    <span className="font-bold truncate max-w-[200px]">{selectedFile.name}</span>
-                    <span className="text-stone-600">({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)</span>
-                  </div>
-                )}
               </div>
 
-              {uploadError && (
-                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-850 text-xs flex items-start gap-2 font-medium">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
-                  <span>{uploadError}</span>
-                </div>
-              )}
+              {/* Selected Files Preview */}
+              {selectedFiles.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-stone-700">
+                      Selected Files ({selectedFiles.length})
+                    </span>
+                    {selectedFiles.some((f) => f.status === 'pending') && (
+                      <Button
+                        type="button"
+                        onClick={handleBulkUpload}
+                        variant="primary"
+                        size="sm"
+                        disabled={isUploading}
+                        className="gap-1.5"
+                      >
+                        {isUploading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Uploading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <UploadCloud className="w-4 h-4" />
+                            <span>Upload All</span>
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
 
-              {uploadSuccess && (
-                <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2 font-medium">
-                  <CheckCircle className="w-4 h-4 shrink-0 text-emerald-700" />
-                  <span>File uploaded securely to server storage: <code className="font-mono text-[11px] font-bold">{formData.url}</code></span>
+                  <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto">
+                    {selectedFiles.map((fileWithPreview) => {
+                      const isVideo = fileWithPreview.file.type.startsWith('video/');
+                      return (
+                        <div
+                          key={fileWithPreview.id}
+                          className="flex items-center gap-3 p-3 bg-white border border-stone-200 rounded-xl"
+                        >
+                          {/* Thumbnail */}
+                          <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-stone-100 shrink-0">
+                            {fileWithPreview.preview ? (
+                              <img
+                                src={fileWithPreview.preview}
+                                alt={fileWithPreview.file.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Video className="w-6 h-6 text-stone-500" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* File Info */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold text-stone-900 truncate">
+                              {fileWithPreview.file.name}
+                            </p>
+                            <p className="text-[11px] text-stone-600">
+                              {(fileWithPreview.file.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+
+                            {/* Status */}
+                            {fileWithPreview.status === 'uploading' && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <Loader2 className="w-3 h-3 animate-spin text-brand-700" />
+                                <span className="text-[11px] text-brand-700 font-medium">
+                                  Uploading...
+                                </span>
+                              </div>
+                            )}
+                            {fileWithPreview.status === 'success' && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <CheckCircle className="w-3 h-3 text-emerald-600" />
+                                <span className="text-[11px] text-emerald-700 font-medium">
+                                  Uploaded {isVideo && fileWithPreview.generatedThumbnail && '+ Thumbnail'}
+                                </span>
+                              </div>
+                            )}
+                            {fileWithPreview.status === 'error' && (
+                              <div className="flex items-center gap-1 mt-1">
+                                <AlertCircle className="w-3 h-3 text-rose-600" />
+                                <span className="text-[11px] text-rose-700 font-medium">
+                                  {fileWithPreview.error || 'Upload failed'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Remove Button */}
+                          {fileWithPreview.status !== 'uploading' && (
+                            <button
+                              type="button"
+                              onClick={() => removeFile(fileWithPreview.id)}
+                              className="p-1.5 text-stone-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
+                              aria-label="Remove file"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -606,10 +979,11 @@ export default function AdminMediaPage() {
 
           {formData.type === 'video' && (
             <Input
-              label="Thumbnail Cover Image URL (Optional)"
+              label="Custom Thumbnail URL (Optional)"
               value={formData.thumbnail_url}
               onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
               placeholder="https://... or /uploads/media/..."
+              helperText="Leave blank to use auto-generated thumbnail"
             />
           )}
 
@@ -669,7 +1043,10 @@ export default function AdminMediaPage() {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setIsModalOpen(false);
+                resetUploadState();
+              }}
             >
               Cancel
             </Button>
@@ -677,8 +1054,8 @@ export default function AdminMediaPage() {
               type="submit"
               variant="primary"
               size="sm"
-              isLoading={isSaving || isUploading}
-              disabled={isUploading}
+              isLoading={isSaving}
+              disabled={isSaving || isUploading}
             >
               {editingId ? 'Save Changes' : 'Add Media Item'}
             </Button>

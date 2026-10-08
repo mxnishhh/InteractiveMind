@@ -7,7 +7,9 @@ import { ConditionsSection } from '@/components/public/ConditionsSection';
 import { BlogSection } from '@/components/public/BlogSection';
 import { Accordion } from '@/components/ui/Accordion';
 import { AppointmentForm } from '@/components/public/AppointmentForm';
-import { getServicesDB, getConditionsDB, getFaqsDB, getTeamMembersDB, getPublishedBlogPostsDB } from '@/lib/db';
+import { GallerySection } from '@/components/public/GallerySection';
+import { AboutImageSlideshow } from '@/components/public/AboutImageSlideshow';
+import { getServicesDB, getConditionsDB, getFaqsDB, getTeamMembersDB, getPublishedBlogPostsDB, getMediaDB } from '@/lib/db';
 import {
   ArrowRight,
   Check,
@@ -39,12 +41,13 @@ import {
 } from '@/components/ui/motion';
 
 export default async function HomePage() {
-  const [services, conditions, faqs, teamMembers, blogPosts] = await Promise.all([
+  const [services, conditions, faqs, teamMembers, blogPosts, galleryMedia] = await Promise.all([
     getServicesDB(),
     getConditionsDB(),
     getFaqsDB(),
     getTeamMembersDB(),
     getPublishedBlogPostsDB(),
+    getMediaDB(),
   ]);
 
   const adlItems = [
@@ -113,29 +116,7 @@ export default async function HomePage() {
             {/* Left 6 Cols: Authentic Centre Environment Photo */}
             <div className="lg:col-span-6 relative">
               <ImageReveal scaleFrom={0.98} className="relative rounded-3xl overflow-hidden shadow-elevated border-4 border-white bg-stone-100 aspect-[4/3] group">
-                <Image
-                  src="/images/homepage/sensory-gym.jpg"
-                  alt="Interactive Minds child development and sensory exploration environment in Patna City"
-                  width={800}
-                  height={600}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/60 via-transparent to-transparent pointer-events-none" />
-
-                {/* Floating Centre Environment Badge */}
-                <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-stone-200/80 shadow-card flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-5 h-5 text-brand-700" />
-                  </div>
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-800 block">
-                      Interactive Minds Centre
-                    </span>
-                    <span className="text-xs font-semibold text-stone-800">
-                      Patna City, Bihar
-                    </span>
-                  </div>
-                </div>
+                <AboutImageSlideshow />
               </ImageReveal>
             </div>
 
@@ -338,13 +319,13 @@ export default async function HomePage() {
             <div className="lg:col-span-5 relative">
               <ImageReveal scaleFrom={0.98} className="relative rounded-3xl overflow-hidden shadow-elevated border-2 border-brand-800 bg-brand-900 aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] group">
                 <img
-                  src="/images/homepage/clinical-approach.jpg"
-                  alt="Pediatric developmental therapist warmly engaged at eye level with a young child in a calm sensory room"
+                  src="/images/approach.png"
+                  alt="Interactive Minds developmental clinicians and therapists working with children in a supportive clinical environment"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-transparent to-transparent"></div>
 
-                <div className="absolute bottom-4 left-4 right-4 bg-brand-900/90 backdrop-blur-md p-4 rounded-2xl border border-brand-700/60 shadow">
+                <div className="absolute bottom-4 left-4 right-4 bg-brand-900/75 backdrop-blur-md p-4 rounded-2xl border border-brand-700/60 shadow">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-brand-200 block">Compassionate Connection</span>
                   <p className="text-xs text-stone-200 font-medium mt-0.5">Meeting every child at eye level with patience, trust, and dignity.</p>
                 </div>
@@ -496,6 +477,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* 7.5 Gallery Section */}
+      <GallerySection media={galleryMedia} />
+
       {/* 8. Team: Editorial Collaboration Feature */}
       <section id="team" className="py-20 lg:py-28 bg-white border-t border-stone-200/80 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -519,12 +503,12 @@ export default async function HomePage() {
               <div className="lg:col-span-6 relative">
                 <ImageReveal scaleFrom={0.98} className="rounded-2xl overflow-hidden shadow-card border-2 border-white aspect-[4/3] bg-stone-100">
                   <img
-                    src="/images/homepage/team-collaboration.jpg"
-                    alt="Child development professionals collaboratively reviewing an individualized child progress chart and learning materials at an oak table"
+                    src="/images/consult.png"
+                    alt="Interactive Minds developmental clinician conducting a clinical consultation with client"
                     className="w-full h-full object-cover"
                   />
                 </ImageReveal>
-                <div className="absolute -bottom-3 -right-2 bg-brand-850 text-white text-[11px] font-semibold px-3.5 py-1.5 rounded-xl shadow-md">
+                <div className="absolute -bottom-3 -right-2 bg-brand-900/80 backdrop-blur-sm text-white text-[11px] font-semibold px-3.5 py-1.5 rounded-xl shadow-md border border-brand-700/50">
                   Case Review &amp; IEP Alignment
                 </div>
               </div>
@@ -653,7 +637,7 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
 
-            {/* Left Column: Trust, Family Entrance Photo, Center Coordinates (5 cols) */}
+            {/* Left Column: Trust, Center Coordinates (5 cols) */}
             <FadeUp className="lg:col-span-5 space-y-6">
               <span className="text-xs font-bold uppercase tracking-wider text-brand-500 block">Take the First Step</span>
               <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
@@ -662,20 +646,6 @@ export default async function HomePage() {
               <p className="text-stone-300 text-base leading-relaxed">
                 Our clinical intake coordinator will review your request confidentially and reach out within 24 hours to guide you through scheduling an evaluation.
               </p>
-
-              {/* Reassuring Family Entrance Photograph */}
-              <ImageReveal scaleFrom={0.98} className="relative rounded-2xl overflow-hidden shadow-elevated border-2 border-brand-800 bg-brand-900 aspect-[16/10] group">
-                <img
-                  src="/images/homepage/family-entrance.jpg"
-                  alt="Indian parents walking happily with their child toward the sunlit entrance of the centre"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent"></div>
-                <div className="absolute bottom-3 left-3 right-3 bg-brand-950/80 backdrop-blur-sm px-3.5 py-2 rounded-xl border border-brand-800/60">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-brand-200">A Safe, Warm Welcome</span>
-                  <p className="text-[11px] text-stone-300">Interactive Minds Pediatric Centre, Patna City</p>
-                </div>
-              </ImageReveal>
 
               {/* Center Info Sidebar */}
               <div className="pt-2 space-y-4 border-t border-brand-850">

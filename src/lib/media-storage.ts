@@ -5,8 +5,8 @@ import crypto from 'crypto';
 export const UPLOAD_DIR_RELATIVE = '/uploads/media';
 export const UPLOAD_BASE_DIR = path.join(process.cwd(), 'public', 'uploads', 'media');
 
-export const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
-export const MAX_VIDEO_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
+export const MAX_IMAGE_SIZE_BYTES = 500 * 1024 * 1024; // 500 MB
+export const MAX_VIDEO_SIZE_BYTES = 500 * 1024 * 1024; // 500 MB
 
 export const ALLOWED_MIME_MAP: Record<string, { type: 'image' | 'video'; exts: string[] }> = {
   'image/jpeg': { type: 'image', exts: ['.jpg', '.jpeg'] },
@@ -62,12 +62,12 @@ export function validateMediaFile(file: File): ValidationResult {
 
   if (mediaType === 'image' && file.size > MAX_IMAGE_SIZE_BYTES) {
     const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-    return { valid: false, error: `Image file is too large (${sizeMb} MB). Maximum allowed size for images is 5 MB.` };
+    return { valid: false, error: `Image file is too large (${sizeMb} MB). Maximum allowed size is 500 MB.` };
   }
 
   if (mediaType === 'video' && file.size > MAX_VIDEO_SIZE_BYTES) {
     const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-    return { valid: false, error: `Video file is too large (${sizeMb} MB). Maximum allowed size for videos is 25 MB.` };
+    return { valid: false, error: `Video file is too large (${sizeMb} MB). Maximum allowed size is 500 MB.` };
   }
 
   return {

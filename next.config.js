@@ -10,6 +10,12 @@ const nextConfig = {
       },
     ],
   },
+  // Increase body size limit for file uploads (500 MB)
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '500mb',
+    },
+  },
   async headers() {
     return [
       {

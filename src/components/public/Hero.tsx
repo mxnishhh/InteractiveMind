@@ -129,14 +129,14 @@ export const Hero: React.FC = () => {
           >
             <div className="relative mx-auto rounded-3xl overflow-hidden shadow-elevated border-4 border-white bg-stone-100 aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] w-full">
               <img
-                src="/images/homepage/hero-parent-child.jpg"
+                src="/images/homepage/hero.png"
                 alt="Caregiver and child gently engaged in a calm creative developmental activity together"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-brand-950/40 via-transparent to-transparent"></div>
 
               {/* Inset Badge on Image */}
-              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/60 shadow-lg flex items-center justify-between">
+              <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/60 shadow-lg flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-xl bg-brand-50 flex items-center justify-center text-brand-700 shrink-0">
                     <Heart className="w-4 h-4 fill-brand-100" />
