@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdminApi } from '@/lib/auth';
 import { getMediaByIdDB, updateMediaDB, deleteMediaDB } from '@/lib/db';
 import { deleteMediaStorage } from '@/lib/media-storage';
@@ -58,6 +59,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     const media = await getMediaByIdDB(id);
+
+    try {
+      revalidatePath('/');
+    } catch (e) {
+      console.warn('Path revalidation warning:', e);
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Media item updated successfully',
@@ -102,6 +110,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     const deleted = await deleteMediaDB(id);
     if (!deleted) {
       return NextResponse.json({ success: false, error: 'Failed to delete media item' }, { status: 500 });
+    }
+
+    try {
+      revalidatePath('/');
+    } catch (e) {
+      console.warn('Path revalidation warning:', e);
     }
 
     return NextResponse.json({

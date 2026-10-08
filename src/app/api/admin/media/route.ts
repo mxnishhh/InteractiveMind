@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdminApi } from '@/lib/auth';
 import { getAllMediaDB, createMediaDB } from '@/lib/db';
 import { MediaItemSchema } from '@/validators/schemas';
@@ -24,6 +25,13 @@ export async function POST(req: NextRequest) {
     const validatedData = MediaItemSchema.parse(body);
 
     const created = await createMediaDB(validatedData);
+
+    try {
+      revalidatePath('/');
+    } catch (e) {
+      console.warn('Path revalidation warning:', e);
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Media item added successfully',

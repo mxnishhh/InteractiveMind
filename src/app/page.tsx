@@ -40,6 +40,9 @@ import {
   MotionCard,
 } from '@/components/ui/motion';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function HomePage() {
   const [services, conditions, faqs, teamMembers, blogPosts, galleryMedia] = await Promise.all([
     getServicesDB(),
