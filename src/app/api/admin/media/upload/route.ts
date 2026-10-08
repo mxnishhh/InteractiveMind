@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { requireAdminApi } from '@/lib/auth';
-import { ALLOWED_CONTENT_TYPES, MAX_IMAGE_SIZE_BYTES } from '@/lib/media-storage';
+import { ALLOWED_CONTENT_TYPES, MAX_IMAGE_SIZE_BYTES, deleteMediaStorage } from '@/lib/media-storage';
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   // 1. Enforce admin authentication
@@ -72,6 +72,30 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       { success: false, error: formattedError },
       { status: isUnauthorized ? 401 : 400 }
+    );
+  }
+}
+
+/**
+ * Handle deletion of orphaned/temporary Vercel Blob assets if DB creation fails.
+ */
+export async function DELETE(req: NextRequest): Promise<NextResponse> {
+  const auth = requireAdminApi(req);
+  if (!auth.authenticated) {
+    return auth.errorResponse!;
+  }
+
+  try {
+    const { url } = await req.json();
+    if (url && typeof url === 'string') {
+      await deleteMediaStorage(url);
+    }
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Error deleting blob cleanup:', error);
+    return NextResponse.json(
+      { success: false, error: error?.message || 'Failed to delete blob' },
+      { status: 500 }
     );
   }
 }

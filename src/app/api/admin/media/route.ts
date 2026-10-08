@@ -38,10 +38,12 @@ export async function POST(req: NextRequest) {
       data: created,
     }, { status: 201 });
   } catch (error: any) {
+    console.error('Failed to create media item in database:', error);
     if (error.name === 'ZodError') {
       const firstError = error.errors?.[0]?.message || 'Validation failed';
       return NextResponse.json({ success: false, error: firstError, details: error.errors }, { status: 400 });
     }
-    return NextResponse.json({ success: false, error: 'Failed to create media item' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to create media item';
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

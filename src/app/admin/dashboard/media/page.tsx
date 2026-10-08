@@ -120,6 +120,22 @@ async function uploadThumbnailDataUrl(dataUrl: string, baseFilename: string): Pr
   }
 }
 
+/**
+ * Safely cleanup an uploaded Vercel Blob asset if DB insertion fails
+ */
+async function cleanupUploadedBlob(url?: string | null): Promise<void> {
+  if (!url || !isVercelBlobUrl(url)) return;
+  try {
+    await fetch('/api/admin/media/upload', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+  } catch (err) {
+    console.warn('Could not cleanup orphaned blob:', err);
+  }
+}
+
 export default function AdminMediaPage() {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -496,11 +512,15 @@ export default function AdminMediaPage() {
 
         const data = await res.json();
         if (!res.ok || !data.success) {
+          // Cleanup newly uploaded blob and thumbnail to prevent orphaned assets
+          await cleanupUploadedBlob(blobUrl);
+          if (thumbnailUrl) await cleanupUploadedBlob(thumbnailUrl);
           throw new Error(data.error || 'Failed to create media database record');
         }
 
         successCount++;
       } catch (err: any) {
+        console.error('Error creating media item in bulk upload:', err);
         failedCount++;
       }
     }
@@ -523,7 +543,7 @@ export default function AdminMediaPage() {
     if (failedCount > 0) {
       setToast({
         type: 'error',
-        message: `${failedCount} file(s) encountered an issue. Successful items were saved.`,
+        message: `${failedCount} file(s) encountered an issue saving to database. Successful items were saved.`,
       });
     }
   };
@@ -590,7 +610,7 @@ export default function AdminMediaPage() {
       category: formData.category.trim() || 'Center',
       featured: formData.featured,
       active: formData.active,
-      display_order: Number(formData.display_order),
+      display_order: Number(formData.display_order) || 0,
       optimization_status: optMeta?.optimization_status || (targetType === 'video' ? 'ready' : null),
       original_size_bytes: optMeta?.original_size_bytes ?? null,
       optimized_size_bytes: optMeta?.optimized_size_bytes ?? null,
@@ -612,6 +632,11 @@ export default function AdminMediaPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
+        // If create failed and a new blob was uploaded, delete newly uploaded blob
+        if (!editingId && targetUrl) {
+          await cleanupUploadedBlob(targetUrl);
+          if (targetThumbnailUrl) await cleanupUploadedBlob(targetThumbnailUrl);
+        }
         throw new Error(data.error || 'Failed to save media item');
       }
 

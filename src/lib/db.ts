@@ -767,6 +767,49 @@ export async function deleteTestimonialDB(id: number): Promise<boolean> {
 // 6. MEDIA GALLERY REPOSITORY
 // ====================================================
 
+let mediaSchemaMigrated = false;
+
+/**
+ * Ensure media table has optimization columns in MySQL database.
+ * Non-destructive and safe across MySQL / TiDB / MariaDB.
+ */
+async function ensureMediaSchema(): Promise<void> {
+  if (mediaSchemaMigrated) return;
+  const p = getDbPool();
+  if (!p) return;
+
+  try {
+    const columns = await queryDb<any>(
+      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'media' AND TABLE_SCHEMA = DATABASE()`
+    );
+    const existing = new Set(columns.map((c: any) => String(c.COLUMN_NAME).toLowerCase()));
+
+    if (existing.size > 0) {
+      if (!existing.has('optimization_status')) {
+        await queryDb(`ALTER TABLE \`media\` ADD COLUMN \`optimization_status\` ENUM('ready', 'processing', 'failed', 'original') DEFAULT 'ready'`);
+      }
+      if (!existing.has('original_size_bytes')) {
+        await queryDb(`ALTER TABLE \`media\` ADD COLUMN \`original_size_bytes\` BIGINT NULL`);
+      }
+      if (!existing.has('optimized_size_bytes')) {
+        await queryDb(`ALTER TABLE \`media\` ADD COLUMN \`optimized_size_bytes\` BIGINT NULL`);
+      }
+      if (!existing.has('duration_seconds')) {
+        await queryDb(`ALTER TABLE \`media\` ADD COLUMN \`duration_seconds\` DECIMAL(10, 2) NULL`);
+      }
+      if (!existing.has('width')) {
+        await queryDb(`ALTER TABLE \`media\` ADD COLUMN \`width\` INT NULL`);
+      }
+      if (!existing.has('height')) {
+        await queryDb(`ALTER TABLE \`media\` ADD COLUMN \`height\` INT NULL`);
+      }
+    }
+    mediaSchemaMigrated = true;
+  } catch (err) {
+    console.warn('Media table schema verification note:', err);
+  }
+}
+
 export async function getMediaDB(): Promise<MediaItem[]> {
   try {
     const rows = await queryDb('SELECT * FROM media WHERE active = 1 ORDER BY display_order ASC, id ASC');
@@ -810,6 +853,8 @@ export async function getMediaByIdDB(id: number): Promise<MediaItem | null> {
 }
 
 export async function createMediaDB(data: Omit<MediaItem, 'id' | 'created_at' | 'updated_at'>): Promise<MediaItem> {
+  await ensureMediaSchema();
+
   const descValue = data.description ? String(data.description).trim() : null;
   const thumbValue = data.thumbnail_url ? String(data.thumbnail_url).trim() : null;
   const optStatus = data.optimization_status || 'ready';
@@ -856,7 +901,39 @@ export async function createMediaDB(data: Omit<MediaItem, 'id' | 'created_at' | 
       width: widthVal ?? undefined,
       height: heightVal ?? undefined,
     };
-  } catch (error) {
+  } catch (error: any) {
+    const errMsg = String(error?.message || '').toLowerCase();
+    // Safe fallback if production DB lacks new columns and cannot ALTER TABLE
+    if (errMsg.includes('unknown column') || errMsg.includes('optimization_status')) {
+      try {
+        const fallbackRes = await queryDb(
+          `INSERT INTO media (title, description, type, url, thumbnail_url, category, featured, active, display_order)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            data.title,
+            descValue,
+            data.type || 'image',
+            data.url,
+            thumbValue,
+            data.category || 'Activities',
+            data.featured ? 1 : 0,
+            data.active ? 1 : 0,
+            data.display_order ?? 0,
+          ]
+        );
+        const insertId = (fallbackRes as any).insertId;
+        const created = await getMediaByIdDB(insertId);
+        return created || {
+          id: insertId,
+          ...data,
+          description: descValue || undefined,
+          thumbnail_url: thumbValue || undefined,
+        };
+      } catch (fallbackErr) {
+        // Continue to error handling below
+      }
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       const newMedia: MediaItem = {
         id: memoryState.nextMediaId++,
@@ -886,6 +963,8 @@ export async function createMediaDB(data: Omit<MediaItem, 'id' | 'created_at' | 
 }
 
 export async function updateMediaDB(id: number, data: Partial<Omit<MediaItem, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> {
+  await ensureMediaSchema();
+
   const existing = await getMediaByIdDB(id);
   if (!existing) return false;
 
@@ -935,7 +1014,31 @@ export async function updateMediaDB(id: number, data: Partial<Omit<MediaItem, 'i
     );
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
+    const errMsg = String(error?.message || '').toLowerCase();
+    if (errMsg.includes('unknown column') || errMsg.includes('optimization_status')) {
+      try {
+        await queryDb(
+          `UPDATE media SET
+           title = ?, description = ?, type = ?, url = ?, thumbnail_url = ?, category = ?, featured = ?, active = ?, display_order = ?
+           WHERE id = ?`,
+          [
+            merged.title,
+            descValue,
+            merged.type || 'image',
+            merged.url,
+            thumbValue,
+            merged.category || 'Activities',
+            merged.featured ? 1 : 0,
+            merged.active ? 1 : 0,
+            merged.display_order ?? 0,
+            id,
+          ]
+        );
+        return true;
+      } catch (fallbackErr) {}
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       const idx = memoryState.media.findIndex(m => m.id === id);
       if (idx !== -1) {

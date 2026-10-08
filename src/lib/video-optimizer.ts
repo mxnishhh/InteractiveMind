@@ -246,6 +246,46 @@ async function probeAudioEncoderSupport(sampleRate: number, channels: number): P
 }
 
 /**
+ * Bounded queue management: waits for VideoEncoder queue to drain if it gets large (> 12),
+ * using the WebCodecs dequeue event with a bounded fallback timeout so it can NEVER deadlock.
+ */
+async function waitForEncoderQueue(encoder: VideoEncoder, maxQueue = 12, maxWaitMs = 120): Promise<void> {
+  if (encoder.encodeQueueSize <= maxQueue) return;
+
+  return new Promise<void>((resolve) => {
+    let resolved = false;
+    let timer: any = null;
+
+    const onDequeue = () => {
+      if (!resolved && encoder.encodeQueueSize <= maxQueue) {
+        cleanup();
+        resolved = true;
+        resolve();
+      }
+    };
+
+    const cleanup = () => {
+      if (timer) clearTimeout(timer);
+      try {
+        encoder.removeEventListener('dequeue', onDequeue);
+      } catch {}
+    };
+
+    try {
+      encoder.addEventListener('dequeue', onDequeue);
+    } catch {}
+
+    timer = setTimeout(() => {
+      if (!resolved) {
+        cleanup();
+        resolved = true;
+        resolve(); // Bounded timeout guarantees loop proceeds
+      }
+    }, maxWaitMs);
+  });
+}
+
+/**
  * Seek video helper with safety timeout to prevent stalling in Safari
  */
 function seekVideo(video: HTMLVideoElement, time: number): Promise<void> {
@@ -263,14 +303,14 @@ function seekVideo(video: HTMLVideoElement, time: number): Promise<void> {
     video.addEventListener('seeked', onSeeked, { once: true });
     video.currentTime = time;
 
-    // 250ms fallback timeout if seeked event is delayed by the media pipeline
+    // 180ms fallback timeout if seeked event is delayed by the media pipeline
     setTimeout(() => {
       if (!resolved) {
         resolved = true;
         video.removeEventListener('seeked', onSeeked);
         resolve();
       }
-    }, 250);
+    }, 180);
   });
 }
 
@@ -530,13 +570,11 @@ export async function optimizeVideo(
       videoEncoder.encode(videoFrame, { keyFrame: isKeyFrame });
       videoFrame.close();
 
-      // Pacing for Safari WebKit & GPU VideoToolbox: prevent queue saturation
-      while (videoEncoder.encodeQueueSize > 2) {
-        await new Promise((resolve) => setTimeout(resolve, 10));
-      }
+      // Bounded pacing: wait for WebKit VideoToolbox queue to drain if backlogged, with hard timeout
+      await waitForEncoderQueue(videoEncoder, 12, 120);
 
-      // Yield event loop every 3 frames so output callbacks and UI stay responsive
-      if (frameIdx % 3 === 0) {
+      // Yield event loop every 2 frames so output callbacks and UI stay responsive
+      if (frameIdx % 2 === 0) {
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
 
