@@ -13,8 +13,13 @@ import {
 } from 'lucide-react';
 import { Service } from '@/types';
 import { ORDERED_THERAPY_SLUGS } from '@/constants';
-import { TherapyDetailModal } from './TherapyDetailModal';
+import dynamic from 'next/dynamic';
 import { FadeUp } from '@/components/ui/motion';
+
+const TherapyDetailModal = dynamic(
+  () => import('./TherapyDetailModal').then((mod) => mod.TherapyDetailModal),
+  { ssr: false }
+);
 
 interface TherapiesSectionProps {
   allServices: Service[];

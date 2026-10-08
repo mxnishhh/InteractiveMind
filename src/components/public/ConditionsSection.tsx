@@ -1,12 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { ArrowRight } from 'lucide-react';
 import { Condition } from '@/types';
-import { ConditionDetailModal } from './ConditionDetailModal';
 import Image from 'next/image';
 import { FadeUp, FadeIn } from '@/components/ui/motion';
 import { motion } from 'framer-motion';
+
+const ConditionDetailModal = dynamic(
+  () => import('./ConditionDetailModal').then((mod) => mod.ConditionDetailModal),
+  { ssr: false }
+);
 
 interface ConditionsSectionProps {
   allConditions: Condition[];
