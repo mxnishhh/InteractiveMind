@@ -1,12 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/Badge';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
-import { Toast } from '@/components/ui/Toast';
-import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
-import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
+import { Badge, Modal, Button, Toast } from '@/components/ui';
+import { AdminPageHeader, AdminEmptyState } from '@/components/admin';
 import { ContactMessage, MessageStatus } from '@/types';
 import { Search, Filter, Eye, Mail, Phone, Calendar, User, CheckCircle2, Archive, MessageSquare } from 'lucide-react';
 

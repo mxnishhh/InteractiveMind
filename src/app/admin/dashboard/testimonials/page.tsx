@@ -2,14 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Testimonial } from '@/types';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
-import { Modal } from '@/components/ui/Modal';
-import { Toast } from '@/components/ui/Toast';
-import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
-import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
-import { AdminDeleteModal } from '@/components/admin/AdminDeleteModal';
+import { Button, Input, Textarea, Modal, Toast } from '@/components/ui';
+import { AdminPageHeader, AdminEmptyState, AdminDeleteModal } from '@/components/admin';
 import {
   HeartHandshake,
   Plus,

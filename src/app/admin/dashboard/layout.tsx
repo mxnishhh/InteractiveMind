@@ -3,8 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { AdminSidebar } from '@/components/admin/AdminSidebar';
-import { AdminHeader } from '@/components/admin/AdminHeader';
+import { AdminSidebar, AdminHeader } from '@/components/admin';
 import { AdminUser } from '@/types';
 
 export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {

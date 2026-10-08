@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
+import { Modal, Button } from '@/components/ui';
 import { AlertTriangle } from 'lucide-react';
 
 interface AdminDeleteModalProps {

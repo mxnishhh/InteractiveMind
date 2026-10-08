@@ -3,14 +3,8 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { upload } from '@vercel/blob/client';
 import { MediaItem, VideoOptimizationMeta } from '@/types';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
-import { Modal } from '@/components/ui/Modal';
-import { Toast } from '@/components/ui/Toast';
-import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
-import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
-import { AdminDeleteModal } from '@/components/admin/AdminDeleteModal';
+import { Button, Input, Textarea, Modal, Toast } from '@/components/ui';
+import { AdminPageHeader, AdminEmptyState, AdminDeleteModal } from '@/components/admin';
 import { isVercelBlobUrl } from '@/lib/media-utils';
 import {
   optimizeVideo,

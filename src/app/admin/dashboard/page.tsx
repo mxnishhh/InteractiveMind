@@ -2,10 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { StatsCard } from '@/components/admin/StatsCard';
-import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
-import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
-import { Badge } from '@/components/ui/Badge';
+import { StatsCard, AdminPageHeader, AdminEmptyState } from '@/components/admin';
+import { Badge } from '@/components/ui';
 import {
   Calendar,
   MessageSquare,

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { MediaItem } from '@/types';
 import { FadeUp } from '@/components/ui/motion';
-import { Modal } from '@/components/ui/Modal';
+import { Modal } from '@/components/ui';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 interface GallerySectionProps {

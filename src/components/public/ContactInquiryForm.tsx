@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
-import { Textarea } from '@/components/ui/Textarea';
-import { Button } from '@/components/ui/Button';
+import { Input, Select, Textarea, Button } from '@/components/ui';
 import { Send, CheckCircle2, MessageSquare, AlertCircle } from 'lucide-react';
 
 interface ContactInquiryFormProps {

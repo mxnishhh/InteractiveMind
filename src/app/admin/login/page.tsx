@@ -3,9 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { Toast } from '@/components/ui/Toast';
+import { Input, Button, Toast } from '@/components/ui';
 import { Lock, ShieldCheck, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 

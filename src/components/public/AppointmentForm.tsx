@@ -1,11 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
-import { Textarea } from '@/components/ui/Textarea';
-import { Button } from '@/components/ui/Button';
-import { Toast } from '@/components/ui/Toast';
+import { Input, Select, Textarea, Button, Toast } from '@/components/ui';
 import { Service } from '@/types';
 import { APPOINTMENT_PAGE } from '@/constants';
 

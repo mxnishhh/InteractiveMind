@@ -5,7 +5,7 @@ import { Hero } from '@/components/public/Hero';
 import { TherapiesSection } from '@/components/public/TherapiesSection';
 import { ConditionsSection } from '@/components/public/ConditionsSection';
 import { BlogSection } from '@/components/public/BlogSection';
-import { Accordion } from '@/components/ui/Accordion';
+import { Accordion } from '@/components/ui';
 import { AppointmentInquiryCard } from '@/components/public/AppointmentInquiryCard';
 import { GallerySection } from '@/components/public/GallerySection';
 import { AboutImageSlideshow } from '@/components/public/AboutImageSlideshow';
