@@ -130,7 +130,7 @@ export const Hero: React.FC = () => {
           >
             <div className="relative mx-auto rounded-3xl overflow-hidden shadow-elevated border-4 border-white bg-stone-100 aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] w-full">
               <Image
-                src="/images/homepage/hero.png"
+                src="/images/homepage/hero.webp"
                 alt="Caregiver and child gently engaged in a calm creative developmental activity together"
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 42vw"
