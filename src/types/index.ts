@@ -1,6 +1,16 @@
 export type AppointmentStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
 export type MessageStatus = 'NEW' | 'READ' | 'RESPONDED' | 'ARCHIVED';
 export type MediaType = 'image' | 'video';
+export type OptimizationStatus = 'ready' | 'processing' | 'failed' | 'original';
+
+export interface VideoOptimizationMeta {
+  optimization_status: OptimizationStatus;
+  original_size_bytes?: number | null;
+  optimized_size_bytes?: number | null;
+  duration_seconds?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
 
 export type BlogPostType = 'article' | 'video' | 'resource';
 export type BlogPostStatus = 'draft' | 'published';
@@ -136,6 +146,12 @@ export interface MediaItem {
   featured: boolean;
   active: boolean;
   display_order: number;
+  optimization_status?: OptimizationStatus | null;
+  original_size_bytes?: number | null;
+  optimized_size_bytes?: number | null;
+  duration_seconds?: number | null;
+  width?: number | null;
+  height?: number | null;
   created_at?: string;
   updated_at?: string;
 }

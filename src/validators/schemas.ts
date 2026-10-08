@@ -115,6 +115,12 @@ export const MediaItemSchema = z.object({
   featured: z.boolean().default(false),
   active: z.boolean().default(true),
   display_order: z.number().default(0),
+  optimization_status: z.enum(['ready', 'processing', 'failed', 'original']).optional().nullable(),
+  original_size_bytes: z.number().optional().nullable(),
+  optimized_size_bytes: z.number().optional().nullable(),
+  duration_seconds: z.number().optional().nullable(),
+  width: z.number().optional().nullable(),
+  height: z.number().optional().nullable(),
 });
 
 export const MediaItemUpdateSchema = MediaItemSchema.partial();

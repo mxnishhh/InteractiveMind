@@ -122,6 +122,12 @@ export function normalizeMediaItem(row: any): MediaItem {
     featured: Boolean(row.featured),
     active: Boolean(row.active),
     display_order: Number(row.display_order ?? 0),
+    optimization_status: row.optimization_status ? String(row.optimization_status) as any : undefined,
+    original_size_bytes: row.original_size_bytes !== null && row.original_size_bytes !== undefined ? Number(row.original_size_bytes) : undefined,
+    optimized_size_bytes: row.optimized_size_bytes !== null && row.optimized_size_bytes !== undefined ? Number(row.optimized_size_bytes) : undefined,
+    duration_seconds: row.duration_seconds !== null && row.duration_seconds !== undefined ? Number(row.duration_seconds) : undefined,
+    width: row.width !== null && row.width !== undefined ? Number(row.width) : undefined,
+    height: row.height !== null && row.height !== undefined ? Number(row.height) : undefined,
     created_at: row.created_at ? String(row.created_at) : undefined,
     updated_at: row.updated_at ? String(row.updated_at) : undefined,
   };
@@ -806,11 +812,17 @@ export async function getMediaByIdDB(id: number): Promise<MediaItem | null> {
 export async function createMediaDB(data: Omit<MediaItem, 'id' | 'created_at' | 'updated_at'>): Promise<MediaItem> {
   const descValue = data.description ? String(data.description).trim() : null;
   const thumbValue = data.thumbnail_url ? String(data.thumbnail_url).trim() : null;
+  const optStatus = data.optimization_status || 'ready';
+  const origSize = data.original_size_bytes ?? null;
+  const optSize = data.optimized_size_bytes ?? null;
+  const durationSec = data.duration_seconds ?? null;
+  const widthVal = data.width ?? null;
+  const heightVal = data.height ?? null;
 
   try {
     const res = await queryDb(
-      `INSERT INTO media (title, description, type, url, thumbnail_url, category, featured, active, display_order)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO media (title, description, type, url, thumbnail_url, category, featured, active, display_order, optimization_status, original_size_bytes, optimized_size_bytes, duration_seconds, width, height)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         data.title,
         descValue,
@@ -821,12 +833,29 @@ export async function createMediaDB(data: Omit<MediaItem, 'id' | 'created_at' | 
         data.featured ? 1 : 0,
         data.active ? 1 : 0,
         data.display_order ?? 0,
+        optStatus,
+        origSize,
+        optSize,
+        durationSec,
+        widthVal,
+        heightVal,
       ]
     );
 
     const insertId = (res as any).insertId;
     const created = await getMediaByIdDB(insertId);
-    return created || { id: insertId, ...data, description: descValue || undefined, thumbnail_url: thumbValue || undefined };
+    return created || {
+      id: insertId,
+      ...data,
+      description: descValue || undefined,
+      thumbnail_url: thumbValue || undefined,
+      optimization_status: optStatus,
+      original_size_bytes: origSize ?? undefined,
+      optimized_size_bytes: optSize ?? undefined,
+      duration_seconds: durationSec ?? undefined,
+      width: widthVal ?? undefined,
+      height: heightVal ?? undefined,
+    };
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
       const newMedia: MediaItem = {
@@ -840,6 +869,12 @@ export async function createMediaDB(data: Omit<MediaItem, 'id' | 'created_at' | 
         featured: Boolean(data.featured),
         active: data.active !== undefined ? Boolean(data.active) : true,
         display_order: Number(data.display_order ?? 0),
+        optimization_status: optStatus,
+        original_size_bytes: origSize ?? undefined,
+        optimized_size_bytes: optSize ?? undefined,
+        duration_seconds: durationSec ?? undefined,
+        width: widthVal ?? undefined,
+        height: heightVal ?? undefined,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -863,10 +898,21 @@ export async function updateMediaDB(id: number, data: Partial<Omit<MediaItem, 'i
     ? (data.thumbnail_url && String(data.thumbnail_url).trim().length > 0 ? String(data.thumbnail_url).trim() : null)
     : (existing.thumbnail_url ? String(existing.thumbnail_url) : null);
 
+  const optStatus = data.optimization_status !== undefined
+    ? data.optimization_status
+    : (existing.optimization_status || 'ready');
+
+  const origSize = data.original_size_bytes !== undefined ? data.original_size_bytes : (existing.original_size_bytes ?? null);
+  const optSize = data.optimized_size_bytes !== undefined ? data.optimized_size_bytes : (existing.optimized_size_bytes ?? null);
+  const durationSec = data.duration_seconds !== undefined ? data.duration_seconds : (existing.duration_seconds ?? null);
+  const widthVal = data.width !== undefined ? data.width : (existing.width ?? null);
+  const heightVal = data.height !== undefined ? data.height : (existing.height ?? null);
+
   try {
     await queryDb(
       `UPDATE media SET
-       title = ?, description = ?, type = ?, url = ?, thumbnail_url = ?, category = ?, featured = ?, active = ?, display_order = ?
+       title = ?, description = ?, type = ?, url = ?, thumbnail_url = ?, category = ?, featured = ?, active = ?, display_order = ?,
+       optimization_status = ?, original_size_bytes = ?, optimized_size_bytes = ?, duration_seconds = ?, width = ?, height = ?
        WHERE id = ?`,
       [
         merged.title,
@@ -878,6 +924,12 @@ export async function updateMediaDB(id: number, data: Partial<Omit<MediaItem, 'i
         merged.featured ? 1 : 0,
         merged.active ? 1 : 0,
         merged.display_order ?? 0,
+        optStatus,
+        origSize,
+        optSize,
+        durationSec,
+        widthVal,
+        heightVal,
         id,
       ]
     );
@@ -892,6 +944,12 @@ export async function updateMediaDB(id: number, data: Partial<Omit<MediaItem, 'i
           ...data,
           description: descValue || undefined,
           thumbnail_url: thumbValue || undefined,
+          optimization_status: optStatus || undefined,
+          original_size_bytes: origSize ?? undefined,
+          optimized_size_bytes: optSize ?? undefined,
+          duration_seconds: durationSec ?? undefined,
+          width: widthVal ?? undefined,
+          height: heightVal ?? undefined,
           updated_at: new Date().toISOString(),
         };
         return true;

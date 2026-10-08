@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { upload } from '@vercel/blob/client';
-import { MediaItem } from '@/types';
+import { MediaItem, VideoOptimizationMeta } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
@@ -12,6 +12,11 @@ import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 import { AdminDeleteModal } from '@/components/admin/AdminDeleteModal';
 import { isVercelBlobUrl } from '@/lib/media-utils';
+import {
+  optimizeVideo,
+  extractVideoMetadata,
+  canOptimizeVideo,
+} from '@/lib/video-optimizer';
 import {
   Image as ImageIcon,
   Video,
@@ -29,6 +34,9 @@ import {
   Link as LinkIcon,
   X,
   Loader2,
+  Zap,
+  Gauge,
+  Film,
 } from 'lucide-react';
 
 interface MediaFormData {
@@ -62,12 +70,14 @@ interface FileWithPreview {
   file: File;
   preview: string;
   id: string;
-  status: 'pending' | 'uploading' | 'success' | 'error';
+  status: 'pending' | 'optimizing' | 'uploading' | 'success' | 'error';
+  stageMessage?: string;
   progress: number;
   error?: string;
   uploadedUrl?: string;
-  generatedThumbnail?: string; // Data URL for client preview & upload
+  generatedThumbnail?: string;
   uploadedThumbnailUrl?: string;
+  optimizationMeta?: VideoOptimizationMeta;
 }
 
 function formatTitleFromFilename(filename: string): string {
@@ -76,73 +86,20 @@ function formatTitleFromFilename(filename: string): string {
   return base.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/**
- * Generate a representative frame thumbnail from a video file using Canvas API.
- * This runs client-side in the browser on any deployment architecture.
- */
-async function generateVideoThumbnail(videoFile: File): Promise<string | null> {
-  return new Promise((resolve) => {
-    try {
-      const video = document.createElement('video');
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      if (!ctx) {
-        resolve(null);
-        return;
-      }
-
-      video.preload = 'metadata';
-      video.muted = true;
-      video.playsInline = true;
-
-      const objectUrl = URL.createObjectURL(videoFile);
-      video.src = objectUrl;
-
-      const cleanup = () => {
-        URL.revokeObjectURL(objectUrl);
-        video.remove();
-        canvas.remove();
-      };
-
-      video.addEventListener('loadedmetadata', () => {
-        // Seek to 1 second (or 10% of duration, whichever is smaller) to capture a clear frame
-        const seekTime = Math.min(1, Math.max(0.1, video.duration * 0.1));
-        video.currentTime = seekTime;
-      });
-
-      video.addEventListener('seeked', () => {
-        try {
-          canvas.width = video.videoWidth || 640;
-          canvas.height = video.videoHeight || 360;
-
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const thumbnailDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-
-          cleanup();
-          resolve(thumbnailDataUrl);
-        } catch (err) {
-          console.error('Error generating canvas video thumbnail:', err);
-          cleanup();
-          resolve(null);
-        }
-      });
-
-      video.addEventListener('error', () => {
-        cleanup();
-        resolve(null);
-      });
-
-      video.load();
-    } catch (err) {
-      console.error('Error in generateVideoThumbnail:', err);
-      resolve(null);
-    }
-  });
+function formatBytes(bytes?: number | null): string {
+  if (!bytes || isNaN(bytes)) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let i = 0;
+  let val = bytes;
+  while (val >= 1024 && i < units.length - 1) {
+    val /= 1024;
+    i++;
+  }
+  return `${val.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 }
 
 /**
- * Upload a video thumbnail data URL to Vercel Blob
+ * Upload a thumbnail image data URL to Vercel Blob
  */
 async function uploadThumbnailDataUrl(dataUrl: string, baseFilename: string): Promise<string | null> {
   try {
@@ -175,11 +132,11 @@ export default function AdminMediaPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  // Multi-file upload state
+  // Multi-file upload & optimization state
   const [sourceMode, setSourceMode] = useState<'upload' | 'url'>('upload');
   const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([]);
   const [isDragActive, setIsDragActive] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadMedia = useCallback(async () => {
@@ -211,7 +168,7 @@ export default function AdminMediaPage() {
       }
     });
     setSelectedFiles([]);
-    setIsUploading(false);
+    setIsProcessing(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -286,10 +243,14 @@ export default function AdminMediaPage() {
       };
 
       if (isVideo) {
-        const thumbnail = await generateVideoThumbnail(file);
-        if (thumbnail) {
-          fileWithPreview.generatedThumbnail = thumbnail;
-          fileWithPreview.preview = thumbnail;
+        try {
+          const meta = await extractVideoMetadata(file);
+          if (meta.posterDataUrl) {
+            fileWithPreview.generatedThumbnail = meta.posterDataUrl;
+            fileWithPreview.preview = meta.posterDataUrl;
+          }
+        } catch (err) {
+          console.warn('Initial video poster extraction failed:', err);
         }
       }
 
@@ -300,7 +261,6 @@ export default function AdminMediaPage() {
 
     setSelectedFiles((prev) => {
       const updated = [...prev, ...newFiles];
-      // If single file selected, auto-populate title & type
       if (updated.length === 1 && !editingId) {
         const single = updated[0];
         const isVideo = single.file.type.startsWith('video/') || single.file.name.endsWith('.mp4') || single.file.name.endsWith('.webm');
@@ -349,40 +309,103 @@ export default function AdminMediaPage() {
   };
 
   /**
-   * Upload a single file directly to Vercel Blob with progress tracking,
-   * generate its video thumbnail if needed, and return the uploaded URLs.
+   * Process (Optimize Video if needed) and Upload a single file directly to Vercel Blob
    */
-  const uploadSingleFileToBlob = async (
+  const processAndUploadFile = async (
     fileWithPreview: FileWithPreview
-  ): Promise<{ blobUrl: string; thumbnailUrl?: string }> => {
+  ): Promise<{ blobUrl: string; thumbnailUrl?: string; meta?: VideoOptimizationMeta }> => {
     const { file, id, generatedThumbnail } = fileWithPreview;
+    const isVideo = file.type.startsWith('video/') || file.name.endsWith('.mp4') || file.name.endsWith('.webm');
 
+    let fileToUpload = file;
+    let posterDataUrl = generatedThumbnail || '';
+    let optimizationMeta: VideoOptimizationMeta | undefined = undefined;
+
+    // 1. If Video, perform hardware-accelerated transcoding (H.264 FastStart)
+    if (isVideo) {
+      setSelectedFiles((prev) =>
+        prev.map((f) =>
+          f.id === id
+            ? {
+                ...f,
+                status: 'optimizing',
+                progress: 0,
+                stageMessage: 'Analyzing video & hardware encoders...',
+                error: undefined,
+              }
+            : f
+        )
+      );
+
+      try {
+        const optResult = await optimizeVideo(file, (percentage, stage) => {
+          setSelectedFiles((prev) =>
+            prev.map((f) =>
+              f.id === id
+                ? {
+                    ...f,
+                    progress: percentage,
+                    stageMessage: stage,
+                  }
+                : f
+            )
+          );
+        });
+
+        fileToUpload = optResult.optimizedFile;
+        optimizationMeta = optResult.metadata;
+        if (optResult.posterDataUrl) {
+          posterDataUrl = optResult.posterDataUrl;
+        }
+      } catch (optErr: any) {
+        console.warn('Video optimization encountered error, proceeding with original:', optErr);
+        fileToUpload = file;
+      }
+    }
+
+    // 2. Upload file to Vercel Blob
     setSelectedFiles((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, status: 'uploading', progress: 0, error: undefined } : f))
+      prev.map((f) =>
+        f.id === id
+          ? {
+              ...f,
+              status: 'uploading',
+              progress: 0,
+              stageMessage: 'Uploading optimized media to Vercel Blob...',
+              optimizationMeta,
+            }
+          : f
+      )
     );
 
-    const isVideo = file.type.startsWith('video/') || file.name.endsWith('.mp4') || file.name.endsWith('.webm');
-    const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const cleanFileName = fileToUpload.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const pathname = `media/${Date.now()}_${cleanFileName}`;
 
     try {
-      // Direct client-side upload to Vercel Blob with multipart support for large files (up to 500 MB)
-      const blobResult = await upload(pathname, file, {
+      const blobResult = await upload(pathname, fileToUpload, {
         access: 'public',
         handleUploadUrl: '/api/admin/media/upload',
-        multipart: file.size > 5 * 1024 * 1024,
+        multipart: fileToUpload.size > 5 * 1024 * 1024,
         onUploadProgress: ({ percentage }) => {
           setSelectedFiles((prev) =>
-            prev.map((f) => (f.id === id ? { ...f, progress: percentage } : f))
+            prev.map((f) =>
+              f.id === id
+                ? {
+                    ...f,
+                    progress: percentage,
+                    stageMessage: `Uploading to Blob: ${Math.round(percentage)}%`,
+                  }
+                : f
+            )
           );
         },
       });
 
       let uploadedThumbnailUrl: string | undefined = undefined;
 
-      // If this is a video with a generated Canvas frame, upload the thumbnail image to Vercel Blob
-      if (isVideo && generatedThumbnail) {
-        const thumbUrl = await uploadThumbnailDataUrl(generatedThumbnail, file.name);
+      // 3. Upload thumbnail image if present
+      if (isVideo && posterDataUrl) {
+        const thumbUrl = await uploadThumbnailDataUrl(posterDataUrl, file.name);
         if (thumbUrl) {
           uploadedThumbnailUrl = thumbUrl;
         }
@@ -395,22 +418,28 @@ export default function AdminMediaPage() {
                 ...f,
                 status: 'success',
                 progress: 100,
+                stageMessage: 'Completed',
                 uploadedUrl: blobResult.url,
                 uploadedThumbnailUrl,
+                optimizationMeta,
               }
             : f
         )
       );
 
-      return { blobUrl: blobResult.url, thumbnailUrl: uploadedThumbnailUrl };
+      return {
+        blobUrl: blobResult.url,
+        thumbnailUrl: uploadedThumbnailUrl,
+        meta: optimizationMeta,
+      };
     } catch (err: any) {
-      console.error('Vercel Blob upload failed for file:', file.name, err);
-      const errorMsg = err?.message || 'Blob upload was interrupted';
+      console.error('Upload failed for file:', file.name, err);
+      const errorMsg = err?.message || 'Upload was interrupted';
 
       setSelectedFiles((prev) =>
         prev.map((f) =>
           f.id === id
-            ? { ...f, status: 'error', progress: 0, error: errorMsg }
+            ? { ...f, status: 'error', progress: 0, error: errorMsg, stageMessage: 'Failed' }
             : f
         )
       );
@@ -419,7 +448,7 @@ export default function AdminMediaPage() {
   };
 
   /**
-   * Bulk upload all pending files directly to Vercel Blob and create their MySQL database records
+   * Bulk upload all pending files with optimization and save records to database
    */
   const handleBulkUpload = async () => {
     const pendingFiles = selectedFiles.filter((f) => f.status === 'pending' || f.status === 'error');
@@ -429,7 +458,7 @@ export default function AdminMediaPage() {
       return;
     }
 
-    setIsUploading(true);
+    setIsProcessing(true);
 
     let successCount = 0;
     let failedCount = 0;
@@ -438,10 +467,9 @@ export default function AdminMediaPage() {
     for (let i = 0; i < pendingFiles.length; i++) {
       const item = pendingFiles[i];
       try {
-        const { blobUrl, thumbnailUrl } = await uploadSingleFileToBlob(item);
+        const { blobUrl, thumbnailUrl, meta } = await processAndUploadFile(item);
         const isVideo = item.file.type.startsWith('video/') || item.file.name.endsWith('.mp4') || item.file.name.endsWith('.webm');
 
-        // Create MySQL database record for this media asset
         const recordPayload = {
           title: formatTitleFromFilename(item.file.name),
           description: formData.description.trim() || null,
@@ -452,6 +480,12 @@ export default function AdminMediaPage() {
           featured: formData.featured,
           active: formData.active,
           display_order: baseDisplayOrder + i,
+          optimization_status: meta?.optimization_status || (isVideo ? 'ready' : null),
+          original_size_bytes: meta?.original_size_bytes ?? item.file.size,
+          optimized_size_bytes: meta?.optimized_size_bytes ?? null,
+          duration_seconds: meta?.duration_seconds ?? null,
+          width: meta?.width ?? null,
+          height: meta?.height ?? null,
         };
 
         const res = await fetch('/api/admin/media', {
@@ -471,16 +505,15 @@ export default function AdminMediaPage() {
       }
     }
 
-    setIsUploading(false);
+    setIsProcessing(false);
 
     if (successCount > 0) {
       setToast({
         type: 'success',
-        message: `Successfully uploaded and saved ${successCount} media item(s) to Vercel Blob & database`,
+        message: `Successfully processed, optimized and saved ${successCount} media item(s)`,
       });
       loadMedia();
 
-      // If all succeeded, close modal
       if (failedCount === 0) {
         setIsModalOpen(false);
         resetUploadState();
@@ -490,13 +523,13 @@ export default function AdminMediaPage() {
     if (failedCount > 0) {
       setToast({
         type: 'error',
-        message: `${failedCount} file(s) failed. Successful files have been saved.`,
+        message: `${failedCount} file(s) encountered an issue. Successful items were saved.`,
       });
     }
   };
 
   /**
-   * Save media item from modal (handles single create, edit, or URL mode)
+   * Save media item from modal (handles single create with optimization, edit, or URL mode)
    */
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -504,23 +537,24 @@ export default function AdminMediaPage() {
     let targetUrl = formData.url.trim();
     let targetThumbnailUrl = formData.thumbnail_url.trim() || null;
     let targetType = formData.type;
+    let optMeta: VideoOptimizationMeta | undefined = undefined;
 
-    // If in upload mode and there is a pending single file that has not uploaded yet, upload it first
     if (sourceMode === 'upload' && !editingId && selectedFiles.length > 0) {
       const pendingFile = selectedFiles.find((f) => f.status === 'pending' || f.status === 'error');
       if (pendingFile) {
         try {
           setIsSaving(true);
-          const { blobUrl, thumbnailUrl } = await uploadSingleFileToBlob(pendingFile);
+          const { blobUrl, thumbnailUrl, meta } = await processAndUploadFile(pendingFile);
           targetUrl = blobUrl;
           if (thumbnailUrl) {
             targetThumbnailUrl = thumbnailUrl;
           }
+          optMeta = meta;
           const isVideo = pendingFile.file.type.startsWith('video/') || pendingFile.file.name.endsWith('.mp4') || pendingFile.file.name.endsWith('.webm');
           targetType = isVideo ? 'video' : 'image';
         } catch (err: any) {
           setIsSaving(false);
-          setToast({ type: 'error', message: err?.message || 'Failed to upload file to Vercel Blob' });
+          setToast({ type: 'error', message: err?.message || 'Failed to optimize or upload file' });
           return;
         }
       } else {
@@ -530,6 +564,7 @@ export default function AdminMediaPage() {
           if (uploadedFile.uploadedThumbnailUrl) {
             targetThumbnailUrl = uploadedFile.uploadedThumbnailUrl;
           }
+          optMeta = uploadedFile.optimizationMeta;
         }
       }
     }
@@ -556,6 +591,12 @@ export default function AdminMediaPage() {
       featured: formData.featured,
       active: formData.active,
       display_order: Number(formData.display_order),
+      optimization_status: optMeta?.optimization_status || (targetType === 'video' ? 'ready' : null),
+      original_size_bytes: optMeta?.original_size_bytes ?? null,
+      optimized_size_bytes: optMeta?.optimized_size_bytes ?? null,
+      duration_seconds: optMeta?.duration_seconds ?? null,
+      width: optMeta?.width ?? null,
+      height: optMeta?.height ?? null,
     };
 
     try {
@@ -637,9 +678,9 @@ export default function AdminMediaPage() {
       {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
 
       <AdminPageHeader
-        eyebrow="Digital Assets"
+        eyebrow="Digital Assets & Video Optimization"
         title="Media Gallery Manager"
-        description="Upload and organize sensory gym photos, therapy room galleries, and clinical explainer videos with Vercel Blob persistent storage."
+        description="Upload photos and high-bitrate camera videos with automatic client-side H.264 FastStart transcoding, Vercel Blob storage, and instant public streaming."
         actions={
           <Button onClick={handleOpenCreate} variant="primary" size="sm" className="gap-1.5 shadow-sm">
             <Plus className="w-4 h-4" />
@@ -656,7 +697,7 @@ export default function AdminMediaPage() {
         <AdminEmptyState
           icon={UploadCloud}
           title="Media Library Empty"
-          description="Upload photos or clinical videos (up to 500 MB each) to showcase the facility with Vercel Blob storage."
+          description="Upload photos or clinical videos (up to 500 MB each) with automated FastStart compression and Vercel Blob storage."
           action={{
             label: 'Upload First Media File',
             onClick: handleOpenCreate,
@@ -668,6 +709,19 @@ export default function AdminMediaPage() {
           {mediaItems.map((item) => {
             const isBlob = isVercelBlobUrl(item.url);
             const isLocal = item.url.startsWith('/uploads/media/');
+            const hasOptimization =
+              item.original_size_bytes &&
+              item.optimized_size_bytes &&
+              item.original_size_bytes > item.optimized_size_bytes;
+
+            const reductionPct = hasOptimization
+              ? Math.round(
+                  ((item.original_size_bytes! - item.optimized_size_bytes!) /
+                    item.original_size_bytes!) *
+                    100
+                )
+              : null;
+
             return (
               <div
                 key={item.id}
@@ -681,6 +735,7 @@ export default function AdminMediaPage() {
                       className="w-full h-full object-cover"
                       controls
                       preload="metadata"
+                      playsInline
                     />
                   ) : (
                     <img
@@ -721,7 +776,7 @@ export default function AdminMediaPage() {
                   </div>
                 </div>
 
-                <div className="p-5 space-y-2">
+                <div className="p-5 space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="font-serif-heading font-bold text-brand-950 text-xs sm:text-sm leading-snug">
                       {item.title}
@@ -735,6 +790,35 @@ export default function AdminMediaPage() {
                     <p className="text-[11px] text-stone-600 line-clamp-2 leading-relaxed font-medium">
                       {item.description}
                     </p>
+                  )}
+
+                  {/* Video Optimization / Codec Metric Badge */}
+                  {item.type === 'video' && (
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                      {hasOptimization ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-900 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-md">
+                          <Zap className="w-3 h-3 text-indigo-600" />
+                          <span>
+                            {formatBytes(item.optimized_size_bytes)} ({reductionPct}% saved)
+                          </span>
+                        </span>
+                      ) : null}
+
+                      {item.width && item.height ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-stone-700 bg-stone-100 px-2 py-0.5 rounded-md font-mono">
+                          <Film className="w-3 h-3 text-stone-500" />
+                          <span>
+                            {item.width}x{item.height}
+                            {item.duration_seconds ? ` • ${Math.round(item.duration_seconds)}s` : ''}
+                          </span>
+                        </span>
+                      ) : null}
+
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md">
+                        <Gauge className="w-3 h-3 text-emerald-600" />
+                        <span>FastStart MP4</span>
+                      </span>
+                    </div>
                   )}
 
                   <div className="pt-1">
@@ -795,18 +879,18 @@ export default function AdminMediaPage() {
         </div>
       )}
 
-      {/* Create / Edit Modal with Direct Vercel Blob Multi-File Upload */}
+      {/* Create / Edit Modal with Automatic Video Optimization & Vercel Blob Upload */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
           resetUploadState();
         }}
-        title={editingId ? 'Edit Media Asset' : 'Upload New Media'}
+        title={editingId ? 'Edit Media Asset' : 'Upload & Optimize Media'}
         description={
           editingId
             ? 'Update metadata or replace the media URL.'
-            : 'Upload photos or videos directly to Vercel Blob persistent storage (up to 500 MB each).'
+            : 'Upload photos or high-bitrate camera videos. Videos are automatically transcoded into web-optimized H.264 FastStart MP4s.'
         }
         maxWidth="lg"
       >
@@ -824,7 +908,7 @@ export default function AdminMediaPage() {
                 }`}
               >
                 <UploadCloud className="w-4 h-4 text-brand-700" />
-                <span>Direct Vercel Blob Upload</span>
+                <span>Direct Upload &amp; Optimization</span>
               </button>
               <button
                 type="button"
@@ -874,11 +958,16 @@ export default function AdminMediaPage() {
                       {isDragActive ? 'Drop files here' : 'Click to choose files or drag & drop'}
                     </span>
                     <p className="text-[11px] text-stone-600 mt-1 font-medium">
-                      Images &amp; Videos (JPG, PNG, WebP, MP4, WebM) up to 500 MB each
+                      Camera Videos &amp; Photos (JPG, PNG, WebP, MP4, WebM) up to 500 MB each
                     </p>
-                    <p className="text-[11px] text-emerald-700 font-bold mt-1">
-                      Direct Vercel Blob client upload • Auto-generated video thumbnails
-                    </p>
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded">
+                        <Zap className="w-3 h-3 text-emerald-600" /> Auto H.264 FastStart
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-800 bg-indigo-100/90 px-2 py-0.5 rounded">
+                        <Cloud className="w-3 h-3 text-indigo-600" /> Vercel Blob Direct
+                      </span>
+                    </div>
                   </div>
                 </label>
               </div>
@@ -896,30 +985,33 @@ export default function AdminMediaPage() {
                         onClick={handleBulkUpload}
                         variant="primary"
                         size="sm"
-                        disabled={isUploading}
+                        disabled={isProcessing}
                         className="gap-1.5"
                       >
-                        {isUploading ? (
+                        {isProcessing ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Uploading to Blob...</span>
+                            <span>Processing &amp; Uploading...</span>
                           </>
                         ) : (
                           <>
                             <UploadCloud className="w-4 h-4" />
-                            <span>Upload All ({selectedFiles.length} files)</span>
+                            <span>Optimize &amp; Upload All ({selectedFiles.length})</span>
                           </>
                         )}
                       </Button>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2 max-h-[280px] overflow-y-auto pr-1">
+                  <div className="grid grid-cols-1 gap-2.5 max-h-[280px] overflow-y-auto pr-1">
                     {selectedFiles.map((fileWithPreview) => {
                       const isVideo =
                         fileWithPreview.file.type.startsWith('video/') ||
                         fileWithPreview.file.name.endsWith('.mp4') ||
                         fileWithPreview.file.name.endsWith('.webm');
+
+                      const isOptimizing = fileWithPreview.status === 'optimizing';
+                      const isUploading = fileWithPreview.status === 'uploading';
 
                       return (
                         <div
@@ -943,24 +1035,30 @@ export default function AdminMediaPage() {
 
                           {/* File Details & Progress */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-stone-900 truncate">
-                              {fileWithPreview.file.name}
-                            </p>
-                            <p className="text-[11px] text-stone-500">
-                              {(fileWithPreview.file.size / (1024 * 1024)).toFixed(2)} MB
-                              {isVideo && fileWithPreview.generatedThumbnail ? ' • Auto-thumbnail ready' : ''}
-                            </p>
+                            <div className="flex items-center justify-between gap-1">
+                              <p className="text-xs font-bold text-stone-900 truncate">
+                                {fileWithPreview.file.name}
+                              </p>
+                              <span className="text-[10px] font-mono text-stone-500 shrink-0">
+                                {formatBytes(fileWithPreview.file.size)}
+                              </span>
+                            </div>
 
-                            {/* Status and Progress Bar */}
-                            {fileWithPreview.status === 'uploading' && (
+                            {/* Optimization & Upload Progress */}
+                            {(isOptimizing || isUploading) && (
                               <div className="space-y-1 mt-1.5">
-                                <div className="flex items-center justify-between text-[10px] font-bold text-brand-700">
-                                  <span>Uploading directly to Blob...</span>
-                                  <span>{Math.round(fileWithPreview.progress)}%</span>
+                                <div className="flex items-center justify-between text-[10px] font-bold">
+                                  <span className={isOptimizing ? 'text-indigo-700 flex items-center gap-1' : 'text-emerald-700'}>
+                                    {isOptimizing && <Loader2 className="w-3 h-3 animate-spin inline" />}
+                                    {fileWithPreview.stageMessage || (isOptimizing ? 'Optimizing video...' : 'Uploading to Blob...')}
+                                  </span>
+                                  <span className="font-mono">{Math.round(fileWithPreview.progress)}%</span>
                                 </div>
                                 <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
                                   <div
-                                    className="bg-brand-700 h-full rounded-full transition-all duration-200"
+                                    className={`h-full rounded-full transition-all duration-200 ${
+                                      isOptimizing ? 'bg-indigo-600' : 'bg-emerald-600'
+                                    }`}
                                     style={{ width: `${Math.max(5, fileWithPreview.progress)}%` }}
                                   />
                                 </div>
@@ -971,7 +1069,7 @@ export default function AdminMediaPage() {
                               <div className="flex items-center gap-1 mt-1">
                                 <CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                                 <span className="text-[11px] text-emerald-700 font-bold">
-                                  Uploaded to Vercel Blob {isVideo && fileWithPreview.uploadedThumbnailUrl ? '+ Thumbnail' : ''}
+                                  {isVideo ? 'Optimized (H.264 FastStart) & Saved' : 'Uploaded to Vercel Blob'}
                                 </span>
                               </div>
                             )}
@@ -980,14 +1078,14 @@ export default function AdminMediaPage() {
                               <div className="flex items-center gap-1 mt-1">
                                 <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
                                 <span className="text-[11px] text-rose-700 font-medium line-clamp-1">
-                                  {fileWithPreview.error || 'Upload failed'}
+                                  {fileWithPreview.error || 'Processing failed'}
                                 </span>
                               </div>
                             )}
                           </div>
 
                           {/* Remove Button */}
-                          {fileWithPreview.status !== 'uploading' && (
+                          {!isOptimizing && !isUploading && (
                             <button
                               type="button"
                               onClick={() => removeFile(fileWithPreview.id)}
@@ -1027,6 +1125,7 @@ export default function AdminMediaPage() {
                     src={formData.url}
                     poster={formData.thumbnail_url || undefined}
                     controls
+                    playsInline
                     className="w-full h-full object-contain"
                   />
                 ) : (
@@ -1142,9 +1241,9 @@ export default function AdminMediaPage() {
               variant="primary"
               size="sm"
               isLoading={isSaving}
-              disabled={isSaving || isUploading}
+              disabled={isSaving || isProcessing}
             >
-              {editingId ? 'Save Changes' : selectedFiles.length > 1 ? 'Save / Submit All' : 'Add Media Item'}
+              {editingId ? 'Save Changes' : selectedFiles.length > 1 ? 'Optimize & Upload All' : 'Save Media Item'}
             </Button>
           </div>
         </form>

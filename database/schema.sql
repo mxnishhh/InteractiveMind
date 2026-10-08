@@ -146,6 +146,12 @@ CREATE TABLE IF NOT EXISTS `media` (
   `featured` TINYINT(1) DEFAULT 0,
   `active` TINYINT(1) DEFAULT 1,
   `display_order` INT DEFAULT 0,
+  `optimization_status` ENUM('ready', 'processing', 'failed', 'original') DEFAULT 'ready',
+  `original_size_bytes` BIGINT NULL,
+  `optimized_size_bytes` BIGINT NULL,
+  `duration_seconds` DECIMAL(10, 2) NULL,
+  `width` INT NULL,
+  `height` INT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
