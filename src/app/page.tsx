@@ -321,12 +321,14 @@ export default async function HomePage() {
             {/* Left 5 Cols: Warm Editorial Therapy Photograph */}
             <div className="lg:col-span-5 relative">
               <ImageReveal scaleFrom={0.98} className="relative rounded-3xl overflow-hidden shadow-elevated border-2 border-brand-800 bg-brand-900 aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] group">
-                <img
+                <Image
                   src="/images/approach.png"
                   alt="Interactive Minds developmental clinicians and therapists working with children in a supportive clinical environment"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 42vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-transparent to-transparent pointer-events-none"></div>
 
                 <div className="absolute bottom-4 left-4 right-4 bg-brand-900/75 backdrop-blur-md p-4 rounded-2xl border border-brand-700/60 shadow">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-brand-200 block">Compassionate Connection</span>
@@ -504,11 +506,13 @@ export default async function HomePage() {
 
               {/* Image Column (6 cols) */}
               <div className="lg:col-span-6 relative">
-                <ImageReveal scaleFrom={0.98} className="rounded-2xl overflow-hidden shadow-card border-2 border-white aspect-[4/3] bg-stone-100">
-                  <img
+                <ImageReveal scaleFrom={0.98} className="relative rounded-2xl overflow-hidden shadow-card border-2 border-white aspect-[4/3] bg-stone-100">
+                  <Image
                     src="/images/consult.png"
                     alt="Interactive Minds developmental clinician conducting a clinical consultation with client"
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 50vw"
+                    className="object-cover"
                   />
                 </ImageReveal>
                 <div className="absolute -bottom-3 -right-2 bg-brand-900/80 backdrop-blur-sm text-white text-[11px] font-semibold px-3.5 py-1.5 rounded-xl shadow-md border border-brand-700/50">

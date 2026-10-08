@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Check, Heart, Sparkles } from 'lucide-react';
 import { HERO } from '@/constants';
@@ -128,12 +129,15 @@ export const Hero: React.FC = () => {
             className="lg:col-span-5 relative"
           >
             <div className="relative mx-auto rounded-3xl overflow-hidden shadow-elevated border-4 border-white bg-stone-100 aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] w-full">
-              <img
+              <Image
                 src="/images/homepage/hero.png"
                 alt="Caregiver and child gently engaged in a calm creative developmental activity together"
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 42vw"
+                className="object-cover"
+                priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-950/40 via-transparent to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-950/40 via-transparent to-transparent pointer-events-none"></div>
 
               {/* Inset Badge on Image */}
               <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/60 shadow-lg flex items-center justify-between">
