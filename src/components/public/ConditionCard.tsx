@@ -18,10 +18,10 @@ export const ConditionCard: React.FC<ConditionCardProps> = ({ condition, onSelec
   const shouldReduceMotion = useReducedMotion();
 
   const imageMap: Record<string, string> = {
-    'autism': '/images/conditions/autism.png',
-    'adhd': '/images/conditions/adhd.png',
-    'down-syndrome': '/images/conditions/down.png',
-    'cerebral-palsy': '/images/conditions/celebral.png',
+    'autism': '/images/conditions/autism.webp',
+    'adhd': '/images/conditions/adhd.webp',
+    'down-syndrome': '/images/conditions/down.webp',
+    'cerebral-palsy': '/images/conditions/celebral.webp',
   };
 
   const altMap: Record<string, string> = {

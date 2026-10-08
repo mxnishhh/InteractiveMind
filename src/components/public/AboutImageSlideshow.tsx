@@ -6,9 +6,9 @@ import { Sparkles } from 'lucide-react';
 
 const IMAGES = [
   '/images/about1.JPG',
-  '/images/about2.png',
-  '/images/about3.png',
-  '/images/about4.png',
+  '/images/about2.webp',
+  '/images/about3.webp',
+  '/images/about4.webp',
 ];
 
 const DISPLAY_DURATION = 1500; // 1.5 seconds visible

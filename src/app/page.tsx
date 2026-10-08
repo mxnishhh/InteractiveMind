@@ -322,7 +322,7 @@ export default async function HomePage() {
             <div className="lg:col-span-5 relative">
               <ImageReveal scaleFrom={0.98} className="relative rounded-3xl overflow-hidden shadow-elevated border-2 border-brand-800 bg-brand-900 aspect-[4/3] sm:aspect-[5/4] lg:aspect-[4/3] group">
                 <Image
-                  src="/images/approach.png"
+                  src="/images/approach.webp"
                   alt="Interactive Minds developmental clinicians and therapists working with children in a supportive clinical environment"
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 42vw"
@@ -508,7 +508,7 @@ export default async function HomePage() {
               <div className="lg:col-span-6 relative">
                 <ImageReveal scaleFrom={0.98} className="relative rounded-2xl overflow-hidden shadow-card border-2 border-white aspect-[4/3] bg-stone-100">
                   <Image
-                    src="/images/consult.png"
+                    src="/images/consult.webp"
                     alt="Interactive Minds developmental clinician conducting a clinical consultation with client"
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 50vw"

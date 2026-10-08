@@ -16,11 +16,11 @@ import { Condition } from '@/types';
 import { SITE } from '@/constants';
 
 const CONDITION_IMAGE_MAP: Record<string, string> = {
-  'autism': '/images/conditions/autism.png',
-  'autism-spectrum-disorder': '/images/conditions/autism.png',
-  'adhd': '/images/conditions/adhd.png',
-  'down-syndrome': '/images/conditions/down.png',
-  'cerebral-palsy': '/images/conditions/celebral.png',
+  'autism': '/images/conditions/autism.webp',
+  'autism-spectrum-disorder': '/images/conditions/autism.webp',
+  'adhd': '/images/conditions/adhd.webp',
+  'down-syndrome': '/images/conditions/down.webp',
+  'cerebral-palsy': '/images/conditions/celebral.webp',
 };
 
 interface ConditionDetailModalProps {

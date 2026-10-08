@@ -27,15 +27,15 @@ interface TherapyDetailModalProps {
 }
 
 const THERAPY_IMAGE_MAP: Record<string, string> = {
-  'aba-therapy': '/images/therapies/ABA.png',
-  'occupational-therapy': '/images/therapies/Occupational.png',
-  'speech-therapy': '/images/therapies/Speech.png',
-  'special-education': '/images/therapies/Special.png',
+  'aba-therapy': '/images/therapies/ABA.webp',
+  'occupational-therapy': '/images/therapies/Occupational.webp',
+  'speech-therapy': '/images/therapies/Speech.webp',
+  'special-education': '/images/therapies/Special.webp',
   'sensory-integration': '/images/homepage/therapy-sensory.jpg',
   'clinical-psychology': '/images/homepage/therapy-psychology.jpg',
   'school-readiness': '/images/homepage/therapy-school-readiness.jpg',
-  'physiotherapy': '/images/therapies/Physio.png',
-  'parent-guidance': '/images/therapies/Parent.png',
+  'physiotherapy': '/images/therapies/Physio.webp',
+  'parent-guidance': '/images/therapies/Parent.webp',
 };
 
 export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
@@ -258,7 +258,7 @@ export const TherapyDetailModal: React.FC<TherapyDetailModalProps> = ({
                 {/* Hero Image Frame */}
                 <div className="relative rounded-2xl overflow-hidden border border-stone-200/90 shadow-md bg-stone-100 group aspect-[16/10] sm:aspect-[16/9]">
                   <Image
-                    src={THERAPY_IMAGE_MAP[service.slug] || service.image_url || '/images/therapies/Occupational.png'}
+                    src={THERAPY_IMAGE_MAP[service.slug] || service.image_url || '/images/therapies/Occupational.webp'}
                     alt={service.name}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 800px"
