@@ -96,7 +96,6 @@ export function GallerySection({ media }: GallerySectionProps) {
               fill
               className={`object-cover ${shouldReduceMotion ? '' : 'transition-transform duration-700 group-hover:scale-105'}`}
               sizes={isFeatured ? "(max-width: 768px) 100vw, 60vw" : "(max-width: 768px) 0vw, 20vw"}
-              priority={isFeatured}
             />
           )}
           <div className="absolute inset-0 bg-black/20 flex items-center justify-center transition-all group-hover:bg-black/30">
@@ -125,7 +124,6 @@ export function GallerySection({ media }: GallerySectionProps) {
           fill
           className={`object-cover ${shouldReduceMotion ? '' : 'transition-transform duration-700 group-hover:scale-105'}`}
           sizes={isFeatured ? "(max-width: 768px) 100vw, 60vw" : "(max-width: 768px) 0vw, 20vw"}
-          priority={isFeatured}
         />
 
         {/* Caption only for featured media if present */}

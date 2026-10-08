@@ -92,7 +92,6 @@ export function AboutImageSlideshow() {
               fill
               className="object-cover w-full h-full"
               sizes="(max-width: 1024px) 100vw, 50vw"
-              priority
             />
           </div>
         );

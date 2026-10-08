@@ -292,6 +292,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts = [] }) => {
                     src={selectedPost.thumbnail}
                     alt={selectedPost.title}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 800px"
                     className="object-cover"
                   />
                 </div>

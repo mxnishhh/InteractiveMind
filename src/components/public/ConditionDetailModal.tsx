@@ -249,7 +249,6 @@ export const ConditionDetailModal: React.FC<ConditionDetailModalProps> = ({
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 58vw, 700px"
                       className="object-cover"
-                      priority
                     />
                   </div>
                 )}
