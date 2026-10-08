@@ -111,7 +111,7 @@ export const MediaItemSchema = z.object({
   type: z.enum(['image', 'video']).default('image'),
   url: z.string().min(5, 'Valid media URL is required'),
   thumbnail_url: z.string().optional().nullable(),
-  category: z.string().min(2, 'Category must be at least 2 characters').default('Activities'),
+  category: z.string().min(1, 'Category is required').default('Activities'),
   featured: z.boolean().default(false),
   active: z.boolean().default(true),
   display_order: z.number().default(0),

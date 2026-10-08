@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
+import { upload } from '@vercel/blob/client';
 import { BlogPost, BlogPostType, BlogPostStatus } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -199,24 +200,19 @@ export default function AdminBlogPage() {
     setSelectedFile(file);
     setIsUploading(true);
 
-    const uploadFormData = new FormData();
-    uploadFormData.append('file', file);
-
     try {
-      const res = await fetch('/api/admin/media/upload', {
-        method: 'POST',
-        body: uploadFormData,
-      });
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const pathname = `blog/${Date.now()}_${cleanFileName}`;
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Upload failed');
-      }
+      const blobResult = await upload(pathname, file, {
+        access: 'public',
+        handleUploadUrl: '/api/admin/media/upload',
+      });
 
       setUploadSuccess(true);
       setFormData((prev) => ({
         ...prev,
-        thumbnail: data.url,
+        thumbnail: blobResult.url,
       }));
     } catch (err: any) {
       setUploadError(err.message || 'Image upload failed');

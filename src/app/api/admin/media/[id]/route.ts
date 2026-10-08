@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminApi } from '@/lib/auth';
 import { getMediaByIdDB, updateMediaDB, deleteMediaDB } from '@/lib/db';
-import { deleteLocalMediaFile } from '@/lib/media-storage';
+import { deleteMediaStorage } from '@/lib/media-storage';
 import { MediaItemUpdateSchema } from '@/validators/schemas';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
@@ -47,9 +47,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ success: false, error: 'Failed to update media item' }, { status: 404 });
     }
 
-    // If media URL changed and old URL was a local upload, safely delete old file
+    // If media URL changed and old URL was stored, safely delete old file
     if (validatedData.url && validatedData.url !== existing.url) {
-      await deleteLocalMediaFile(existing.url);
+      await deleteMediaStorage(existing.url);
+    }
+
+    // If thumbnail URL changed and old thumbnail was stored, safely delete old thumbnail
+    if (validatedData.thumbnail_url && validatedData.thumbnail_url !== existing.thumbnail_url) {
+      await deleteMediaStorage(existing.thumbnail_url);
     }
 
     const media = await getMediaByIdDB(id);
@@ -86,12 +91,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       return NextResponse.json({ success: false, error: 'Media item not found' }, { status: 404 });
     }
 
-    // Clean up local file from disk if it was a local upload
+    // Clean up media file from storage (Vercel Blob or local)
     if (existing.url) {
-      await deleteLocalMediaFile(existing.url);
+      await deleteMediaStorage(existing.url);
     }
     if (existing.thumbnail_url) {
-      await deleteLocalMediaFile(existing.thumbnail_url);
+      await deleteMediaStorage(existing.thumbnail_url);
     }
 
     const deleted = await deleteMediaDB(id);

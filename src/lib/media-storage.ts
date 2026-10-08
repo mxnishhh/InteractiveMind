@@ -1,6 +1,10 @@
 import path from 'path';
 import fs from 'fs/promises';
 import crypto from 'crypto';
+import { del } from '@vercel/blob';
+import { isVercelBlobUrl } from './media-utils';
+
+export { isVercelBlobUrl };
 
 export const UPLOAD_DIR_RELATIVE = '/uploads/media';
 export const UPLOAD_BASE_DIR = path.join(process.cwd(), 'public', 'uploads', 'media');
@@ -16,6 +20,8 @@ export const ALLOWED_MIME_MAP: Record<string, { type: 'image' | 'video'; exts: s
   'video/mp4': { type: 'video', exts: ['.mp4'] },
   'video/webm': { type: 'video', exts: ['.webm'] },
 };
+
+export const ALLOWED_CONTENT_TYPES = Object.keys(ALLOWED_MIME_MAP);
 
 const DISALLOWED_EXTENSIONS = new Set([
   '.js', '.ts', '.tsx', '.jsx', '.php', '.phtml', '.sh', '.bash',
@@ -143,4 +149,32 @@ export async function deleteLocalMediaFile(mediaUrl?: string | null): Promise<bo
     console.error(`Failed to delete local media file (${filename}):`, err);
     return false;
   }
+}
+
+/**
+ * Unified media storage deletion.
+ * Deletes from Vercel Blob if the URL is a Blob URL,
+ * or from local filesystem if it is a legacy local file.
+ */
+export async function deleteMediaStorage(mediaUrl?: string | null): Promise<boolean> {
+  if (!mediaUrl || typeof mediaUrl !== 'string') return false;
+  const trimmed = mediaUrl.trim();
+
+  // 1. If it is a Vercel Blob URL, delete via @vercel/blob
+  if (isVercelBlobUrl(trimmed)) {
+    try {
+      await del(trimmed);
+      return true;
+    } catch (err) {
+      console.error(`Failed to delete Vercel Blob object (${trimmed}):`, err);
+      return false;
+    }
+  }
+
+  // 2. If it is a legacy local upload, delete from disk
+  if (trimmed.startsWith(UPLOAD_DIR_RELATIVE + '/')) {
+    return deleteLocalMediaFile(trimmed);
+  }
+
+  return false;
 }

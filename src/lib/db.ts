@@ -804,25 +804,50 @@ export async function getMediaByIdDB(id: number): Promise<MediaItem | null> {
 }
 
 export async function createMediaDB(data: Omit<MediaItem, 'id' | 'created_at' | 'updated_at'>): Promise<MediaItem> {
-  const res = await queryDb(
-    `INSERT INTO media (title, description, type, url, thumbnail_url, category, featured, active, display_order)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      data.title,
-      data.description || null,
-      data.type || 'image',
-      data.url,
-      data.thumbnail_url || null,
-      data.category || 'Activities',
-      data.featured ? 1 : 0,
-      data.active ? 1 : 0,
-      data.display_order ?? 0,
-    ]
-  );
+  const descValue = data.description ? String(data.description).trim() : null;
+  const thumbValue = data.thumbnail_url ? String(data.thumbnail_url).trim() : null;
 
-  const insertId = (res as any).insertId;
-  const created = await getMediaByIdDB(insertId);
-  return created || { id: insertId, ...data };
+  try {
+    const res = await queryDb(
+      `INSERT INTO media (title, description, type, url, thumbnail_url, category, featured, active, display_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        data.title,
+        descValue,
+        data.type || 'image',
+        data.url,
+        thumbValue,
+        data.category || 'Activities',
+        data.featured ? 1 : 0,
+        data.active ? 1 : 0,
+        data.display_order ?? 0,
+      ]
+    );
+
+    const insertId = (res as any).insertId;
+    const created = await getMediaByIdDB(insertId);
+    return created || { id: insertId, ...data, description: descValue || undefined, thumbnail_url: thumbValue || undefined };
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const newMedia: MediaItem = {
+        id: memoryState.nextMediaId++,
+        title: data.title,
+        description: descValue || undefined,
+        type: data.type || 'image',
+        url: data.url,
+        thumbnail_url: thumbValue || undefined,
+        category: data.category || 'Activities',
+        featured: Boolean(data.featured),
+        active: data.active !== undefined ? Boolean(data.active) : true,
+        display_order: Number(data.display_order ?? 0),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      memoryState.media.push(newMedia);
+      return normalizeMediaItem(newMedia);
+    }
+    throw error;
+  }
 }
 
 export async function updateMediaDB(id: number, data: Partial<Omit<MediaItem, 'id' | 'created_at' | 'updated_at'>>): Promise<boolean> {
@@ -830,31 +855,65 @@ export async function updateMediaDB(id: number, data: Partial<Omit<MediaItem, 'i
   if (!existing) return false;
 
   const merged = { ...existing, ...data };
+  const descValue = data.description !== undefined
+    ? (data.description && String(data.description).trim().length > 0 ? String(data.description).trim() : null)
+    : (existing.description ? String(existing.description) : null);
 
-  await queryDb(
-    `UPDATE media SET
-     title = ?, description = ?, type = ?, url = ?, thumbnail_url = ?, category = ?, featured = ?, active = ?, display_order = ?
-     WHERE id = ?`,
-    [
-      merged.title,
-      merged.description || null,
-      merged.type || 'image',
-      merged.url,
-      merged.thumbnail_url || null,
-      merged.category || 'Activities',
-      merged.featured ? 1 : 0,
-      merged.active ? 1 : 0,
-      merged.display_order ?? 0,
-      id,
-    ]
-  );
+  const thumbValue = data.thumbnail_url !== undefined
+    ? (data.thumbnail_url && String(data.thumbnail_url).trim().length > 0 ? String(data.thumbnail_url).trim() : null)
+    : (existing.thumbnail_url ? String(existing.thumbnail_url) : null);
 
-  return true;
+  try {
+    await queryDb(
+      `UPDATE media SET
+       title = ?, description = ?, type = ?, url = ?, thumbnail_url = ?, category = ?, featured = ?, active = ?, display_order = ?
+       WHERE id = ?`,
+      [
+        merged.title,
+        descValue,
+        merged.type || 'image',
+        merged.url,
+        thumbValue,
+        merged.category || 'Activities',
+        merged.featured ? 1 : 0,
+        merged.active ? 1 : 0,
+        merged.display_order ?? 0,
+        id,
+      ]
+    );
+
+    return true;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const idx = memoryState.media.findIndex(m => m.id === id);
+      if (idx !== -1) {
+        memoryState.media[idx] = {
+          ...memoryState.media[idx],
+          ...data,
+          description: descValue || undefined,
+          thumbnail_url: thumbValue || undefined,
+          updated_at: new Date().toISOString(),
+        };
+        return true;
+      }
+      return false;
+    }
+    throw error;
+  }
 }
 
 export async function deleteMediaDB(id: number): Promise<boolean> {
-  const res = await queryDb('DELETE FROM media WHERE id = ?', [id]);
-  return (res as any).affectedRows > 0;
+  try {
+    const res = await queryDb('DELETE FROM media WHERE id = ?', [id]);
+    return (res as any).affectedRows > 0;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const initLen = memoryState.media.length;
+      memoryState.media = memoryState.media.filter(m => m.id !== id);
+      return memoryState.media.length < initLen;
+    }
+    throw error;
+  }
 }
 
 // ====================================================
