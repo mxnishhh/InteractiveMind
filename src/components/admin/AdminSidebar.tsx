@@ -73,7 +73,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen, onClose }) =
             <Link href="/admin/dashboard" className="flex items-center gap-3 group">
               <div className="w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center shadow-sm">
                 <Image
-                  src="/images/interactive-minds-mark.png"
+                  src="/images/interactive-minds-mark.webp"
                   alt="Interactive Minds"
                   width={36}
                   height={36}

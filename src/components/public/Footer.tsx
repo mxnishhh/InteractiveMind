@@ -18,7 +18,7 @@ export const Footer: React.FC = () => {
                 <div className="bg-white rounded-2xl inline-flex items-center justify-center shadow-md border border-white/10 transition-transform duration-200 group-hover:scale-[1.02] overflow-hidden w-[260px] sm:w-[290px] lg:w-[310px] h-[80px] sm:h-[88px] lg:h-[94px]">
                   <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
                     <Image
-                      src="/images/interactive-minds-logo.png"
+                      src="/images/interactive-minds-logo.webp"
                       alt="Interactive Minds - Autism Care & Child Development Centre"
                       width={310}
                       height={310}

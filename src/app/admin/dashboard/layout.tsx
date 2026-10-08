@@ -42,7 +42,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
         <div className="flex flex-col items-center gap-4 p-8 rounded-3xl bg-white border border-stone-200/80 shadow-soft">
           <div className="w-12 h-12 rounded-2xl bg-white border border-stone-200/90 flex items-center justify-center p-1.5 shadow-sm">
             <Image
-              src="/images/interactive-minds-mark.png"
+              src="/images/interactive-minds-mark.webp"
               alt="Interactive Minds"
               width={40}
               height={40}

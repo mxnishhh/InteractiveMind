@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
         <div className="text-center space-y-3">
           <div className="flex justify-center">
             <Image
-              src="/images/interactive-minds-logo.png"
+              src="/images/interactive-minds-logo.webp"
               alt="Interactive Minds"
               width={180}
               height={44}

@@ -113,7 +113,7 @@ export const Navbar: React.FC = () => {
           {/* Logo Brand: Circular Mark Only */}
           <Link href="/" className="flex items-center group focus:outline-none shrink-0 py-1" aria-label="Interactive Minds Home">
             <Image
-              src="/images/interactive-minds-mark.png"
+              src="/images/interactive-minds-mark.webp"
               alt="Interactive Minds"
               width={56}
               height={56}
