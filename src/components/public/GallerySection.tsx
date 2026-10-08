@@ -83,36 +83,50 @@ export function GallerySection({ media }: GallerySectionProps) {
   // Renders the media item depending on its type
   const renderMedia = (item: MediaItem, isFeatured: boolean) => {
     const isVideo = item.type === 'video';
-    const src = item.thumbnail_url || item.url;
+    const posterSrc = item.thumbnail_url || item.url;
 
-    const content = (
-      <div className="relative w-full h-full bg-stone-100 rounded-2xl overflow-hidden group">
-        {isVideo ? (
-          <>
-            <video
-              src={item.url}
-              poster={item.thumbnail_url || undefined}
-              className="object-cover w-full h-full"
-              preload="metadata"
-              muted
-              playsInline
+    if (isVideo) {
+      return (
+        <div className="relative w-full h-full bg-stone-900 rounded-2xl overflow-hidden group">
+          {/* Use lightweight thumbnail/poster image for gallery cards to eliminate video preloading overhead */}
+          {posterSrc && (
+            <Image
+              src={posterSrc}
+              alt={item.title || 'Video preview'}
+              fill
+              className={`object-cover ${shouldReduceMotion ? '' : 'transition-transform duration-700 group-hover:scale-105'}`}
+              sizes={isFeatured ? "(max-width: 768px) 100vw, 60vw" : "(max-width: 768px) 0vw, 20vw"}
+              priority={isFeatured}
             />
-            <div className="absolute inset-0 bg-black/20 flex items-center justify-center transition-opacity group-hover:bg-black/30">
-              <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg text-brand-700">
-                <Play className="w-5 h-5 ml-1" />
-              </div>
+          )}
+          <div className="absolute inset-0 bg-black/20 flex items-center justify-center transition-all group-hover:bg-black/30">
+            <div className={`rounded-full bg-white/95 flex items-center justify-center shadow-lg text-brand-700 transition-transform ${isFeatured ? 'w-14 h-14 group-hover:scale-110' : 'w-8 h-8'}`}>
+              <Play className={`${isFeatured ? 'w-6 h-6 ml-1' : 'w-4 h-4 ml-0.5'}`} />
             </div>
-          </>
-        ) : (
-          <Image
-            src={src}
-            alt={item.title || 'Gallery Image'}
-            fill
-            className={`object-cover ${shouldReduceMotion ? '' : 'transition-transform duration-700 group-hover:scale-105'}`}
-            sizes={isFeatured ? "(max-width: 768px) 100vw, 60vw" : "(max-width: 768px) 0vw, 20vw"}
-            priority={isFeatured}
-          />
-        )}
+          </div>
+
+          {/* Caption only for featured media if present */}
+          {isFeatured && item.title && (
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 pt-12">
+              <p className="text-white font-medium text-lg md:text-xl drop-shadow-md">
+                {item.title}
+              </p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative w-full h-full bg-stone-100 rounded-2xl overflow-hidden group">
+        <Image
+          src={posterSrc}
+          alt={item.title || 'Gallery Image'}
+          fill
+          className={`object-cover ${shouldReduceMotion ? '' : 'transition-transform duration-700 group-hover:scale-105'}`}
+          sizes={isFeatured ? "(max-width: 768px) 100vw, 60vw" : "(max-width: 768px) 0vw, 20vw"}
+          priority={isFeatured}
+        />
 
         {/* Caption only for featured media if present */}
         {isFeatured && item.title && (
@@ -124,8 +138,6 @@ export function GallerySection({ media }: GallerySectionProps) {
         )}
       </div>
     );
-
-    return content;
   };
 
   return (
@@ -243,10 +255,12 @@ export function GallerySection({ media }: GallerySectionProps) {
         <div className="w-full aspect-video sm:aspect-auto mt-4 bg-black rounded-xl overflow-hidden relative">
           {activeMedia?.type === 'video' ? (
             <video
+              key={activeMedia.url}
               src={activeMedia.url}
+              poster={activeMedia.thumbnail_url || undefined}
               className="w-full max-h-[70vh] object-contain"
               controls
-              autoPlay
+              preload="metadata"
               playsInline
             />
           ) : activeMedia ? (
