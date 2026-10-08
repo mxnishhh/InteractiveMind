@@ -49,7 +49,6 @@ export async function extractVideoMetadata(videoFile: File): Promise<VideoMetada
       }, 15000);
 
       video.addEventListener('loadedmetadata', () => {
-        // Seek to 1s or 10% of duration to get a representative frame
         const seekTime = Math.min(1.0, Math.max(0.1, (video.duration || 1) * 0.1));
         video.currentTime = seekTime;
       });
@@ -94,7 +93,7 @@ export async function extractVideoMetadata(videoFile: File): Promise<VideoMetada
 
 /**
  * Calculate scaled dimensions fitting within maxWidth x maxHeight,
- * preserving aspect ratio and ensuring even pixel dimensions.
+ * preserving aspect ratio and ensuring even pixel dimensions for H.264 macroblocks.
  */
 function calculateTargetDimensions(
   origW: number,
@@ -102,8 +101,8 @@ function calculateTargetDimensions(
   maxW: number = 1920,
   maxH: number = 1080
 ): { width: number; height: number } {
-  let w = origW;
-  let h = origH;
+  let w = origW || 1280;
+  let h = origH || 720;
 
   if (w > maxW || h > maxH) {
     const ratio = Math.min(maxW / w, maxH / h);
@@ -111,7 +110,7 @@ function calculateTargetDimensions(
     h = Math.round(h * ratio);
   }
 
-  // Ensure even dimensions for standard H.264 macroblocks (yuv420p requirement)
+  // Ensure even dimensions for standard H.264 (yuv420p)
   w = w - (w % 2);
   h = h - (h % 2);
 
@@ -136,15 +135,19 @@ function getRecommendedBitrate(width: number, height: number): number {
 }
 
 /**
- * Determine supported H.264 codec string for WebCodecs VideoEncoder
+ * Probe and test real H.264 encoder support in current browser (handles Safari/Chrome differences)
  */
 async function getSupportedH264Codec(
   width: number,
   height: number,
   bitrate: number
 ): Promise<string | null> {
+  if (typeof window === 'undefined' || typeof window.VideoEncoder !== 'function') {
+    return null;
+  }
+
   const candidateCodecs = [
-    'avc1.4d4028', // Main Profile, Level 4.0/4.1 (Optimal for 1080p web streaming)
+    'avc1.4d4028', // Main Profile, Level 4.0/4.1
     'avc1.420028', // Baseline Profile, Level 4.0
     'avc1.42e01f', // Baseline Profile, Level 3.1
     'avc1.640028', // High Profile, Level 4.0
@@ -158,8 +161,33 @@ async function getSupportedH264Codec(
         height,
         bitrate,
       });
+
       if (support && support.supported) {
-        return codec;
+        // Test real instantiation to prevent WebKit false positives
+        let testEnc: VideoEncoder | null = null;
+        try {
+          testEnc = new VideoEncoder({
+            output: () => {},
+            error: () => {},
+          });
+          testEnc.configure({
+            codec,
+            width,
+            height,
+            bitrate,
+            framerate: 30,
+            avc: { format: 'avc' },
+          });
+          return codec;
+        } catch {
+          // If configure failed, try next
+        } finally {
+          if (testEnc) {
+            try {
+              testEnc.close();
+            } catch {}
+          }
+        }
       }
     } catch {
       // Continue to next candidate
@@ -170,7 +198,55 @@ async function getSupportedH264Codec(
 }
 
 /**
- * Helper to seek video with timeout to prevent hanging
+ * Probe real AudioEncoder AAC support (Safari WebKit often lacks AAC encoder)
+ */
+async function probeAudioEncoderSupport(sampleRate: number, channels: number): Promise<boolean> {
+  if (typeof window === 'undefined' || typeof window.AudioEncoder !== 'function') {
+    return false;
+  }
+
+  try {
+    const audioSupport = await AudioEncoder.isConfigSupported({
+      codec: 'mp4a.40.2',
+      numberOfChannels: channels,
+      sampleRate: sampleRate,
+      bitrate: 128000,
+    });
+
+    if (!audioSupport || !audioSupport.supported) return false;
+
+    // Real instantiation test
+    let testEncoder: AudioEncoder | null = null;
+    let works = false;
+    try {
+      testEncoder = new AudioEncoder({
+        output: () => {},
+        error: () => {},
+      });
+      testEncoder.configure({
+        codec: 'mp4a.40.2',
+        numberOfChannels: channels,
+        sampleRate: sampleRate,
+        bitrate: 128000,
+      });
+      works = true;
+    } catch {
+      works = false;
+    } finally {
+      if (testEncoder) {
+        try {
+          testEncoder.close();
+        } catch {}
+      }
+    }
+    return works;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Seek video helper with safety timeout to prevent stalling in Safari
  */
 function seekVideo(video: HTMLVideoElement, time: number): Promise<void> {
   return new Promise((resolve) => {
@@ -187,14 +263,14 @@ function seekVideo(video: HTMLVideoElement, time: number): Promise<void> {
     video.addEventListener('seeked', onSeeked, { once: true });
     video.currentTime = time;
 
-    // Failsafe timeout in case seeked event doesn't fire immediately
+    // 250ms fallback timeout if seeked event is delayed by the media pipeline
     setTimeout(() => {
       if (!resolved) {
         resolved = true;
         video.removeEventListener('seeked', onSeeked);
         resolve();
       }
-    }, 400);
+    }, 250);
   });
 }
 
@@ -206,7 +282,7 @@ export interface VideoOptimizationResult {
 
 /**
  * Transcode raw/camera video into a web-optimized H.264 FastStart MP4 container.
- * Runs 100% in the client browser with hardware acceleration via WebCodecs & mp4-muxer.
+ * Runs in the client browser with WebCodecs hardware acceleration and mp4-muxer.
  */
 export async function optimizeVideo(
   videoFile: File,
@@ -246,6 +322,7 @@ export async function optimizeVideo(
   }
 
   // 2. Determine supported H.264 codec
+  onProgress?.(10, 'Checking hardware H.264 encoder...');
   const codec = await getSupportedH264Codec(targetDims.width, targetDims.height, targetBitrate);
   if (!codec) {
     onProgress?.(100, 'H.264 hardware encoder not available. Using original video.');
@@ -263,8 +340,8 @@ export async function optimizeVideo(
     };
   }
 
-  // 3. Extract and transcode audio if present
-  onProgress?.(10, 'Extracting and processing audio track...');
+  // 3. Extract and check audio support
+  onProgress?.(12, 'Checking audio tracks...');
   let audioBuffer: AudioBuffer | null = null;
   let hasAudio = false;
   let audioChannels = 2;
@@ -281,25 +358,10 @@ export async function optimizeVideo(
     }
     await audioCtx.close();
   } catch (audioErr) {
-    // Silent video or unsupported audio container
     hasAudio = false;
   }
 
-  // Check if AudioEncoder supports AAC
-  let canEncodeAudio = false;
-  if (hasAudio && typeof window.AudioEncoder === 'function') {
-    try {
-      const audioSupport = await AudioEncoder.isConfigSupported({
-        codec: 'mp4a.40.2',
-        numberOfChannels: audioChannels,
-        sampleRate: audioSampleRate,
-        bitrate: 128000,
-      });
-      canEncodeAudio = Boolean(audioSupport && audioSupport.supported);
-    } catch {
-      canEncodeAudio = false;
-    }
-  }
+  const canEncodeAudio = hasAudio ? await probeAudioEncoderSupport(audioSampleRate, audioChannels) : false;
 
   // 4. Initialize MP4 Muxer with FastStart
   const muxer = new Muxer({
@@ -320,14 +382,18 @@ export async function optimizeVideo(
     firstTimestampBehavior: 'offset',
   });
 
-  // 5. Initialize Video Encoder
+  // 5. Initialize Video Encoder with error handling
   let videoEncoderError: Error | null = null;
   const videoEncoder = new VideoEncoder({
     output: (chunk, metadata) => {
-      muxer.addVideoChunk(chunk, metadata);
+      try {
+        muxer.addVideoChunk(chunk, metadata);
+      } catch (err) {
+        console.error('Error adding video chunk to muxer:', err);
+      }
     },
     error: (e) => {
-      console.error('VideoEncoder error occurred:', e);
+      console.error('VideoEncoder error:', e);
       videoEncoderError = e instanceof Error ? e : new Error(String(e));
     },
   });
@@ -341,12 +407,16 @@ export async function optimizeVideo(
     avc: { format: 'avc' },
   });
 
-  // 6. Encode Audio Chunks if available
+  // 6. Encode Audio Chunks if supported
   if (canEncodeAudio && audioBuffer) {
     try {
       const audioEncoder = new AudioEncoder({
         output: (chunk, metadata) => {
-          muxer.addAudioChunk(chunk, metadata);
+          try {
+            muxer.addAudioChunk(chunk, metadata);
+          } catch (err) {
+            console.error('Error adding audio chunk to muxer:', err);
+          }
         },
         error: (e) => {
           console.error('AudioEncoder error:', e);
@@ -361,7 +431,7 @@ export async function optimizeVideo(
       });
 
       const totalSamples = audioBuffer.length;
-      const chunkSize = 1024; // Standard AAC frame size
+      const chunkSize = 1024;
       const channelData: Float32Array[] = [];
       for (let ch = 0; ch < audioChannels; ch++) {
         channelData.push(audioBuffer.getChannelData(ch));
@@ -392,7 +462,10 @@ export async function optimizeVideo(
         audioData.close();
       }
 
-      await audioEncoder.flush();
+      await Promise.race([
+        audioEncoder.flush(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('AudioEncoder flush timeout')), 5000)),
+      ]);
       audioEncoder.close();
     } catch (aErr) {
       console.warn('Non-fatal error encoding audio track:', aErr);
@@ -415,10 +488,20 @@ export async function optimizeVideo(
 
   try {
     await new Promise<void>((resolve, reject) => {
-      video.addEventListener('loadeddata', () => resolve(), { once: true });
-      video.addEventListener('error', () => reject(new Error('Failed to load video element')), {
-        once: true,
-      });
+      const onLoad = () => {
+        cleanup();
+        resolve();
+      };
+      const onErr = () => {
+        cleanup();
+        reject(new Error('Failed to load video element'));
+      };
+      const cleanup = () => {
+        video.removeEventListener('loadeddata', onLoad);
+        video.removeEventListener('error', onErr);
+      };
+      video.addEventListener('loadeddata', onLoad, { once: true });
+      video.addEventListener('error', onErr, { once: true });
       video.load();
     });
 
@@ -447,9 +530,19 @@ export async function optimizeVideo(
       videoEncoder.encode(videoFrame, { keyFrame: isKeyFrame });
       videoFrame.close();
 
-      // Report progress: 15% -> 85%
+      // Pacing for Safari WebKit & GPU VideoToolbox: prevent queue saturation
+      while (videoEncoder.encodeQueueSize > 2) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+
+      // Yield event loop every 3 frames so output callbacks and UI stay responsive
+      if (frameIdx % 3 === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+
+      // Progress reporting: 15% -> 85%
       const progressPercent = 15 + Math.round((frameIdx / totalFrames) * 70);
-      if (frameIdx % 5 === 0 || frameIdx === totalFrames - 1) {
+      if (frameIdx % 4 === 0 || frameIdx === totalFrames - 1) {
         onProgress?.(
           progressPercent,
           `Optimizing video (${frameIdx + 1}/${totalFrames} frames)...`
@@ -457,13 +550,29 @@ export async function optimizeVideo(
       }
     }
 
-    // 8. Finalize Video Stream & FastStart Container
+    // 8. Finalize Video Stream & FastStart Container with Timeout Protection
     onProgress?.(88, 'Finalizing FastStart container...');
-    await videoEncoder.flush();
-    videoEncoder.close();
 
+    // Wait for remaining queued frames to flush with 12s safety timeout
+    await Promise.race([
+      videoEncoder.flush(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Encoder flush timeout')), 12000)
+      ),
+    ]);
+
+    try {
+      videoEncoder.close();
+    } catch {}
+
+    onProgress?.(94, 'Writing FastStart headers...');
     muxer.finalize();
     const buffer = muxer.target.buffer;
+
+    if (!buffer || buffer.byteLength === 0) {
+      throw new Error('Muxer produced empty buffer');
+    }
+
     const optimizedBlob = new Blob([buffer], { type: 'video/mp4' });
 
     // Clean up temporary DOM & Blob objects
@@ -495,11 +604,10 @@ export async function optimizeVideo(
     };
   } catch (err: any) {
     console.error('Video optimization encountered an error, falling back to original:', err);
-    URL.revokeObjectURL(videoUrl);
-    video.remove();
-    canvas.remove();
-
     try {
+      URL.revokeObjectURL(videoUrl);
+      video.remove();
+      canvas.remove();
       videoEncoder.close();
     } catch {}
 
