@@ -1,9 +1,25 @@
 import './globals.css';
 import React from 'react';
 import { Metadata } from 'next';
+import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google';
 import { Navbar } from '@/components/public/Navbar';
 import { Footer } from '@/components/public/Footer';
 import { WhatsAppButton } from '@/components/public/WhatsAppButton';
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.interactivemind.in'),
@@ -41,7 +57,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${plusJakartaSans.variable} ${fraunces.variable}`}>
       <body className="flex flex-col min-h-screen">
         <Navbar />
         <main className="flex-grow">{children}</main>
