@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminApi } from '@/lib/auth';
 import { getBlogPostByIdDB, updateBlogPostDB, deleteBlogPostDB } from '@/lib/db';
+import { deleteMediaStorage } from '@/lib/media-storage';
 import { BlogPostUpdateSchema } from '@/validators/schemas';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
@@ -33,12 +34,22 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 
   try {
+    const existing = await getBlogPostByIdDB(id);
+    if (!existing) {
+      return NextResponse.json({ success: false, error: 'Post not found' }, { status: 404 });
+    }
+
     const body = await req.json();
     const validatedData = BlogPostUpdateSchema.parse(body);
 
     const updated = await updateBlogPostDB(id, validatedData);
     if (!updated) {
-      return NextResponse.json({ success: false, error: 'Post not found' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Failed to update blog post' }, { status: 404 });
+    }
+
+    // If thumbnail changed and old thumbnail was stored locally, safely delete old file
+    if (validatedData.thumbnail && validatedData.thumbnail !== existing.thumbnail) {
+      await deleteMediaStorage(existing.thumbnail);
     }
 
     const post = await getBlogPostByIdDB(id);
@@ -81,6 +92,11 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     const deleted = await deleteBlogPostDB(id);
     if (!deleted) {
       return NextResponse.json({ success: false, error: 'Failed to delete blog post' }, { status: 500 });
+    }
+
+    // Safely delete thumbnail file from storage only if not referenced elsewhere
+    if (existing.thumbnail) {
+      await deleteMediaStorage(existing.thumbnail);
     }
 
     return NextResponse.json({

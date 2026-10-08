@@ -99,17 +99,17 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       return NextResponse.json({ success: false, error: 'Media item not found' }, { status: 404 });
     }
 
-    // Clean up media file from storage (Vercel Blob or local)
+    const deleted = await deleteMediaDB(id);
+    if (!deleted) {
+      return NextResponse.json({ success: false, error: 'Failed to delete media item' }, { status: 500 });
+    }
+
+    // Clean up media file from storage only if not referenced by other records
     if (existing.url) {
       await deleteMediaStorage(existing.url);
     }
     if (existing.thumbnail_url) {
       await deleteMediaStorage(existing.thumbnail_url);
-    }
-
-    const deleted = await deleteMediaDB(id);
-    if (!deleted) {
-      return NextResponse.json({ success: false, error: 'Failed to delete media item' }, { status: 500 });
     }
 
     try {

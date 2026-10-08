@@ -1,15 +1,26 @@
 import path from 'path';
 import fs from 'fs/promises';
 import crypto from 'crypto';
-import { del } from '@vercel/blob';
-import { isVercelBlobUrl } from './media-utils';
+import { isVercelBlobUrl, isLocalMediaUrl } from './media-utils';
+import { isMediaUrlInUseDB } from './db';
 
-export { isVercelBlobUrl };
+export { isVercelBlobUrl, isLocalMediaUrl };
 
 export const UPLOAD_DIR_RELATIVE = '/uploads/media';
-export const UPLOAD_BASE_DIR = path.join(process.cwd(), 'public', 'uploads', 'media');
 
-export const MAX_IMAGE_SIZE_BYTES = 500 * 1024 * 1024; // 500 MB
+/**
+ * Resolves the absolute directory path where uploaded media files are stored.
+ * If MEDIA_UPLOAD_DIR is set in the environment, uses that persistent path.
+ * Otherwise, falls back to public/uploads/media inside the project root.
+ */
+export function getUploadBaseDir(): string {
+  if (process.env.MEDIA_UPLOAD_DIR && process.env.MEDIA_UPLOAD_DIR.trim().length > 0) {
+    return path.resolve(process.env.MEDIA_UPLOAD_DIR.trim());
+  }
+  return path.resolve(process.cwd(), 'public', 'uploads', 'media');
+}
+
+export const MAX_IMAGE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 export const MAX_VIDEO_SIZE_BYTES = 500 * 1024 * 1024; // 500 MB
 
 export const ALLOWED_MIME_MAP: Record<string, { type: 'image' | 'video'; exts: string[] }> = {
@@ -36,13 +47,13 @@ export interface ValidationResult {
   extension?: string;
 }
 
-export function validateMediaFile(file: File): ValidationResult {
-  if (!file || !(file instanceof File) || file.size === 0) {
+export function validateMediaFile(file: File | Blob & { name?: string }): ValidationResult {
+  if (!file || file.size === 0) {
     return { valid: false, error: 'No file provided or file is empty' };
   }
 
   const mimeType = (file.type || '').toLowerCase().trim();
-  const originalName = file.name || 'unnamed';
+  const originalName = (file as any).name || 'unnamed.jpg';
   const rawExt = path.extname(originalName).toLowerCase();
 
   if (!rawExt || DISALLOWED_EXTENSIONS.has(rawExt)) {
@@ -68,7 +79,7 @@ export function validateMediaFile(file: File): ValidationResult {
 
   if (mediaType === 'image' && file.size > MAX_IMAGE_SIZE_BYTES) {
     const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
-    return { valid: false, error: `Image file is too large (${sizeMb} MB). Maximum allowed size is 500 MB.` };
+    return { valid: false, error: `Image file is too large (${sizeMb} MB). Maximum allowed size is 50 MB.` };
   }
 
   if (mediaType === 'video' && file.size > MAX_VIDEO_SIZE_BYTES) {
@@ -83,7 +94,7 @@ export function validateMediaFile(file: File): ValidationResult {
   };
 }
 
-export async function saveUploadedMediaFile(file: File): Promise<{
+export async function saveUploadedMediaFile(file: File | Blob & { name?: string }): Promise<{
   url: string;
   filename: string;
   size: number;
@@ -94,16 +105,18 @@ export async function saveUploadedMediaFile(file: File): Promise<{
     throw new Error(validation.error || 'Invalid media file');
   }
 
-  // Ensure upload directory exists
-  await fs.mkdir(UPLOAD_BASE_DIR, { recursive: true });
+  const baseDir = getUploadBaseDir();
 
-  // Generate safe unique filename
+  // Ensure target upload directory exists
+  await fs.mkdir(baseDir, { recursive: true });
+
+  // Generate safe collision-resistant filename
   const uniqueToken = crypto.randomBytes(12).toString('hex');
   const safeFilename = `${Date.now()}-${uniqueToken}${validation.extension}`;
-  const destinationPath = path.resolve(UPLOAD_BASE_DIR, safeFilename);
+  const destinationPath = path.resolve(baseDir, safeFilename);
 
-  // Security check: ensure path is strictly inside UPLOAD_BASE_DIR
-  if (!destinationPath.startsWith(UPLOAD_BASE_DIR)) {
+  // Security check: ensure path is strictly inside baseDir
+  if (!destinationPath.startsWith(baseDir)) {
     throw new Error('Security error: Path traversal detected');
   }
 
@@ -134,8 +147,9 @@ export async function deleteLocalMediaFile(mediaUrl?: string | null): Promise<bo
     return false;
   }
 
-  const targetPath = path.resolve(UPLOAD_BASE_DIR, filename);
-  if (!targetPath.startsWith(UPLOAD_BASE_DIR)) {
+  const baseDir = getUploadBaseDir();
+  const targetPath = path.resolve(baseDir, filename);
+  if (!targetPath.startsWith(baseDir)) {
     return false;
   }
 
@@ -144,7 +158,7 @@ export async function deleteLocalMediaFile(mediaUrl?: string | null): Promise<bo
     return true;
   } catch (err: any) {
     if (err.code === 'ENOENT') {
-      return false; // File did not exist
+      return false; // File already does not exist
     }
     console.error(`Failed to delete local media file (${filename}):`, err);
     return false;
@@ -153,26 +167,20 @@ export async function deleteLocalMediaFile(mediaUrl?: string | null): Promise<bo
 
 /**
  * Unified media storage deletion.
- * Deletes from Vercel Blob if the URL is a Blob URL,
- * or from local filesystem if it is a legacy local file.
+ * Safely deletes local media files from Hostinger storage only if they
+ * are not referenced by any other database records.
  */
 export async function deleteMediaStorage(mediaUrl?: string | null): Promise<boolean> {
   if (!mediaUrl || typeof mediaUrl !== 'string') return false;
   const trimmed = mediaUrl.trim();
 
-  // 1. If it is a Vercel Blob URL, delete via @vercel/blob
-  if (isVercelBlobUrl(trimmed)) {
-    try {
-      await del(trimmed);
-      return true;
-    } catch (err) {
-      console.error(`Failed to delete Vercel Blob object (${trimmed}):`, err);
+  // If it is a local upload, check references before deletion
+  if (trimmed.startsWith(UPLOAD_DIR_RELATIVE + '/')) {
+    const inUse = await isMediaUrlInUseDB(trimmed);
+    if (inUse) {
+      // Preserve physical file because another record still references it
       return false;
     }
-  }
-
-  // 2. If it is a legacy local upload, delete from disk
-  if (trimmed.startsWith(UPLOAD_DIR_RELATIVE + '/')) {
     return deleteLocalMediaFile(trimmed);
   }
 

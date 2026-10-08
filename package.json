@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@vercel/blob": "^2.8.1",
     "autoprefixer": "^10.4.20",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",

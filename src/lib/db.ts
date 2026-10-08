@@ -1259,6 +1259,82 @@ export async function deleteBlogPostDB(id: number): Promise<boolean> {
   }
 }
 
+/**
+ * Check if a given media URL is referenced in any database table
+ * (media gallery records, blog posts, services, conditions, team members, testimonials).
+ * Used to prevent accidental deletion of shared physical files on disk.
+ */
+export async function isMediaUrlInUseDB(url: string): Promise<boolean> {
+  if (!url || typeof url !== 'string') return false;
+  const trimmedUrl = url.trim();
+  if (!trimmedUrl) return false;
+
+  try {
+    // 1. Check media table (url and thumbnail_url)
+    const mediaMatches = await queryDb<any>(
+      'SELECT id FROM media WHERE url = ? OR thumbnail_url = ? LIMIT 1',
+      [trimmedUrl, trimmedUrl]
+    );
+    if (mediaMatches && mediaMatches.length > 0) return true;
+
+    // 2. Check blog_posts table (thumbnail and video_url)
+    const blogMatches = await queryDb<any>(
+      'SELECT id FROM blog_posts WHERE thumbnail = ? OR video_url = ? LIMIT 1',
+      [trimmedUrl, trimmedUrl]
+    );
+    if (blogMatches && blogMatches.length > 0) return true;
+
+    // 3. Check services table (image_url)
+    const serviceMatches = await queryDb<any>(
+      'SELECT id FROM services WHERE image_url = ? LIMIT 1',
+      [trimmedUrl]
+    );
+    if (serviceMatches && serviceMatches.length > 0) return true;
+
+    // 4. Check conditions table (image_url)
+    const conditionMatches = await queryDb<any>(
+      'SELECT id FROM conditions WHERE image_url = ? LIMIT 1',
+      [trimmedUrl]
+    );
+    if (conditionMatches && conditionMatches.length > 0) return true;
+
+    // 5. Check team_members table (image_url)
+    const teamMatches = await queryDb<any>(
+      'SELECT id FROM team_members WHERE image_url = ? LIMIT 1',
+      [trimmedUrl]
+    );
+    if (teamMatches && teamMatches.length > 0) return true;
+
+    // 6. Check testimonials table (image_url)
+    const testimonialMatches = await queryDb<any>(
+      'SELECT id FROM testimonials WHERE image_url = ? LIMIT 1',
+      [trimmedUrl]
+    );
+    if (testimonialMatches && testimonialMatches.length > 0) return true;
+
+    return false;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const inMedia = memoryState.media.some(m => m.url === trimmedUrl || m.thumbnail_url === trimmedUrl);
+      if (inMedia) return true;
+      const inBlog = memoryState.blogPosts.some(b => b.thumbnail === trimmedUrl || b.video_url === trimmedUrl);
+      if (inBlog) return true;
+      const inServices = memoryState.services.some(s => s.image_url === trimmedUrl);
+      if (inServices) return true;
+      const inConditions = memoryState.conditions.some(c => c.image_url === trimmedUrl);
+      if (inConditions) return true;
+      const inTeam = memoryState.team.some(t => t.image_url === trimmedUrl);
+      if (inTeam) return true;
+      const inTestimonials = memoryState.testimonials.some(t => t.image_url === trimmedUrl);
+      if (inTestimonials) return true;
+      return false;
+    }
+    // If DB query fails in production, be conservative: don't delete physical file
+    console.error('Error checking media URL database references:', error);
+    return true;
+  }
+}
+
 
 // ====================================================
 // 8. APPOINTMENTS & MESSAGES REPOSITORY

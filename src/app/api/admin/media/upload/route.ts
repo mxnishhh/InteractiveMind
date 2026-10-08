@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { requireAdminApi } from '@/lib/auth';
-import { ALLOWED_CONTENT_TYPES, MAX_IMAGE_SIZE_BYTES, deleteMediaStorage } from '@/lib/media-storage';
+import { saveUploadedMediaFile, deleteMediaStorage, validateMediaFile } from '@/lib/media-storage';
 
+export const dynamic = 'force-dynamic';
+
+/**
+ * Handle multipart/form-data media uploads directly to Hostinger storage.
+ */
 export async function POST(req: NextRequest): Promise<NextResponse> {
   // 1. Enforce admin authentication
   const auth = requireAdminApi(req);
@@ -11,73 +15,48 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const contentType = req.headers.get('content-type') || '';
+    const formData = await req.formData();
+    const file = formData.get('file');
 
-    // Handle Vercel Blob client upload token generation
-    if (contentType.includes('application/json')) {
-      const body = (await req.json()) as HandleUploadBody;
-
-      const jsonResponse = await handleUpload({
-        body,
-        request: req,
-        onBeforeGenerateToken: async (pathname /*, clientPayload, multipart */) => {
-          // Re-verify authentication
-          const currentAuth = requireAdminApi(req);
-          if (!currentAuth.authenticated) {
-            throw new Error('Unauthorized: Admin authentication required');
-          }
-
-          // Validate filename / extension
-          const sanitizedExt = '.' + pathname.split('.').pop()?.toLowerCase();
-          const allowedExts = ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.mp4', '.webm'];
-
-          if (!sanitizedExt || !allowedExts.includes(sanitizedExt)) {
-            throw new Error(`Disallowed file extension: ${sanitizedExt || 'unknown'}. Allowed: JPG, PNG, WebP, SVG, MP4, WebM`);
-          }
-
-          return {
-            allowedContentTypes: ALLOWED_CONTENT_TYPES,
-            maximumSizeInBytes: MAX_IMAGE_SIZE_BYTES, // 500 MB
-            addRandomSuffix: true,
-          };
-        },
-        onUploadCompleted: async ({ blob }) => {
-          // Optional server-side logging of completed upload
-          console.log('[BLOB] Client upload completed successfully:', blob.url);
-        },
-      });
-
-      return NextResponse.json(jsonResponse);
+    if (!file || typeof file === 'string' || !(file instanceof Blob)) {
+      return NextResponse.json(
+        { success: false, error: 'No valid file provided in upload request' },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json(
-      { success: false, error: 'Invalid request format. Expected JSON for client-side Blob upload.' },
-      { status: 400 }
-    );
+    // Validate file type, extension, and size
+    const validation = validateMediaFile(file as File);
+    if (!validation.valid) {
+      return NextResponse.json(
+        { success: false, error: validation.error || 'Invalid media file' },
+        { status: 400 }
+      );
+    }
+
+    // Save file to persistent storage
+    const saved = await saveUploadedMediaFile(file as File);
+
+    return NextResponse.json({
+      success: true,
+      url: saved.url,
+      filename: saved.filename,
+      size: saved.size,
+      type: saved.type,
+    });
   } catch (error: any) {
     console.error('Admin media upload error:', error);
-
     const errorMessage = error?.message || 'Failed to process media upload';
-    const isTokenMissing =
-      errorMessage.includes('BLOB_READ_WRITE_TOKEN') ||
-      errorMessage.includes('No token found') ||
-      errorMessage.includes('token');
-
-    const formattedError = isTokenMissing
-      ? 'Upload failed: storage configuration is missing (BLOB_READ_WRITE_TOKEN is not configured).'
-      : `Upload failed: ${errorMessage}`;
-
-    const isUnauthorized = errorMessage.includes('Unauthorized');
 
     return NextResponse.json(
-      { success: false, error: formattedError },
-      { status: isUnauthorized ? 401 : 400 }
+      { success: false, error: `Upload failed: ${errorMessage}` },
+      { status: 500 }
     );
   }
 }
 
 /**
- * Handle deletion of orphaned/temporary Vercel Blob assets if DB creation fails.
+ * Handle deletion of stored media assets from Hostinger storage.
  */
 export async function DELETE(req: NextRequest): Promise<NextResponse> {
   const auth = requireAdminApi(req);
@@ -92,9 +71,9 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
     }
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('Error deleting blob cleanup:', error);
+    console.error('Error deleting media storage:', error);
     return NextResponse.json(
-      { success: false, error: error?.message || 'Failed to delete blob' },
+      { success: false, error: error?.message || 'Failed to delete file' },
       { status: 500 }
     );
   }

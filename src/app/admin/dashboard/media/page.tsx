@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { upload } from '@vercel/blob/client';
 import { MediaItem, VideoOptimizationMeta } from '@/types';
 import { Button, Input, Textarea, Modal, Toast } from '@/components/ui';
 import { AdminPageHeader, AdminEmptyState, AdminDeleteModal } from '@/components/admin';
-import { isVercelBlobUrl } from '@/lib/media-utils';
+import { isVercelBlobUrl, isLocalMediaUrl } from '@/lib/media-utils';
 import {
   optimizeVideo,
   extractVideoMetadata,
@@ -24,7 +23,6 @@ import {
   UploadCloud,
   AlertCircle,
   HardDrive,
-  Cloud,
   Link as LinkIcon,
   X,
   Loader2,
@@ -93,7 +91,54 @@ function formatBytes(bytes?: number | null): string {
 }
 
 /**
- * Upload a thumbnail image data URL to Vercel Blob
+ * Upload a File to Hostinger storage via multipart/form-data with real-time progress tracking.
+ */
+function uploadFileToHostinger(
+  file: File,
+  onProgress?: (percentage: number) => void
+): Promise<{ url: string }> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+    formData.append('file', file);
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable && onProgress) {
+        const percentage = (e.loaded / e.total) * 100;
+        onProgress(percentage);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const res = JSON.parse(xhr.responseText);
+          if (res.success && res.url) {
+            resolve({ url: res.url });
+          } else {
+            reject(new Error(res.error || 'Upload failed'));
+          }
+        } catch (err) {
+          reject(new Error('Invalid server response during upload'));
+        }
+      } else {
+        try {
+          const res = JSON.parse(xhr.responseText);
+          reject(new Error(res.error || `Upload failed (HTTP ${xhr.status})`));
+        } catch (err) {
+          reject(new Error(`Upload failed (HTTP ${xhr.status})`));
+        }
+      }
+    };
+
+    xhr.onerror = () => reject(new Error('Network error during file upload'));
+    xhr.open('POST', '/api/admin/media/upload');
+    xhr.send(formData);
+  });
+}
+
+/**
+ * Upload a thumbnail image data URL to storage
  */
 async function uploadThumbnailDataUrl(dataUrl: string, baseFilename: string): Promise<string | null> {
   try {
@@ -102,23 +147,19 @@ async function uploadThumbnailDataUrl(dataUrl: string, baseFilename: string): Pr
     const cleanName = baseFilename.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/\.[^/.]+$/, '');
     const thumbFile = new File([blob], `thumb_${cleanName}.jpg`, { type: 'image/jpeg' });
 
-    const uploaded = await upload(`media/thumbnails/thumb_${Date.now()}_${cleanName}.jpg`, thumbFile, {
-      access: 'public',
-      handleUploadUrl: '/api/admin/media/upload',
-    });
-
+    const uploaded = await uploadFileToHostinger(thumbFile);
     return uploaded.url;
   } catch (err) {
-    console.error('Error uploading video thumbnail to Vercel Blob:', err);
+    console.error('Error uploading video thumbnail to storage:', err);
     return null;
   }
 }
 
 /**
- * Safely cleanup an uploaded Vercel Blob asset if DB insertion fails
+ * Safely cleanup an uploaded asset if DB insertion fails
  */
-async function cleanupUploadedBlob(url?: string | null): Promise<void> {
-  if (!url || !isVercelBlobUrl(url)) return;
+async function cleanupUploadedMedia(url?: string | null): Promise<void> {
+  if (!url || !url.startsWith('/uploads/media/')) return;
   try {
     await fetch('/api/admin/media/upload', {
       method: 'DELETE',
@@ -126,7 +167,7 @@ async function cleanupUploadedBlob(url?: string | null): Promise<void> {
       body: JSON.stringify({ url }),
     });
   } catch (err) {
-    console.warn('Could not cleanup orphaned blob:', err);
+    console.warn('Could not cleanup orphaned media:', err);
   }
 }
 
@@ -319,7 +360,7 @@ export default function AdminMediaPage() {
   };
 
   /**
-   * Process (Optimize Video if needed) and Upload a single file directly to Vercel Blob
+   * Process (Optimize Video if needed) and Upload a single file directly to Hostinger storage
    */
   const processAndUploadFile = async (
     fileWithPreview: FileWithPreview
@@ -373,7 +414,7 @@ export default function AdminMediaPage() {
       }
     }
 
-    // 2. Upload file to Vercel Blob
+    // 2. Upload file to Hostinger Storage
     setSelectedFiles((prev) =>
       prev.map((f) =>
         f.id === id
@@ -381,34 +422,26 @@ export default function AdminMediaPage() {
               ...f,
               status: 'uploading',
               progress: 0,
-              stageMessage: 'Uploading optimized media to Vercel Blob...',
+              stageMessage: 'Uploading media to storage...',
               optimizationMeta,
             }
           : f
       )
     );
 
-    const cleanFileName = fileToUpload.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const pathname = `media/${Date.now()}_${cleanFileName}`;
-
     try {
-      const blobResult = await upload(pathname, fileToUpload, {
-        access: 'public',
-        handleUploadUrl: '/api/admin/media/upload',
-        multipart: fileToUpload.size > 5 * 1024 * 1024,
-        onUploadProgress: ({ percentage }) => {
-          setSelectedFiles((prev) =>
-            prev.map((f) =>
-              f.id === id
-                ? {
-                    ...f,
-                    progress: percentage,
-                    stageMessage: `Uploading to Blob: ${Math.round(percentage)}%`,
-                  }
-                : f
-            )
-          );
-        },
+      const uploadResult = await uploadFileToHostinger(fileToUpload, (percentage) => {
+        setSelectedFiles((prev) =>
+          prev.map((f) =>
+            f.id === id
+              ? {
+                  ...f,
+                  progress: percentage,
+                  stageMessage: `Uploading: ${Math.round(percentage)}%`,
+                }
+              : f
+          )
+        );
       });
 
       let uploadedThumbnailUrl: string | undefined = undefined;
@@ -429,7 +462,7 @@ export default function AdminMediaPage() {
                 status: 'success',
                 progress: 100,
                 stageMessage: 'Completed',
-                uploadedUrl: blobResult.url,
+                uploadedUrl: uploadResult.url,
                 uploadedThumbnailUrl,
                 optimizationMeta,
               }
@@ -438,7 +471,7 @@ export default function AdminMediaPage() {
       );
 
       return {
-        blobUrl: blobResult.url,
+        blobUrl: uploadResult.url,
         thumbnailUrl: uploadedThumbnailUrl,
         meta: optimizationMeta,
       };
@@ -506,9 +539,9 @@ export default function AdminMediaPage() {
 
         const data = await res.json();
         if (!res.ok || !data.success) {
-          // Cleanup newly uploaded blob and thumbnail to prevent orphaned assets
-          await cleanupUploadedBlob(blobUrl);
-          if (thumbnailUrl) await cleanupUploadedBlob(thumbnailUrl);
+          // Cleanup newly uploaded file and thumbnail to prevent orphaned assets
+          await cleanupUploadedMedia(blobUrl);
+          if (thumbnailUrl) await cleanupUploadedMedia(thumbnailUrl);
           throw new Error(data.error || 'Failed to create media database record');
         }
 
@@ -626,10 +659,10 @@ export default function AdminMediaPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        // If create failed and a new blob was uploaded, delete newly uploaded blob
+        // If create failed and a new file was uploaded, delete newly uploaded file
         if (!editingId && targetUrl) {
-          await cleanupUploadedBlob(targetUrl);
-          if (targetThumbnailUrl) await cleanupUploadedBlob(targetThumbnailUrl);
+          await cleanupUploadedMedia(targetUrl);
+          if (targetThumbnailUrl) await cleanupUploadedMedia(targetThumbnailUrl);
         }
         throw new Error(data.error || 'Failed to save media item');
       }
@@ -699,7 +732,7 @@ export default function AdminMediaPage() {
       <AdminPageHeader
         eyebrow="Digital Assets & Video Optimization"
         title="Media Gallery Manager"
-        description="Upload photos and high-bitrate camera videos with automatic client-side H.264 FastStart transcoding, Vercel Blob storage, and instant public streaming."
+        description="Upload photos and high-bitrate camera videos with automatic client-side H.264 FastStart transcoding, persistent Hostinger storage, and instant public streaming."
         actions={
           <Button onClick={handleOpenCreate} variant="primary" size="sm" className="gap-1.5 shadow-sm">
             <Plus className="w-4 h-4" />
@@ -716,7 +749,7 @@ export default function AdminMediaPage() {
         <AdminEmptyState
           icon={UploadCloud}
           title="Media Library Empty"
-          description="Upload photos or clinical videos (up to 500 MB each) with automated FastStart compression and Vercel Blob storage."
+          description="Upload photos or clinical videos with automated FastStart compression and persistent Hostinger storage."
           action={{
             label: 'Upload First Media File',
             onClick: handleOpenCreate,
@@ -726,8 +759,8 @@ export default function AdminMediaPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {mediaItems.map((item) => {
+            const isLocal = isLocalMediaUrl(item.url);
             const isBlob = isVercelBlobUrl(item.url);
-            const isLocal = item.url.startsWith('/uploads/media/');
             const hasOptimization =
               item.original_size_bytes &&
               item.optimized_size_bytes &&
@@ -777,14 +810,14 @@ export default function AdminMediaPage() {
                   </div>
 
                   <div className="absolute top-3 right-3 flex items-center gap-1.5 pointer-events-none">
-                    {isBlob && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-900 bg-emerald-100/95 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-2xs">
-                        <Cloud className="w-3 h-3 text-emerald-700" /> Blob
-                      </span>
-                    )}
                     {isLocal && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-teal-900 bg-teal-100/95 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-2xs">
-                        <HardDrive className="w-3 h-3" /> Local
+                        <HardDrive className="w-3 h-3 text-teal-700" /> Hostinger
+                      </span>
+                    )}
+                    {isBlob && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-900 bg-emerald-100/95 backdrop-blur-sm px-2 py-0.5 rounded-md shadow-2xs">
+                        Blob
                       </span>
                     )}
                     {item.featured && (
@@ -983,8 +1016,8 @@ export default function AdminMediaPage() {
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded">
                         <Zap className="w-3 h-3 text-emerald-600" /> Auto H.264 FastStart
                       </span>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-800 bg-indigo-100/90 px-2 py-0.5 rounded">
-                        <Cloud className="w-3 h-3 text-indigo-600" /> Vercel Blob Direct
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-teal-800 bg-teal-100/90 px-2 py-0.5 rounded">
+                        <HardDrive className="w-3 h-3 text-teal-600" /> Hostinger Storage
                       </span>
                     </div>
                   </div>
@@ -1069,7 +1102,7 @@ export default function AdminMediaPage() {
                                 <div className="flex items-center justify-between text-[10px] font-bold">
                                   <span className={isOptimizing ? 'text-indigo-700 flex items-center gap-1' : 'text-emerald-700'}>
                                     {isOptimizing && <Loader2 className="w-3 h-3 animate-spin inline" />}
-                                    {fileWithPreview.stageMessage || (isOptimizing ? 'Optimizing video...' : 'Uploading to Blob...')}
+                                    {fileWithPreview.stageMessage || (isOptimizing ? 'Optimizing video...' : 'Uploading to storage...')}
                                   </span>
                                   <span className="font-mono">{Math.round(fileWithPreview.progress)}%</span>
                                 </div>
@@ -1088,7 +1121,7 @@ export default function AdminMediaPage() {
                               <div className="flex items-center gap-1 mt-1">
                                 <CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                                 <span className="text-[11px] text-emerald-700 font-bold">
-                                  {isVideo ? 'Optimized (H.264 FastStart) & Saved' : 'Uploaded to Vercel Blob'}
+                                  {isVideo ? 'Optimized (H.264 FastStart) & Saved' : 'Uploaded to Storage'}
                                 </span>
                               </div>
                             )}
@@ -1128,8 +1161,8 @@ export default function AdminMediaPage() {
                 required
                 value={formData.url}
                 onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                placeholder="https://...public.blob.vercel-storage.com/... or https://..."
-                helperText="Enter a direct link to a Vercel Blob or external media asset"
+                placeholder="/uploads/media/... or https://..."
+                helperText="Enter a direct link to an uploaded or external media asset"
               />
             </div>
           )}
@@ -1187,7 +1220,7 @@ export default function AdminMediaPage() {
               label="Custom Thumbnail URL (Optional)"
               value={formData.thumbnail_url}
               onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-              placeholder="https://...public.blob.vercel-storage.com/... or https://..."
+              placeholder="/uploads/media/... or https://..."
               helperText="Leave blank to use auto-generated video frame thumbnail"
             />
           )}
