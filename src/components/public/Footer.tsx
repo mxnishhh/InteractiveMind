@@ -56,6 +56,7 @@ export const Footer: React.FC = () => {
                 <li><Link href="/#blog" className="hover:text-white transition-colors">Journal &amp; Insights</Link></li>
                 <li><Link href="/#faq" className="hover:text-white transition-colors">Parent FAQ</Link></li>
                 <li><Link href="/#appointment" className="hover:text-white transition-colors">Book Assessment</Link></li>
+                <li><Link href="/#inquiry" className="hover:text-white transition-colors">Send an Inquiry</Link></li>
               </ul>
             </div>
 

@@ -6,7 +6,7 @@ import { TherapiesSection } from '@/components/public/TherapiesSection';
 import { ConditionsSection } from '@/components/public/ConditionsSection';
 import { BlogSection } from '@/components/public/BlogSection';
 import { Accordion } from '@/components/ui/Accordion';
-import { AppointmentForm } from '@/components/public/AppointmentForm';
+import { AppointmentInquiryCard } from '@/components/public/AppointmentInquiryCard';
 import { GallerySection } from '@/components/public/GallerySection';
 import { AboutImageSlideshow } from '@/components/public/AboutImageSlideshow';
 import { getServicesDB, getConditionsDB, getFaqsDB, getTeamMembersDB, getPublishedBlogPostsDB, getMediaDB } from '@/lib/db';
@@ -634,8 +634,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 10. Assessment Request: Reassuring Family Entrance Photography */}
+      {/* 10. Assessment Request & Direct Clinical Inquiries */}
       <section id="appointment" className="py-20 lg:py-28 bg-brand-950 text-white relative scroll-mt-20">
+        <div id="contact" className="absolute -top-20" aria-hidden="true" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
@@ -644,10 +645,10 @@ export default async function HomePage() {
             <FadeUp className="lg:col-span-5 space-y-6">
               <span className="text-xs font-bold uppercase tracking-wider text-brand-500 block">Take the First Step</span>
               <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
-                Schedule an Assessment for Your Child
+                Schedule an Assessment or Get in Touch
               </h2>
               <p className="text-stone-300 text-base leading-relaxed">
-                Our clinical intake coordinator will review your request confidentially and reach out within 24 hours to guide you through scheduling an evaluation.
+                Whether you are ready to book a clinical intake evaluation or simply have questions about our developmental therapies, our team is here to guide and support your family.
               </p>
 
               {/* Center Info Sidebar */}
@@ -693,16 +694,13 @@ export default async function HomePage() {
               {/* Trust & Confidentiality Notice */}
               <div className="p-4 rounded-2xl bg-brand-900/80 border border-brand-800 text-xs text-stone-300 leading-relaxed">
                 <strong className="text-white block mb-1">Confidential &amp; Procedural Notice:</strong>
-                Submitting this request connects you directly with our clinical intake team. All child and family information is kept strictly confidential.
+                All submissions connect directly with our clinical intake and coordinator team. Family and child information is kept strictly confidential.
               </div>
             </FadeUp>
 
-            {/* Right Column: Live Interactive AppointmentForm (7 cols) */}
+            {/* Right Column: Live Interactive Dual Card (Assessment & Inquiry) (7 cols) */}
             <ScaleReveal scale={0.985} delay={0.1} className="lg:col-span-7 bg-white text-stone-900 rounded-3xl p-6 sm:p-10 shadow-elevated border border-stone-200">
-              <h3 className="font-serif-heading text-2xl font-bold text-brand-950 mb-1">Appointment Intake Request</h3>
-              <p className="text-xs text-stone-500 mb-6">Complete this form and our intake coordinator will contact you to confirm available slots.</p>
-
-              <AppointmentForm services={services} />
+              <AppointmentInquiryCard services={services} />
             </ScaleReveal>
 
           </div>

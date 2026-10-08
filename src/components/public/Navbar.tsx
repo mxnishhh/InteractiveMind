@@ -32,13 +32,14 @@ export const Navbar: React.FC = () => {
     { id: 'team', label: 'Team', href: isHome ? '#team' : '/#team' },
     { id: 'blog', label: 'Blog', href: isHome ? '#blog' : '/#blog' },
     { id: 'faq', label: 'FAQ', href: isHome ? '#faq' : '/#faq' },
+    { id: 'appointment', label: 'Contact', href: isHome ? '#appointment' : '/#appointment' },
   ];
 
   // Active section tracking via IntersectionObserver
   useEffect(() => {
     if (!isHome) return;
 
-    const sectionIds = ['hero', 'about', 'therapies', 'conditions', 'approach', 'journey', 'team', 'blog', 'faq'];
+    const sectionIds = ['hero', 'about', 'therapies', 'conditions', 'approach', 'journey', 'team', 'blog', 'faq', 'appointment'];
     const elements = sectionIds
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);

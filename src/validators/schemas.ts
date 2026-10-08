@@ -16,7 +16,7 @@ export const AppointmentRequestSchema = z.object({
 export const ContactMessageSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
-  phone: z.string().min(8, 'Phone number must be at least 8 digits'),
+  phone: z.string().optional().default(''),
   subject: z.string().optional().nullable(),
   message: z.string().min(10, 'Message must be at least 10 characters'),
   preferred_contact_method: z.string().optional().default('email'),

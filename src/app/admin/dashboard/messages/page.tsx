@@ -267,12 +267,26 @@ export default function AdminMessagesPage() {
                   <Phone className="w-3 h-3" />
                   <span>Phone Number</span>
                 </span>
-                <a href={`tel:${selectedMsg.phone}`} className="block font-semibold text-stone-900">
-                  {selectedMsg.phone}
-                </a>
+                {selectedMsg.phone ? (
+                  <a href={`tel:${selectedMsg.phone}`} className="block font-semibold text-stone-900 hover:text-brand-850">
+                    {selectedMsg.phone}
+                  </a>
+                ) : (
+                  <span className="block text-stone-400 font-medium text-xs">Not provided</span>
+                )}
               </div>
 
               <div className="space-y-1">
+                <span className="flex items-center gap-1.5 text-stone-600 font-bold uppercase text-[10px]">
+                  <MessageSquare className="w-3 h-3" />
+                  <span>Preferred Contact</span>
+                </span>
+                <span className="block font-semibold text-brand-950 capitalize">
+                  {selectedMsg.preferred_contact_method || 'Email'}
+                </span>
+              </div>
+
+              <div className="space-y-1 sm:col-span-2">
                 <span className="flex items-center gap-1.5 text-stone-600 font-bold uppercase text-[10px]">
                   <Calendar className="w-3 h-3" />
                   <span>Current Status</span>

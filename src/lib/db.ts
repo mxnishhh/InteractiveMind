@@ -1360,36 +1360,75 @@ export async function updateAppointmentStatusDB(id: number, status: Appointment[
 export async function createContactMessageDB(data: Omit<ContactMessage, 'id' | 'status' | 'created_at'>): Promise<ContactMessage> {
   const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
 
-  const res = await queryDb(
-    `INSERT INTO contact_messages (name, email, phone, subject, message, preferred_contact_method, status, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, 'NEW', ?)`,
-    [
-      data.name,
-      data.email,
-      data.phone,
-      data.subject || null,
-      data.message,
-      data.preferred_contact_method || 'email',
-      now
-    ]
-  );
+  try {
+    const res = await queryDb(
+      `INSERT INTO contact_messages (name, email, phone, subject, message, preferred_contact_method, status, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, 'NEW', ?)`,
+      [
+        data.name,
+        data.email,
+        data.phone || '',
+        data.subject || null,
+        data.message,
+        data.preferred_contact_method || 'email',
+        now
+      ]
+    );
 
-  const insertId = (res as any).insertId;
+    const insertId = (res as any).insertId;
 
-  return {
-    id: insertId,
-    ...data,
-    status: 'NEW',
-    created_at: now
-  };
+    return {
+      id: insertId,
+      ...data,
+      phone: data.phone || '',
+      status: 'NEW',
+      created_at: now
+    };
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const newMsg: ContactMessage = {
+        id: memoryState.nextMessageId++,
+        name: data.name,
+        email: data.email,
+        phone: data.phone || '',
+        subject: data.subject || undefined,
+        message: data.message,
+        preferred_contact_method: data.preferred_contact_method || 'email',
+        status: 'NEW',
+        created_at: now
+      };
+      memoryState.messages.push(newMsg);
+      return newMsg;
+    }
+    throw error;
+  }
 }
 
 export async function getContactMessagesDB(): Promise<ContactMessage[]> {
-  const rows = await queryDb('SELECT * FROM contact_messages ORDER BY created_at DESC');
-  return rows || [];
+  try {
+    const rows = await queryDb('SELECT * FROM contact_messages ORDER BY created_at DESC');
+    return rows || [];
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      return [...memoryState.messages].sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+    }
+    throw error;
+  }
 }
 
 export async function updateContactMessageStatusDB(id: number, status: ContactMessage['status']): Promise<boolean> {
-  await queryDb('UPDATE contact_messages SET status = ? WHERE id = ?', [status, id]);
-  return true;
+  try {
+    await queryDb('UPDATE contact_messages SET status = ? WHERE id = ?', [status, id]);
+    return true;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      const found = memoryState.messages.find(m => m.id === id);
+      if (found) {
+        found.status = status;
+        return true;
+      }
+      return false;
+    }
+    throw error;
+  }
 }
