@@ -56,7 +56,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect }) =
           </span>
         ) : (
           <Link
-            href={`/therapies/${service.slug}`}
+            href="/#therapies"
             className="text-xs font-bold text-brand-850 hover:text-brand-700 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-all"
           >
             <span>{UI_TEXT.learnMore}</span>

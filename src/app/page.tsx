@@ -641,6 +641,7 @@ export default async function HomePage() {
       {/* 10. Assessment Request & Direct Clinical Inquiries */}
       <section id="appointment" className="py-20 lg:py-28 bg-brand-950 text-white relative scroll-mt-20">
         <div id="contact" className="absolute -top-20" aria-hidden="true" />
+        <div id="inquiry" className="absolute -top-20" aria-hidden="true" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">

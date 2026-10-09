@@ -66,7 +66,7 @@ export const ConditionCard: React.FC<ConditionCardProps> = ({ condition, onSelec
           </span>
         ) : (
           <Link
-            href={`/conditions/${condition.slug}`}
+            href="/#conditions"
             className="text-xs font-bold text-brand-850 hover:text-brand-700 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-all"
           >
             <span>{UI_TEXT.learnMore}</span>
